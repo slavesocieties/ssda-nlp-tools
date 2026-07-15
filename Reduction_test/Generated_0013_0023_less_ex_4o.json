@@ -1,0 +1,3996 @@
+{
+  "examples": [
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0013-01",
+      "raw": "Lunes, dia veinte y uno de Octubre de Mil, Setecien-tos, Noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Igle-sia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una niña de color, morena, de quatro meses de edad, hija natural de los Negros Juan, y Siliby, Naturales de la America del Norte, y todos, Esclavos de Don Francisco Sanchez; y en ella exer-cì las sacras Ceremonias, y preces de nuestra santa ma-dre Iglesia, y la puse por nombre Maria Dolores: fue-ron sus padrinos el Mulato libre Josè Rivas, y la Negra libre Maria de la Luz Blanco, vecinos de esta Ciudad, les adverti el parentesco espiritual, y demas obli-gaciones, y lo firmè en dicho dia, mes, y año= Miguel OReilly",
+      "normalized": "Lunes, día veinte y uno de octubre de mil setecientos noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial, y provincia de San Agustín de la Florida Oriental, bapticé y puse los santos óleos a una niña de color, morena, de cuatro meses de edad, hija natural de los negros Juan y Siliby, naturales de la América del Norte, y todos esclavos de Don Francisco Sanchez. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre Maria Dolores. Fueron sus padrinos el mulato libre José Rivas, y la negra libre Maria de la Luz Blanco, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Maria Dolores",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "four months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P07",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Siliby",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Francisco Sanchez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "José Rivas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "mulato",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P07",
+            "name": "Maria de la Luz Blanco",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-10-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0013-02",
+      "raw": "Miercoles, dia veinte de Noviembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel OReilly Teniente de Cura Beneficiado, Vicario, y Juez Eclesias-tico Auxiliar de esta Iglesia parroquial, y provincia, de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à un niño de color moreno, que naciò el dia primero de Octubre del presente año, hijo na-tural de los negros libres Isaac Guillo, y Sara Ca-mel, ambos naturales de la America del Norte; y en el exercì las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y le puse por nombre Juan Antonio: fueron sus padrinos Antonio Palliser, y Juana Palliser, vecinos de esta Ciudad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Miércoles, día veinte de noviembre de mil setecientos noventa y tres. Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, que nació el día primero de octubre del presente año, hijo natural de los negros libres Isaac Guillo y Sara Camel, ambos naturales de la América del Norte. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Juan Antonio. Fueron sus padrinos Antonio Palliser y Juana Palliser, vecinos de esta ciudad, les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Isaac Guillo",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Sara Camel",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Antonio Palliser",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Antonio",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Juana Palliser",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1793-11-20"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P05"
+            ],
+            "date": "1793-10-01"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0014-01",
+      "raw": "Domingo, dia veinte y quatro de Noviem-bre de Mil, Setecientos, Noventa y tres. Yo Don Miguel o Reilly, Teniente de Cura Beneficiado, Vi-cario, y Juez Eclesiastico Auxiliar de esta Iglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos oleos a una niña libre de color parda de ocho años y ocho meses de edad, hija natural de Don Jeremias Fish Natural de nueva York, y de la negra libre Eva Fish, Natural de la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y la puse por nombre Maria Juana, Francisca. fueron sus padrinos Lorenzo Capo, y Juana Joaquina Gonzalez, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y año= Miguel oReilly",
+      "normalized": "Domingo, día veinte y cuatro de noviembre de mil setecientos noventa y tres. Yo, Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña libre de color parda de ocho años y ocho meses de edad, hija natural de Don Jeremías Fish, natural de Nueva York, y de la negra libre Eva Fish, natural de la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y la puse por nombre María Juana Francisca. Fueron sus padrinos Lorenzo Capo y Juana Joaquina González, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Juana Francisca",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight years and eight months",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Jeremías Fish",
+            "rank": null,
+            "origin": "New York",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Eva Fish",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negra",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Lorenzo Capo",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Juana Joaquina González",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-11-24"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0014-02",
+      "raw": "Domingo, dia veinte y quatro de Noviembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel o Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Iglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos oleos a una niña libre de color parda de ocho años y ocho meses de edad, hija natural de Don Jeremias Fish Natural de nueva York, y de la negra libre Eva Fish, Natural de la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y la puse por nombre Maria Juana, Francisca. fueron sus padrinos Lorenzo Capo, y Juana Joaquina Gonzalez, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y año= Miguel oReilly",
+      "normalized": "Domingo, día veinticuatro de noviembre de mil setecientos noventa y tres. Yo, Don Miguel O'Reilly, teniente de cura beneficiado, vicario y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña libre de color parda de ocho años y ocho meses de edad, hija natural de Don Jeremias Fish, natural de Nueva York, y de la negra libre Eva Fish, natural de la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y la puse por nombre María Juana Francisca. Fueron sus padrinos Lorenzo Capo y Juana Joaquina González, vecinos de esta ciudad, les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Juana Francisca",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight years and eight months",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Jeremias Fish",
+            "rank": null,
+            "origin": "New York",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Eva Fish",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Lorenzo Capo",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Juana Joaquina González",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-11-24"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0014-03",
+      "raw": "Domingo, dia veinte y quatro de Noviembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel o Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Iglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos oleos a una niña libre de color, morena, que nacio el dia veinte y seis de Septiembre del presente año, hija natural de los Negros libres Andres Camel, y Eva Fish, ambos Naturales de la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y la puse por nombre Maria Teresa. fueron sus padrinos Francisco Huiton, y",
+      "normalized": "Domingo, día veinte y cuatro de noviembre de mil setecientos noventa y tres. Yo, Don Miguel O'Reilly, teniente de cura beneficiado, vicario y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña libre de color, morena, que nació el día veinte y seis de septiembre del presente año, hija natural de los negros libres Andrés Camel y Eva Fish, ambos naturales de la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y la puse por nombre María Teresa. Fueron sus padrinos Francisco Huiton, y...",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Andrés Camel",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Eva Fish",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "María Teresa",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Francisco Huiton",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": "1793-11-24"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P04"
+            ],
+            "date": "1793-09-26"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0015-01",
+      "raw": "Miercoles, dia quatro de Deciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisé, y puse los santos Oleos à una niña de color parda que nacio el dia treinta de Noviembre del presente año, hija de la negra Maria Prudencia de Zayas, y de padre blanco no conocido, y ambas Esclavas de Don Bernardo de la Puente. y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Maria, Josefa Andrea. fueron sus padrinos Domingo Estatcholy, y Doña Constanza Josefa Leonardy, Vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Miércoles, día cuatro de diciembre de mil setecientos noventa y tres. Yo, Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color parda que nació el día treinta de noviembre del presente año, hija de la negra María Prudencia de Zayas y de padre blanco no conocido, y ambas esclavas de Don Bernardo de la Puente. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y la puse por nombre María Josefa Andrea. Fueron sus padrinos Domingo Estatcholy y Doña Constanza Josefa Leonardy, vecinos de esta ciudad, les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Prudencia de Zayas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Josefa Andrea",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Bernardo de la Puente",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Domingo Estatcholy",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Constanza Josefa Leonardy",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1793-12-04"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P03"
+            ],
+            "date": "1793-11-30"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0015-02",
+      "raw": "Miercoles, dia quatro de Deciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisè, y pusè los santos Oleos à una niña de color parda que naciò el dia treinta de Noviembre del presente año, hija de la negra Maria Prudencia de Zayas, y de padre blanco no conocido, y ambas Esclavas de Don Bernardo de la Puente. y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la pusè por nombre Maria, Josefa Andrea. fueron sus padrinos Domingo Estatcholy, y Doña Constanza Josefa Leonardy, Vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Miércoles, día cuatro de diciembre de mil setecientos noventa y tres, yo Don Miguel OReilly, teniente de cura beneficiado, vicario y juez eclesiástico auxiliar de esta Yglesia parroquial y provincia de San Agustín de la Florida Oriental, bautisé y puse los santos óleos a una niña de color parda que nació el día treinta de noviembre del presente año, hija de la negra María Prudencia de Zayas y de padre blanco no conocido, y ambas esclavas de Don Bernardo de la Puente. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y la puse por nombre María Josefa Andrea. Fueron sus padrinos Domingo Estatcholy y Doña Constanza Josefa Leonardy, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones y lo firmé en dicho día, mes y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": "teniente de cura",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Prudencia de Zayas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Josefa Andrea",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Bernardo de la Puente",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Domingo Estatcholy",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Constanza Josefa Leonardy",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1793-12-04"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0015-03",
+      "raw": "Jueves, dia doze de Deciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisé, y puse los santos Oleos à una negra adulta como de diez y seis años de edad, Natural de Guinea, y Esclava de Don Guillermo Gernon, y en ella exerci las sacras Ceremonias y preces de nuestra santa madre Yglesia, y la puse por nombre Juana Teresa de Jesus. fue su madrina Doña Teresa Rodriguez, vecina de esta Cuidad, à quien adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Jueves, día doce de diciembre de mil setecientos noventa y tres. Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Yglesia parroquial y provincia de San Agustín de la Florida Oriental, baptisé y puse los santos óleos a una negra adulta como de diez y seis años de edad, natural de Guinea y esclava de Don Guillermo Gernon, y en ella ejercí las sacras ceremonias y preces de nuestra santa madre Yglesia, y la puse por nombre Juana Teresa de Jesús. Fue su madrina Doña Teresa Rodríguez, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juana Teresa de Jesús",
+            "rank": null,
+            "origin": "Guinea",
+            "ethnicity": null,
+            "age": "sixteen years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negra",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Guillermo Gernon",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Teresa Rodríguez",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-12-12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0015-04",
+      "raw": "Jueves, dia doze de Deciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisè, y pusè los santos Oleos à una negra adulta como de diez y seis años de edad, Natural de Guinea, y Esclava de Don Guillermo Gernon, y en ella exerci las sacras Ceremonias y preces de nuestra santa madre Yglesia, y la pusè por nombre Juana Teresa de Jesus. fuè su madrina Doña Teresa Rodriguez, vecina de esta Cuidad, à quien adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Jueves, día doce de diciembre de mil setecientos noventa y tres. Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una negra adulta como de dieciséis años de edad, natural de Guinea y esclava de Don Guillermo Gernon, y en ella ejercí las sagradas ceremonias y preces de nuestra Santa Madre Iglesia, y la puse por nombre Juana Teresa de Jesús. Fue su madrina Doña Teresa Rodríguez, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juana Teresa de Jesús",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "Guinea",
+            "age": "sixteen years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Guillermo Gernon",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Teresa Rodríguez",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-12-12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0016-01",
+      "raw": "Lunes, dia diez y seis de Diciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel o Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial y provincia de San Agustin de la Florida Oriental. Baptise, y puse los Santos oleos à una morena adulta como de veinte y tres Años de edad, Natural de Boston, y hija de padres no conocidos, y Esclava de Don Mateo Guadarama, y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y la puse por nombre Maria Josepha de los Dolores. fue su madrina Doña Catalina Geronima Porras, vecina de esta Cuidad, à quien adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel oReilly",
+      "normalized": "Lunes, día diez y seis de diciembre de mil setecientos noventa y tres. Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una morena adulta como de veintitrés años de edad, natural de Boston, e hija de padres no conocidos, y esclava de Don Mateo Guadarama. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y la puse por nombre María Josefa de los Dolores. Fue su madrina Doña Catalina Jerónima Porras, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Josefa de los Dolores",
+            "rank": null,
+            "origin": "Boston",
+            "ethnicity": null,
+            "age": "twenty-three years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "morena",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Mateo Guadarama",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Catalina Jerónima Porras",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-12-16"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0016-02",
+      "raw": "Jueves, dia veinte y seis de Diciembre de Mil, Setecientos, Noventa y tres. Yo Don Miguel o Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos oleos à una niña libre de color morena, que naciò el dia doze del presente mes, y Año, hija natural de los negros libres Syrus Tomson, y Mariana Biset, ambos naturales de la Carolina del sur en la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y la puse por nombre Maria Dolores. fuèron padrinos Juan Baptista Huiten y Maria Raphaela Quinty, Negros libres y vecinos de esta Cuidad, les adverti el parentesco",
+      "normalized": "Jueves, día veinte y seis de diciembre de mil setecientos noventa y tres. Yo, Don Miguel O'Reilly, teniente de cura beneficiado, vicario y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña libre de color morena, que nació el día doce del presente mes y año, hija natural de los negros libres Syrus Tomson y Mariana Biset, ambos naturales de la Carolina del Sur en la América del Norte. En ella ejercí las sagradas ceremonias y preces de nuestra Santa Madre Iglesia y la puse por nombre María Dolores. Fueron padrinos Juan Baptista Huiten y María Raphaela Quinty, negros libres y vecinos de esta ciudad. Les advertí el parentesco.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Dolores",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Syrus Tomson",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Mariana Biset",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Baptista Huiten",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "María Raphaela Quinty",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-12-26"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P02"
+            ],
+            "date": "1793-12-12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0017-01",
+      "raw": "Viernes, dia diez de Enero de Mil Setecientos Noventa y quatro. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos à una niña de color morena, que naciò el dia seis del presente mes, y Año, hija de la negra Maria Ortegas, Natural de Guinea, y de padre no conocido, y ambas Esclavas de Sebastian Ortegas; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Maria Teresa. Fueron sus padrinos Juan Martinely, y Mariana Cavedo, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Viernes, día diez de enero de mil setecientos noventa y cuatro. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena, que nació el día seis del presente mes y año, hija de la negra María Ortegas, natural de Guinea, y de padre no conocido, y ambas esclavas de Sebastián Ortegas. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre María Teresa. Fueron sus padrinos Juan Martinely y Mariana Cavedo, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": "Lieutenant",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Ortegas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "Guinea",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Teresa",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Sebastián Ortegas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Martinely",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Mariana Cavedo",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1794-01-10"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P03"
+            ],
+            "date": "1794-01-06"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0017-02",
+      "raw": "Lunes, dia treze de Enero de Mil, Setecientos, Noventa y quatro. Yo Don Miguel ò Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos à una niña de color parda, libre, que naciò el dia Siete del presente mes, y Año, hija de la Mulata libre Margarita Cepar, Natural de providencia, y de padre conocido; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Ysabel Francisca. fue su madrina Ysabel Pridavets, vecina de esta Ciudad, a quien adverti el parentesco espiritual y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Lunes, día trece de enero de mil setecientos noventa y cuatro. Yo, Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bautizé y puse los santos óleos a una niña de color parda, libre, que nació el día siete del presente mes y año, hija de la mulata libre Margarita Cepar, natural de Providencia y de padre desconocido. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y la puse por nombre Ysabel Francisca. Fue su madrina Ysabel Pridavets, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Ysabel Francisca",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Margarita Cepar",
+            "rank": null,
+            "origin": "Providencia",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "mulato",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Ysabel Pridavets",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-01-13"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-01-07"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0018-01",
+      "raw": "Lunes, dia tres de Febrero de Mil, Setecientos Noventa y quatro. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y Provincia de San Agustin de la Florida Oriental. Baptizè y puse los santos Oleos a un niño de color moreno de tres meses de edad, hijo de la negra Juana Leslie, natural de la America del Norte, y de padre no conocido, y ambos esclavos de Don Juan Leslie; y en el exercì las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Joseph Manuel. fue su madrina la mulata libre Maria Guadalupe de Rubio, vecina de esta Ciudad, a quien adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Lunes, día tres de febrero de mil setecientos noventa y cuatro. Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta Iglesia parroquial y Provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de tres meses de edad, hijo de la negra Juana Leslie, natural de la América del Norte, y de padre no conocido, y ambos esclavos de Don Juan Leslie. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y le puse por nombre Joseph Manuel. Fue su madrina la mulata libre María Guadalupe de Rubio, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Joseph Manuel",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three months old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juana Leslie",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negra",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Leslie",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "María Guadalupe de Rubio",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": "mulata",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-02-03"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0017-03",
+      "raw": "Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y Provincia de San Agustin de la Florida Oriental. Baptizè y puse los santos Oleos a un niño de color moreno de tres meses de edad, hijo de la negra Juana Leslie, natural de la America del Norte, y de padre no conocido, y ambos esclavos de Don Juan Leslie; y en el exercì las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Joseph Manuel. fue su madrina la mulata libre Maria Guadalupe de Rubio, vecina de esta Ciudad, a quien adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial y Provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de tres meses de edad, hijo de la negra Juana Leslie, natural de la América del Norte, y de padre no conocido, y ambos esclavos de Don Juan Leslie. En él ejercí las sagradas ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Joseph Manuel. Fue su madrina la mulata libre María Guadalupe de Rubio, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juana Leslie",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negra",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Joseph Manuel",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three months old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "María Guadalupe de Rubio",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "mulato",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Leslie",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0018-02",
+      "raw": "Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Aux iliar de esta Yglesia parroquial, y Provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos Oleos a un niño de color moreno, que naciò oy dicho dia cinco del presente mes y Año, hijo de la negra Maria Dolores y de padre no Conocidos, y ambos Esclavos de Don Mateo Guadarrama; y en el exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y le puse por nombre Eusebio Joseph Ramon. fueron sus padrinos Pedro Miranda, y Ma ria Dolores Miranda, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y año= Miguel OReilly",
+      "normalized": "Yo, Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta Yglesia parroquial y Provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, que nació hoy, dicho día cinco del presente mes y año, hijo de la negra María Dolores y de padre no conocido, y ambos esclavos de Don Mateo Guadarrama. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Yglesia, y le puse por nombre Eusebio Joseph Ramon. Fueron sus padrinos Pedro Miranda y María Dolores Miranda, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Dolores",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negra",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Eusebio Joseph Ramon",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P07",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Padre no conocido",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Mateo Guadarrama",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Pedro Miranda",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P07",
+            "name": "María Dolores Miranda",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": null
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P03"
+            ],
+            "date": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0019-01",
+      "raw": "Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à un negro adulto libre, como de cincuenta Años de edad, hijo de padres no conocidos, y Natural de Guinea; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Ygle sia, y le puse por nombre Antonio Joseph Dimas Paten. fueron sus padrinos Dimas Perez, y Margarita Perez, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año. Miguel OReilly",
+      "normalized": "Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un negro adulto libre, como de cincuenta años de edad, hijo de padres no conocidos y natural de Guinea. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Antonio Joseph Dimas Paten. Fueron sus padrinos Dimas Perez y Margarita Perez, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Antonio Joseph Dimas Paten",
+            "rank": null,
+            "origin": "Guinea",
+            "ethnicity": null,
+            "age": "adult",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Dimas Perez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Margarita Perez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0019-02",
+      "raw": "Domingo, dia diez y seis de Marzo de Mil, Setecientos, Noventa y cuatro. Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à un negro adulto libre, como de cincuenta Años de edad, hijo de padres no conocidos, y Natural de Guinea; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Antonio Joseph Dimas Paten. fueron sus padrinos Dimas Perez, y Margarita Perez, vecinos de esta Cuidad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año.\nMiguel OReilly",
+      "normalized": "Domingo, día diez y seis de marzo de mil setecientos noventa y cuatro, yo Don Miguel O'Reilly, teniente de cura beneficiado, vicario y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un negro adulto libre, como de cincuenta años de edad, hijo de padres no conocidos y natural de Guinea. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Antonio Joseph Dimas Paten. Fueron sus padrinos Dimas Pérez y Margarita Pérez, vecinos de esta ciudad, les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año.  \nMiguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Antonio Joseph Dimas Paten",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "Guinea",
+            "age": "about fifty years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Dimas Pérez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Margarita Pérez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-03-16"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0019-03",
+      "raw": "Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiasti co Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una negra adulta de treinta y seis Años de edad, hija de padres no conocidos, libre, y natu ral de la Carolina del Sur en la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nues tra santa madre Yglesia, y la puse por nombre Maria Dolores Judith Smith. fue su madrina Doña Rosa de la Luz, vecina de esta Cuidad, à quien adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y Año= Miguel OReilly",
+      "normalized": "Yo Don Miguel O'Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta Iglesia parroquial, y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una negra adulta de treinta y seis años de edad, hija de padres no conocidos, libre, y natural de la Carolina del Sur en la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre María Dolores Judith Smith. Fue su madrina Doña Rosa de la Luz, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Miguel O'Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O'Reilly",
+            "rank": "Lieutenant Beneficiary Priest",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Dolores Judith Smith",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": null,
+            "age": "thirty-six years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negra",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Rosa de la Luz",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0019-04",
+      "raw": "Domingo, dia diez y seis de Marzo, de Mil, Setecientos, Noventa y cuatro. Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una negra adulta de treinta y seis Años de edad, hija de padres no conocidos, libre, y natural de la Carolina del Sur en la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Maria Dolores Judith Smith. fue su madrina Doña Rosa de la Luz, vecina de esta Cuidad, à quien adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y Año=\nMiguel OReilly",
+      "normalized": "Domingo, día diez y seis de marzo de mil setecientos noventa y cuatro. Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una negra adulta de treinta y seis años de edad, hija de padres no conocidos, libre y natural de la Carolina del Sur en la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y la puse por nombre María Dolores Judith Smith. Fue su madrina Doña Rosa de la Luz, vecina de esta ciudad, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O Reilly",
+            "rank": "Lieutenant Priest",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "María Dolores Judith Smith",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": null,
+            "age": "thirty-six years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "black",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Rosa de la Luz",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-03-16"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0020-01",
+      "raw": "Miercoles, dia veinte y seis de Marzo de Mil, Setecientos, Noventa y cuatro. Yo Don Miguel O Reilly, Teniente de Cura Beneficiado, Vicario, y Juez Ecclesiastico Auxiliar de esta Yglesia parroquial y provincia de San Agustin de la Florida Oriental Baptisè, y puse los santos Oleos à un niño de color moreno, que naciò el dia veinte y dos del presente mes, y año, hijo de la Negra Maria Josepha Verpal, natural de la America del Norte, y de padre no conoscido, y ambos Esclavos de Doña Juana Verpal; y en el exercì las sacras Ceremonias y preces de nuestra santa madre Yglesia, y le puse por nombre Juan Nepomuceno. fuè su Madrina Maria Dolores Salcedo, Esclava de Don Pedro Salce=do, à quien adverti el parentesco espiritual, y de=mas obligaciones, y lo firmè en dicho dia, mes, y Año=\nMiguel OReilly",
+      "normalized": "Miércoles, día veinte y seis de marzo de mil setecientos noventa y cuatro. Yo Don Miguel O Reilly, teniente de cura beneficiado, vicario, y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, que nació el día veinte y dos del presente mes y año, hijo de la negra María Josepha Verpal, natural de la América del Norte, y de padre no conocido, y ambos esclavos de Doña Juana Verpal. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Juan Nepomuceno. Fue su madrina María Dolores Salcedo, esclava de Don Pedro Salcedo, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel O Reilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel O Reilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan Nepomuceno",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Josepha Verpal",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juana Verpal",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doña"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "María Dolores Salcedo",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-03-26"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0020-02",
+      "raw": "Lunes, dia quatorze de Abril de Mil, Setecientos, Noventa y cuatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Ecclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisè, y puse los santos Oleos à un niño de color moreno, libre, que naciò el dia doze del presente mes, y año, hijo legi=timo del negro Pedro Vonz, natural de Virginia, y de su muger, la negra Anna Vonz, natural de Charleston, ambos libres; y en el exercì las sacras Ceremonias, y preces de nuestra santa madre",
+      "normalized": "Lunes, día catorce de abril de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, libre, que nació el día doce del presente mes y año, hijo legítimo del negro Pedro Vonz, natural de Virginia, y de su mujer, la negra Anna Vonz, natural de Charleston, ambos libres, y en él ejercí las sacras ceremonias y preces de nuestra santa madre.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Pedro Vonz",
+            "rank": null,
+            "origin": "Virginia",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Anna Vonz",
+            "rank": null,
+            "origin": "Charleston",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "[unnamed]",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": true,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": "1794-04-14"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P04"
+            ],
+            "date": "1794-04-12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0020-03",
+      "raw": "Lunes, dia quatorze de Abril de Mil, Setecientos, Noventa y cuatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Ecclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisè, y puse los santos Oleos à un niño de color moreno, libre, que naciò el dia doze del presente mes, y año, hijo legitimo del negro Pedro Vonz, natural de Virginia, y de su muger, la negra Anna Vonz, natural de Charleston, ambos libres; y en el exercì las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y le puse por nombre Juan Baptista Antonio. fueron sus padrinos, Don Juan Guitierrez, y Agada Venz, vecinos de esta Ciudad, les adverti el parentesco espiritual, y demas obligaciones y lo firmè en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Lunes, día catorce de abril de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, baptisé y puse los santos óleos a un niño de color moreno, libre, que nació el día doce del presente mes y año, hijo legítimo del negro Pedro Vonz, natural de Virginia, y de su mujer, la negra Anna Vonz, natural de Charleston, ambos libres. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y le puse por nombre Juan Baptista Antonio. Fueron sus padrinos Don Juan Guitierrez y Agada Venz, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones y lo firmé en dicho día, mes y año. Thomas Hassett.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan Baptista Antonio",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": true,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Pedro Vonz",
+            "rank": null,
+            "origin": "Virginia",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Anna Vonz",
+            "rank": null,
+            "origin": "Charleston",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Guitierrez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Agada Venz",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-04-14"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-04-12"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0021-01",
+      "raw": "Sabado, dia tres de Mayo de Mil, Setecientos Noventa y quatro. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico auxiliar de esta Iglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una niña de color morena, que naciò el dia onze de Abril del presente año, hija natural y libre de los Negros Antonio Verpal y Anna Aventrot, Naturales y libres de la Carolina del Sur en la America del Norte; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y la puse por nombre Mariana Guadalupe. fueron sus padrinos Juan Baptista Huiten, y Maria Rafaela Quinty Negros libres y vecinos de esta Ciudad, les adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y año= Miguel OReilly",
+      "normalized": "Sábado, día tres de mayo de mil setecientos noventa y cuatro. Yo Don Miguel OReilly, teniente de cura beneficiado, vicario, y juez eclesiástico auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena, que nació el día once de abril del presente año, hija natural y libre de los negros Antonio Verpal y Anna Aventrot, naturales y libres de la Carolina del Sur en la América del Norte. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y la puse por nombre Mariana Guadalupe. Fueron sus padrinos Juan Baptista Huiten y María Rafaela Quinty, negros libres y vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Mariana Guadalupe",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Antonio Verpal",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Anna Aventrot",
+            "rank": null,
+            "origin": "South Carolina",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Baptista Huiten",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "María Rafaela Quinty",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": true,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-05-03"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-04-11"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0021-02",
+      "raw": "Sabado, dia tres de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Iglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una niña de color parda, que naciò el dia quinze de Abril del presente año, hija natural del Negro Juan y la Mulata Judith Ernandez, Naturales de la America del Norte, y Esclava de Martin Ernandez; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Iglesia, y la puse por nombre Mariana, Basilia, Anastacia. fueron sus padrinos Lorenzo Capò, y Anna Perez, vecinos de esta Ciudad, les adverti el parentesco espiritual, y demas obligaciones y lo firmè en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Sábado, día tres de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bapticé y puse los santos óleos a una niña de color parda, que nació el día quince de abril del presente año, hija natural del negro Juan y la mulata Judith Ernandez, naturales de la América del Norte, y esclava de Martin Ernandez. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre Mariana, Basilia, Anastacia. Fueron sus padrinos Lorenzo Capò y Anna Perez, vecinos de esta ciudad. Les advertí el parentesco espiritual y demás obligaciones y lo firmé en dicho día, mes, y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Judith Ernandez",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "mulato",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Martin Ernandez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Mariana Basilia Anastacia",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "infant",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "pardo",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P07",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Lorenzo Capò",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P07",
+            "name": "Anna Perez",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-03"
+          },
+          {
+            "type": "birth",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-04-15"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0022-01",
+      "raw": "Martes, dia veinte de Mayo de Mil, Setecientos Noventa y quatro. Yo Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiastico Auxiliar de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisé, y puse los santos Oleos à un negro adulto como de cincuenta Años de edad, Natural de Jamaica, y hijo de padres no conocidos, y Esclavo de Don Miguel Lorenzo Isnardy; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Juan Baptista. fué su padrino Don Miguel Lorenzo Isnardy, vecino de esta Cuidad, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año =\nMiguel OReilly",
+      "normalized": "Martes, día veinte de mayo de mil setecientos noventa y cuatro. Yo, Don Miguel OReilly, Teniente de Cura Beneficiado, Vicario, y Juez Eclesiástico Auxiliar de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un negro adulto como de cincuenta años de edad, natural de Jamaica, y hijo de padres no conocidos, y esclavo de Don Miguel Lorenzo Isnardy. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y le puse por nombre Juan Bautista. Fue su padrino Don Miguel Lorenzo Isnardy, vecino de esta ciudad, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Miguel OReilly",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Miguel OReilly",
+            "rank": "Teniente de Cura Beneficiado",
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan Bautista",
+            "rank": null,
+            "origin": "Jamaica",
+            "ethnicity": null,
+            "age": "adult",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Miguel Lorenzo Isnardy",
+            "rank": null,
+            "origin": "this city",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-05-20"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0022-02",
+      "raw": "Martes, Dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisé, y puse los santos Oleos à un niño de cinco Años de edad, de color moreno, hijo natural de los Negros Roberto, y Elionora, naturales de la America del Norte, y todos Esclavos de Don Juan Macquien; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Roberto. fué su padrino El Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año =\nThomas Hassett",
+      "normalized": "Martes, día veinte y uno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, baptisé y puse los santos óleos a un niño de cinco años de edad, de color moreno, hijo natural de los negros Roberto y Elionora, naturales de la América del Norte, y todos esclavos de Don Juan Macquien. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Roberto. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones y lo firmé en dicho día, mes y año.  \nThomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Roberto",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Roberto",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Elionora",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negra",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macquien",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": "this province",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P02"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0023-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y pusè los santos Oleos à un niño de color, moreno, de tres años de edad, hijo natural de los negros Smart, y Hanna Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen, y en el exercì las sacras Ceremonias, y preces de nuestra santa Madre Yglesia, y le pusè por nombre Thomas. fuè su padrino el Doctor Don Thom^s Sterling, vecino de esta provincia, le advertì el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año = Thomas Hassett",
+      "normalized": "Miércoles, día veinte y uno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiástico de esta Iglesia parroquial, y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color, moreno, de tres años de edad, hijo natural de los negros Smart y Hanna Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En el ejercí las sacras ceremonias y preces de nuestra santa Madre Iglesia, y le puse por nombre Thomas. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia; le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Hanna Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Thomas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": "this province",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doctor",
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0023-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Augustin de la Florida Oriental. Baptizè, y pusè los santos Oleos à una niña color morena, de un año de edad, hija natural de los negros Smart y Hanna Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exercì las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le pusè por nombre Catarina. fuè su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertì el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año = Thomas Hassett",
+      "normalized": "Miércoles, día veinte y uno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Augustin de la Florida Oriental, bauticé y puse los santos óleos a una niña color morena, de un año de edad, hija natural de los negros Smart y Hanna Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Catarina. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "Black",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Hanna Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": "Black",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Catarina",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "one year old",
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    }
+  ]
+}

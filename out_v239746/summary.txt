@@ -1,0 +1,98 @@
+================================================================
+Volume QA — None  (27 entries)
+================================================================
+issues: duplicate_entry=5
+
+suspected duplicate entries (window-overlap re-transcriptions):
+  0019-01 ~ 0019-02  (sim 0.84, principal 'Antonio Joseph Dimas Paten', confirmed)
+  0019-03 ~ 0019-04  (sim 0.996, principal 'María Dolores Judith Smith', confirmed)
+  0020-01 ~ 0020-02  (sim 0.997, principal 'Juan Nepomuceno', confirmed)
+  0022-01 ~ 0022-02  (sim 0.973, principal 'Juan Bautista', confirmed)
+  0022-03 ~ 0022-04  (sim 0.98, principal 'Roberto', confirmed)
+
+vocabulary (drift check):
+  phenotype  negro×30, moreno×9, negra×7, morena×6, parda×3, mulata×2, mulato×1, pardo×1
+  ethnicity  north america×5, negro×2, guinea×2, carolina del sur×2, américa del norte×2, negra×1, mulata×1, jamaica×1
+  origin     north america×16, south carolina×6, guinea×4, jamaica×2, new york×1, boston×1, providence×1, virginia×1
+  age        infant×10, about fifty years old×4, thirty-six years old×2, five years old×2, four months old×1, eight years old×1, sixteen years old×1, twenty-three years old×1
+================================================================
+
+================================================================
+Volume QA — None  (29 entries)
+================================================================
+issues: duplicate_entry=4
+
+suspected duplicate entries (window-overlap re-transcriptions):
+  0027-02 ~ 0027-03  (sim 0.805, principal '', unconfirmed(no principal))
+  0027-02 ~ 0028-01  (sim 0.762, principal '', unconfirmed(no principal))
+  0031-01 ~ 0031-02  (sim 0.845, principal 'Andrés', confirmed)
+  0032-01 ~ 0032-02  (sim 0.993, principal 'Matilda', confirmed)
+
+vocabulary (drift check):
+  phenotype  negro×55, moreno×28, morena×1
+  ethnicity  negro×2
+  origin     north america×54
+  age        eight months old×7, three years old×5, five years old×4, six years old×2, thirteen months old×2, eighteen months old×2, four years old×2, three and a half years old×1
+================================================================
+
+================================================================
+Volume QA — None  (32 entries)
+================================================================
+issues: duplicate_entry=6
+
+suspected duplicate entries (window-overlap re-transcriptions):
+  0036-01 ~ 0036-02  (sim 0.969, principal 'Dionicia Antonia', confirmed)
+  0038-01 ~ 0038-02  (sim 0.812, principal 'María Gracia', confirmed)
+  0039-01 ~ 0039-03  (sim 0.991, principal 'Domingo José', confirmed)
+  0040-03 ~ 0040-04  (sim 0.851, principal 'Dominga Josefa', confirmed)
+  0041-01 ~ 0041-02  (sim 0.994, principal 'Francisco Joseph Hipólito', confirmed)
+  0043-03 ~ 0043-04  (sim 0.998, principal 'María Rafaela Quesada', confirmed)
+
+vocabulary (drift check):
+  phenotype  negro×44, moreno×16, negra×10, morena×9, mulato×2, pardo×2, parda×1, mulata×1
+  ethnicity  carolina del sur×1, negra×1, mulata×1
+  origin     north america×16, south carolina×8, guinea×6, guatemala×2
+  age        five years old×2, twenty-six years old×2, forty-five years old×2, infant×2, adult×1, thirty-four years old×1, two years old×1
+================================================================
+
+================================================================
+Cross-chunk person linking
+================================================================
+chunks:   p13-23, p24-34, p35-44
+entries:  88   mentions: 493
+identities: 240  (reduction 51.3%)
+CROSS-CHUNK identities: 8  <- people linked across files
+review queue: 340 pairs
+
+people spanning chunks (top by mentions):
+  V239746-0223  "Miguel O'Reilly"  x45 across ['p13-23', 'p35-44']
+  V239746-0235  'Thomas Hassett'  x39 across ['p13-23', 'p24-34', 'p35-44']
+  V239746-0154  'Juan Macquien'  x35 across ['p13-23', 'p24-34', 'p35-44']
+  V239746-0156  'Thomas Sterling'  x32 across ['p13-23', 'p24-34', 'p35-44']
+  V239746-0233  'Lorenzo Capo'  x7 across ['p13-23', 'p35-44']
+  V239746-0148  'Thomas'  x5 across ['p24-34', 'p35-44']
+  V239746-0197  'Juan Leslie'  x3 across ['p13-23', 'p35-44']
+  V239746-0207  'Juana Joaquina González'  x3 across ['p13-23', 'p35-44']
+
+============================================================
+Person / relationship network
+============================================================
+nodes (people):        240
+edges (relationships): 762 unique typed (874 instances)
+isolated nodes:        8
+connected components:  31 (largest 73 people)
+cross-entry people:    74 (appear in >1 entry — the links that matter)
+cross-entry edges:     86
+
+relationship types: child=129, parent=129, enslaver=114, slave=114, godparent=110, godchild=110, spouse=56
+
+top hubs (by degree):
+  132  'Juan Macquien'  (V239746-0154, x35 mentions)
+   72  'Thomas Sterling'  (V239746-0156, x32 mentions)
+   18  'Lorenzo Capo'  (V239746-0233, x7 mentions)
+   18  'Smart'  (V239746-0127, x6 mentions)
+   18  'María de la Luz Ruiz'  (V239746-0185, x9 mentions)
+   16  'Thomas'  (V239746-0148, x5 mentions)
+   14  'Juan'  (V239746-0102, x4 mentions)
+   12  'Ysabel'  (V239746-0112, x2 mentions)
+============================================================

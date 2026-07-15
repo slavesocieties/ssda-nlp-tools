@@ -1,0 +1,4864 @@
+{
+  "examples": [
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0024-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro, Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos à una niña de color morena, de ocho meses de edad, hija natural de Alexandro, y Lucia Macqueen, Naturales de la America del Norte, y todos negros Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Juana. fué su padrino El Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena, de ocho meses de edad, hija natural de Alexandro y Lucía Macqueen, naturales de la América del Norte, y todos negros esclavos de Don Juan Macqueen; y en ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Juana. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Alexandro",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Lucía Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juana",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0024-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos à un niño de tres años y medio de edad, de color moreno, hijo natural de los Negros Benjamin y Ysabel, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Benjamin; fué su padrino El Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de tres años y medio de edad, de color moreno, hijo natural de los negros Benjamin y Ysabel, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y le puse por nombre Benjamin. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Benjamin",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Ysabel",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": "negro",
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Benjamin",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three and a half years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0025-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptize, y puse los santos Oleos à un niño de color moreno de ocho meses de edad, hijo natural de los negros Benjamin, y Ysabel Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y le puse por nombre Pablo. fuè su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco Espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de ocho meses de edad, hijo natural de los negros Benjamin e Ysabel Macqueen, naturales de la América del Norte, todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y le puse por nombre Pablo. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia; le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Benjamin",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Ysabel Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Pablo",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0025-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptize, y puse los santos Oleos à una niña de color morena de cinco Años de edad, hija natural de los negros Juan, y Dafney Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y le puse por nombre Maria Josepha. fuè su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de cinco años de edad, hija natural de los negros Juan y Dafney Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre iglesia, y le puse por nombre María Josefa. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Josefa",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Dafney Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0026-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à un niño de color moreno de seis años de edad, hijo natural de los negros Juan, y Dafiny Macqueen naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombres Thomas fuè su padrino el Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial, y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de seis años de edad, hijo natural de los negros Juan y Dafiny Macqueen, naturales de América del Norte, y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Thomas. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Thomas Hassett.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Dafiny Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Thomas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "six years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0026-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à un niño de color moreno de seis años de edad, hijo natural de los negros Juan, y Dafiny Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombres Thomas fuè su padrino el Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de seis años de edad, hijo natural de los negros Juan y Dafiny Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Thomas. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Dafiny Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Thomas",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "six years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0026-03",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una niña de color morena de ocho meses de edad, hija natural de los negros Juan y Dafiny Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bapticé y puse los santos óleos a una niña de color morena de ocho meses de edad, hija natural de los negros Juan y Dafiny Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen; y en ella ejercí las sacras ceremonias y preces de nuestra Santa Iglesia.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": []
+          },
+          {
+            "id": "P03",
+            "name": "Dafiny Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": []
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0026-04",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos oleos à una niña de color morena de ocho meses de edad, hija natural de los negros Juan y Dafiny Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Dorotea: fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y Año Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de ocho meses de edad, hija natural de los negros Juan y Dafiny Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Dorotea. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Dafiny Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Dorotea",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0027-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos Oleos à un niño de color moreno, de cinco años de edad, hijo natural de los negros Ricardo, y Carlota Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Andres: fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y Año = Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial, y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, de cinco años de edad, hijo natural de los negros Ricardo y Carlota Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen; y en él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Andrés. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Ricardo",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Carlota Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Andrés",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0027-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos Oleos à una niña de color morena de treze meses de edad, hija natural de los Negros Thomas y Ysabel Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias y preces de nuestra santa",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de trece meses de edad, hija natural de los negros Thomas e Ysabel Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen; y en ella ejercí las sacras ceremonias y preces de nuestra santa.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Thomas",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Ysabel Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "thirteen months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0027-03",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos Oleos à una niña de color morena de treze meses de edad, hija natural de los Negros Thomas y Ysabel Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias y preces de nuestra santa madre Yglesia, y la puse por nombre Maria, fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firme en dicho dia, mes, y Año = Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de trece meses de edad, hija natural de los negros Thomas e Ysabel Macqueen, naturales de la América del Norte, todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre iglesia y la puse por nombre María. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes, y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Thomas",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Ysabel Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "María",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "thirteen months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0028-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Ecclesiastico de esta Yglesia parroquial y provincia de San Agustin de la Florida Oriental. Baptise, y puse los santos oleos à un niño de color moreno de tres meses de edad, hijo natural de los Negros Thomas, y Ysabel Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa Madre Yglesia y le puse por nombre Simon. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual y demas obligaciones y lo firme en dicho dia mes, y Año = Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de tres meses de edad, hijo natural de los negros Thomas e Isabel Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen; y en él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y le puse por nombre Simón. Fue su padrino el doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones y lo firmé en dicho día, mes, y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Thomas",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Isabel Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Simón",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0028-02",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Ecclesiastico de esta Yglesia parroquial y provincia de San Agustin de la Florida Oriental. Baptise, y puse los Santos Oleos à una niña de color moreno, de tres años de edad, hija natural de los negros Andres, y Mayna Macqueen, todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Ysabel: fué su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color moreno, de tres años de edad, hija natural de los negros Andrés y Mayna Macqueen, todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre Ysabel. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Andrés",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Mayna Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Ysabel",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don",
+              "Doctor"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0029-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y pusè los santos oleos à un niño de color moreno, de tres años de edad, hijo natural de los Negros Abraham, y Judith Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Juan: fué su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bapticé y puse los santos óleos a un niño de color moreno, de tres años de edad, hijo natural de los negros Abraham y Judith Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Juan. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Abraham",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Judith Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0029-02",
+      "raw": "à una niña de color, moreno, de tres años de edad, hija natural de los negros Andres, y Mayna Macqueen, todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la puse por nombre Ysabel: fué su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y año=\nThomas Hassett",
+      "normalized": "A una niña de color moreno, de tres años de edad, hija natural de los negros Andrés y Mayna Macqueen, todos esclavos de Don Juan Macqueen; y en ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Isabel. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año.  \nThomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Andrés",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P02",
+            "name": "Mayna Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P01",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P01",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Isabel",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P01",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "godchild"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [],
+            "relationships": []
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": null
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0029-03",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y pusè los santos oleos à un niño de color moreno, de dos años de edad, hijo natural de los negros Abraham, y Judith Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le pusè por nombre Patricio. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y año=\nThomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, de dos años de edad, hijo natural de los negros Abraham y Judith Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Patricio. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Abraham",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Judith Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Patricio",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "two years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doctor",
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0030-01",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y pusé los santos oleos á una niña de color, morena, de tres años de edad, hija natural de los negros Smart, y Rachael Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la pusé por nombre Sara. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y año=\nThomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de tres años de edad, hija natural de los negros Smart y Rachael Macqueen, naturales de América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre Sara. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rachael Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Sara",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0030-02",
+      "raw": "35.. Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Macqueen. Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y pusé los santos oleos á una niña de color, morena, de tres años de edad, hija natural de los negros Smart, y Rachael Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y la pusé por nombre Sara. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Macqueen Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color, morena, de tres años de edad, hija natural de los negros Smart y Rachael Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y la puse por nombre Sara. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Macqueen Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Rachael Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Sara",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "three years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "morena",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0030-03",
+      "raw": "Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y pusé los santos oleos á un niño de color moreno de diez y ocho meses de edad, hijo natural de los Negros Smart, y Rachael Macqueen, naturales de la America del Norte, y todos Esclavos de Don",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario, y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de dieciocho meses de edad, hijo natural de los negros Smart y Rachael Macqueen, naturales de la América del Norte, y todos esclavos de Don...",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eighteen months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rachael Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0030-04",
+      "raw": "36.. Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Macqueen. Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y pusé los santos oleos á un niño de color moreno de diez y ocho meses de edad, hijo natural de los Negros Smart, y Rachael Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse nombre Juan. fue su padrino el Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Macqueen Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno de dieciocho meses de edad, hijo natural de los negros Smart y Rachael Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia y le puse por nombre Juan. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Macqueen Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eighteen months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rachael Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doctor",
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P03"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0031-01",
+      "raw": "37. Miercoles, dia veinte y uno de Mayo de Mil Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos Oleos à un niño de color moreno, de cinco años de edad, hijo natural de los negros Smart, y Rachael, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Andres. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, de cinco años de edad, hijo natural de los negros Smart y Rachael, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En él, ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Andrés. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rachael",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Andrés",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Doctor",
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0031-02",
+      "raw": "37. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos Oleos à un niño de color moreno, de cinco años de edad, hijo natural de los negros Smart, y Rachael, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Andres. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, de cinco años de edad, hijo natural de los negros Smart y Rachael, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Andrés. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Smart",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rachael",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Andrés",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0031-03",
+      "raw": "38. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè y puse los santos oleos à una niña de color morena, de quatro Años de edad, hija natural de los negros Henrique, y Susana Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y le puse por nombre Juana. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas Obligaciones, y lo firmé en dicho dia, mes, y año. Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta Iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena, de cuatro años de edad, hija natural de los negros Henrique y Susana Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y le puse por nombre Juana. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Henrique",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Susana Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juana",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "four years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0032-01",
+      "raw": "39. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos a una niña de color morena de ocho meses de edad, hija natural de los Negros Henerique, y Susana Macqueen, naturales de la America del Norte; y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y la puse por nombre Matilda. fue su padrino el Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año. Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de ocho meses de edad, hija natural de los negros Henerique y Susana Macqueen, naturales de América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra Santa Madre Iglesia, y la puse por nombre Matilda. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Henerique",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Susana Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Matilda",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0032-02",
+      "raw": "39. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Matilda Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos a una niña de color morena de ocho meses de edad, hija natural de los Negros Henerique, y Susana Macqueen, naturales de la America del Norte; y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra Santa madre Yglesia, y la puse por nombre Matilda. fue su padrino el Doctor Don Thomas Sterling vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmé en dicho dia, mes, y Año. Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Matilda Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de ocho meses de edad, hija natural de los negros Henerique y Susana Macqueen, naturales de América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Matilda. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Matilda Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Henerique",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Susana Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Matilda",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "doctor",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0032-03",
+      "raw": "40. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizé, y puse los santos Oleos a una niña de color morena de nueve meses de edad, hija natural de los negros Sorrow, y Maria Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia; y la puse por nombre Dionicia. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año. Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color morena de nueve meses de edad, hija natural de los negros Sorrow y María Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y la puse por nombre Dionicia. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia. Le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Sorrow",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "María Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P06",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Dionicia",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "nine months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don",
+              "Doctor"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0033-01",
+      "raw": "41. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos Oleos à una niña de color moreno, de ocho meses de edad, hija natural de los negros Juan y Rosa Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia; y la puse por nombre Dorothea. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual y demas obligaciones, y lo firmè en dicho dia, mes, y Año. Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color moreno, de ocho meses de edad, hija natural de los negros Juan y Rosa Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen. En ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia, y le puse por nombre Dorothea. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, a quien advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Juan",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Rosa Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Dorothea",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "eight months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0033-02",
+      "raw": "42. Miercoles, dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro. Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptizè, y puse los santos Oleos à una niña de color moreno, de cinco meses de edad, hija natural de los negros Thomas y Martha Macqueen, naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en ella exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro. Yo, Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a una niña de color moreno, de cinco meses de edad, hija natural de los negros Thomas y Martha Macqueen, naturales de la América del Norte, y todos esclavos de Don Juan Macqueen; y en ella ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia.",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Thomas",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Martha Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "child"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "five months old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": null,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "enslaver"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P04"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    },
+    {
+      "type": "baptism",
+      "language": "Spanish",
+      "country": "United States",
+      "state": "Florida",
+      "city": "San Agustin",
+      "institution": "parish",
+      "id": 239746,
+      "entry": "0034-01",
+      "raw": "43. Miercoles dia veinte y uno de Mayo de Mil, Setecientos, Noventa y quatro Yo Don Thomas Hassett, Cura Beneficiado, Vicario, y Juez Eclesiastico de esta Yglesia parroquial, y provincia de San Agustin de la Florida Oriental. Baptisè, y puse los santos oleos à un niño de color moreno, de quatro años de edad, hijo natural de los negros Francisco, y Ysabel Macqueen, Naturales de la America del Norte, y todos Esclavos de Don Juan Macqueen; y en el exerci las sacras Ceremonias, y preces de nuestra santa madre Yglesia, y le puse por nombre Manuel. fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le adverti el parentesco espiritual, y demas obligaciones, y lo firmè en dicho dia, mes, y Año= Thomas Hassett",
+      "normalized": "Miércoles, día veintiuno de mayo de mil setecientos noventa y cuatro, yo Don Thomas Hassett, cura beneficiado, vicario y juez eclesiástico de esta iglesia parroquial y provincia de San Agustín de la Florida Oriental, bauticé y puse los santos óleos a un niño de color moreno, de cuatro años de edad, hijo natural de los negros Francisco e Ysabel Macqueen, naturales de la América del Norte y todos esclavos de Don Juan Macqueen. En él ejercí las sacras ceremonias y preces de nuestra santa madre Iglesia y le puse por nombre Manuel. Fue su padrino el Doctor Don Thomas Sterling, vecino de esta provincia, le advertí el parentesco espiritual y demás obligaciones, y lo firmé en dicho día, mes y año. Thomas Hassett",
+      "data": {
+        "people": [
+          {
+            "id": "P01",
+            "name": "Thomas Hassett",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": "cleric",
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": []
+          },
+          {
+            "id": "P02",
+            "name": "Francisco",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P04",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P03",
+            "name": "Juan Macqueen",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "slave"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "slave"
+              }
+            ]
+          },
+          {
+            "id": "P04",
+            "name": "Ysabel Macqueen",
+            "rank": null,
+            "origin": "North America",
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": "negro",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P02",
+                "relationship_type": "spouse"
+              },
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P05",
+                "relationship_type": "child"
+              }
+            ]
+          },
+          {
+            "id": "P05",
+            "name": "Manuel",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": "four years old",
+            "legitimate": false,
+            "occupation": null,
+            "phenotype": "moreno",
+            "free": false,
+            "titles": [],
+            "relationships": [
+              {
+                "related_person": "P03",
+                "relationship_type": "enslaver"
+              },
+              {
+                "related_person": "P06",
+                "relationship_type": "godparent"
+              },
+              {
+                "related_person": "P02",
+                "relationship_type": "parent"
+              },
+              {
+                "related_person": "P04",
+                "relationship_type": "parent"
+              }
+            ]
+          },
+          {
+            "id": "P06",
+            "name": "Thomas Sterling",
+            "rank": null,
+            "origin": null,
+            "ethnicity": null,
+            "age": null,
+            "legitimate": null,
+            "occupation": null,
+            "phenotype": null,
+            "free": null,
+            "titles": [
+              "Don"
+            ],
+            "relationships": [
+              {
+                "related_person": "P05",
+                "relationship_type": "godchild"
+              }
+            ]
+          }
+        ],
+        "events": [
+          {
+            "type": "baptism",
+            "principals": [
+              "P05"
+            ],
+            "date": "1794-05-21"
+          }
+        ]
+      }
+    }
+  ]
+}

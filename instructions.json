@@ -1,0 +1,14 @@
+{
+  "instructions": [
+    {
+      "cases": ["normalization", "Spanish", "baptism"],
+      "sequence": 1,
+      "text": "Normalize the transcription text by correcting spelling errors, expanding abbreviations, standardizing punctuation, and ensuring consistent formatting. Preserve the original meaning and historical language where possible."
+    },
+    {
+      "cases": ["extraction", "Spanish", "baptism"],
+      "sequence": 1,
+      "text": "Extract structured data from the normalized baptism record text. Identify all people mentioned with their names, roles (e.g., priest, parent, godparent, baptized person), relationships, and attributes such as age, ethnicity, origin, and status. Also extract dates, locations, and any other relevant details. Output the result as JSON."
+    }
+  ]
+}

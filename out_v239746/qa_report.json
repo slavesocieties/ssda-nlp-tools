@@ -1,0 +1,328 @@
+[
+  {
+    "volume": null,
+    "entries": 27,
+    "issues": [
+      {
+        "type": "duplicate_entry",
+        "entry": "0019-02",
+        "detail": "0019-02 duplicates 0019-01 (sim 0.84, principal 'Antonio Joseph Dimas Paten', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0019-04",
+        "detail": "0019-04 duplicates 0019-03 (sim 1.00, principal 'María Dolores Judith Smith', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0020-02",
+        "detail": "0020-02 duplicates 0020-01 (sim 1.00, principal 'Juan Nepomuceno', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0022-02",
+        "detail": "0022-02 duplicates 0022-01 (sim 0.97, principal 'Juan Bautista', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0022-04",
+        "detail": "0022-04 duplicates 0022-03 (sim 0.98, principal 'Roberto', confirmed)"
+      }
+    ],
+    "issues_by_type": {
+      "duplicate_entry": 5
+    },
+    "duplicates": [
+      {
+        "a": "0019-01",
+        "b": "0019-02",
+        "sim": 0.84,
+        "principal": "Antonio Joseph Dimas Paten",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0019-03",
+        "b": "0019-04",
+        "sim": 0.996,
+        "principal": "María Dolores Judith Smith",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0020-01",
+        "b": "0020-02",
+        "sim": 0.997,
+        "principal": "Juan Nepomuceno",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0022-01",
+        "b": "0022-02",
+        "sim": 0.973,
+        "principal": "Juan Bautista",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0022-03",
+        "b": "0022-04",
+        "sim": 0.98,
+        "principal": "Roberto",
+        "confidence": "confirmed"
+      }
+    ],
+    "chronology_breaks": [],
+    "nonreciprocal_relationships": 0,
+    "vocabulary": {
+      "phenotype": {
+        "negro": 30,
+        "moreno": 9,
+        "negra": 7,
+        "morena": 6,
+        "parda": 3,
+        "mulata": 2,
+        "mulato": 1,
+        "pardo": 1
+      },
+      "ethnicity": {
+        "north america": 5,
+        "negro": 2,
+        "guinea": 2,
+        "carolina del sur": 2,
+        "américa del norte": 2,
+        "negra": 1,
+        "mulata": 1,
+        "jamaica": 1
+      },
+      "origin": {
+        "north america": 16,
+        "south carolina": 6,
+        "guinea": 4,
+        "jamaica": 2,
+        "new york": 1,
+        "boston": 1,
+        "providence": 1,
+        "virginia": 1,
+        "charleston": 1
+      },
+      "age": {
+        "infant": 10,
+        "about fifty years old": 4,
+        "thirty-six years old": 2,
+        "five years old": 2,
+        "four months old": 1,
+        "eight years old": 1,
+        "sixteen years old": 1,
+        "twenty-three years old": 1,
+        "three months old": 1,
+        "three years old": 1
+      }
+    },
+    "file": "Sample_output/Generated_0013_0023_4o_prompt_V2.json"
+  },
+  {
+    "volume": null,
+    "entries": 29,
+    "issues": [
+      {
+        "type": "duplicate_entry",
+        "entry": "0027-03",
+        "detail": "0027-03 duplicates 0027-02 (sim 0.80, principal '', unconfirmed(no principal))"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0028-01",
+        "detail": "0028-01 duplicates 0027-02 (sim 0.76, principal '', unconfirmed(no principal))"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0031-02",
+        "detail": "0031-02 duplicates 0031-01 (sim 0.85, principal 'Andrés', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0032-02",
+        "detail": "0032-02 duplicates 0032-01 (sim 0.99, principal 'Matilda', confirmed)"
+      }
+    ],
+    "issues_by_type": {
+      "duplicate_entry": 4
+    },
+    "duplicates": [
+      {
+        "a": "0027-02",
+        "b": "0027-03",
+        "sim": 0.805,
+        "principal": "",
+        "confidence": "unconfirmed(no principal)"
+      },
+      {
+        "a": "0027-02",
+        "b": "0028-01",
+        "sim": 0.762,
+        "principal": "",
+        "confidence": "unconfirmed(no principal)"
+      },
+      {
+        "a": "0031-01",
+        "b": "0031-02",
+        "sim": 0.845,
+        "principal": "Andrés",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0032-01",
+        "b": "0032-02",
+        "sim": 0.993,
+        "principal": "Matilda",
+        "confidence": "confirmed"
+      }
+    ],
+    "chronology_breaks": [],
+    "nonreciprocal_relationships": 0,
+    "vocabulary": {
+      "phenotype": {
+        "negro": 55,
+        "moreno": 28,
+        "morena": 1
+      },
+      "ethnicity": {
+        "negro": 2
+      },
+      "origin": {
+        "north america": 54
+      },
+      "age": {
+        "eight months old": 7,
+        "three years old": 5,
+        "five years old": 4,
+        "six years old": 2,
+        "thirteen months old": 2,
+        "eighteen months old": 2,
+        "four years old": 2,
+        "three and a half years old": 1,
+        "three months old": 1,
+        "two years old": 1,
+        "nine months old": 1,
+        "five months old": 1
+      }
+    },
+    "file": "Sample_output/Generated_0024_0034_4o_prompt_V2.json"
+  },
+  {
+    "volume": null,
+    "entries": 32,
+    "issues": [
+      {
+        "type": "duplicate_entry",
+        "entry": "0036-02",
+        "detail": "0036-02 duplicates 0036-01 (sim 0.97, principal 'Dionicia Antonia', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0038-02",
+        "detail": "0038-02 duplicates 0038-01 (sim 0.81, principal 'María Gracia', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0039-03",
+        "detail": "0039-03 duplicates 0039-01 (sim 0.99, principal 'Domingo José', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0040-04",
+        "detail": "0040-04 duplicates 0040-03 (sim 0.85, principal 'Dominga Josefa', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0041-02",
+        "detail": "0041-02 duplicates 0041-01 (sim 0.99, principal 'Francisco Joseph Hipólito', confirmed)"
+      },
+      {
+        "type": "duplicate_entry",
+        "entry": "0043-04",
+        "detail": "0043-04 duplicates 0043-03 (sim 1.00, principal 'María Rafaela Quesada', confirmed)"
+      }
+    ],
+    "issues_by_type": {
+      "duplicate_entry": 6
+    },
+    "duplicates": [
+      {
+        "a": "0036-01",
+        "b": "0036-02",
+        "sim": 0.969,
+        "principal": "Dionicia Antonia",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0038-01",
+        "b": "0038-02",
+        "sim": 0.812,
+        "principal": "María Gracia",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0039-01",
+        "b": "0039-03",
+        "sim": 0.991,
+        "principal": "Domingo José",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0040-03",
+        "b": "0040-04",
+        "sim": 0.851,
+        "principal": "Dominga Josefa",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0041-01",
+        "b": "0041-02",
+        "sim": 0.994,
+        "principal": "Francisco Joseph Hipólito",
+        "confidence": "confirmed"
+      },
+      {
+        "a": "0043-03",
+        "b": "0043-04",
+        "sim": 0.998,
+        "principal": "María Rafaela Quesada",
+        "confidence": "confirmed"
+      }
+    ],
+    "chronology_breaks": [],
+    "nonreciprocal_relationships": 0,
+    "vocabulary": {
+      "phenotype": {
+        "negro": 44,
+        "moreno": 16,
+        "negra": 10,
+        "morena": 9,
+        "mulato": 2,
+        "pardo": 2,
+        "parda": 1,
+        "mulata": 1
+      },
+      "ethnicity": {
+        "carolina del sur": 1,
+        "negra": 1,
+        "mulata": 1
+      },
+      "origin": {
+        "north america": 16,
+        "south carolina": 8,
+        "guinea": 6,
+        "guatemala": 2
+      },
+      "age": {
+        "five years old": 2,
+        "twenty-six years old": 2,
+        "forty-five years old": 2,
+        "infant": 2,
+        "adult": 1,
+        "thirty-four years old": 1,
+        "two years old": 1
+      }
+    },
+    "file": "Sample_output/Generated_0035_0044_4o_prompt_V2.json"
+  }
+]

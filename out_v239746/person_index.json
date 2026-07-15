@@ -1,0 +1,6989 @@
+[
+  {
+    "person_id": "V239746-0001",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "ethnicity": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0002",
+    "canonical_name": "Siliby",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "ethnicity": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P03",
+        "name": "Siliby",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0003",
+    "canonical_name": "Francisco Sánchez",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P04",
+        "name": "Francisco Sánchez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0004",
+    "canonical_name": "María Dolores",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "legitimate": false,
+      "age": "four months old"
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P05",
+        "name": "María Dolores",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0005",
+    "canonical_name": "José Rivas",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "mulato",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P06",
+        "name": "José Rivas",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0006",
+    "canonical_name": "María de la Luz Blanco",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P07",
+        "name": "María de la Luz Blanco",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0007",
+    "canonical_name": "Isaac Guillo",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0013-02",
+        "id": "P02",
+        "name": "Isaac Guillo",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0008",
+    "canonical_name": "Sara Camel",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0013-02",
+        "id": "P03",
+        "name": "Sara Camel",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0009",
+    "canonical_name": "Juan Antonio",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0013-02",
+        "id": "P04",
+        "name": "Juan Antonio",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0010",
+    "canonical_name": "Antonio Palliser",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0013-02",
+        "id": "P05",
+        "name": "Antonio Palliser",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0011",
+    "canonical_name": "Juana Palliser",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0013-02",
+        "id": "P06",
+        "name": "Juana Palliser",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0012",
+    "canonical_name": "Jeremías Fish",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "origin": "New York",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0014-01",
+        "id": "P02",
+        "name": "Jeremías Fish",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0013",
+    "canonical_name": "Eva Fish",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": true,
+      "ethnicity": "negra",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0014-01",
+        "id": "P03",
+        "name": "Eva Fish",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0014",
+    "canonical_name": "María Juana Francisca",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "parda",
+      "free": true,
+      "legitimate": false,
+      "age": "eight years old"
+    },
+    "mentions": [
+      {
+        "entry": "0014-01",
+        "id": "P04",
+        "name": "María Juana Francisca",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0015",
+    "canonical_name": "Andrés Camel",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": true,
+      "ethnicity": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0014-02",
+        "id": "P02",
+        "name": "Andrés Camel",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0016",
+    "canonical_name": "Eva Fish",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": true,
+      "ethnicity": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0014-02",
+        "id": "P03",
+        "name": "Eva Fish",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0017",
+    "canonical_name": "Maria Teresa",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": true,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0014-02",
+        "id": "P04",
+        "name": "Maria Teresa",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0018",
+    "canonical_name": "Francisco Huiton",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0014-02",
+        "id": "P05",
+        "name": "Francisco Huiton",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0019",
+    "canonical_name": "María Prudencia de Zayas",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0015-01",
+        "id": "P02",
+        "name": "María Prudencia de Zayas",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0020",
+    "canonical_name": "Bernardo de la Puente",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0015-01",
+        "id": "P03",
+        "name": "Bernardo de la Puente",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0021",
+    "canonical_name": "María Josefa Andrea",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "pardo",
+      "free": false,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0015-01",
+        "id": "P04",
+        "name": "María Josefa Andrea",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0022",
+    "canonical_name": "Domingo Estatcholy",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0015-01",
+        "id": "P05",
+        "name": "Domingo Estatcholy",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0023",
+    "canonical_name": "Constanza Josefa Leonardy",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0015-01",
+        "id": "P06",
+        "name": "Constanza Josefa Leonardy",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0024",
+    "canonical_name": "Juana Teresa de Jesús",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "Guinea",
+      "age": "sixteen years old"
+    },
+    "mentions": [
+      {
+        "entry": "0015-02",
+        "id": "P02",
+        "name": "Juana Teresa de Jesús",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0025",
+    "canonical_name": "Guillermo Gernon",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0015-02",
+        "id": "P03",
+        "name": "Guillermo Gernon",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0026",
+    "canonical_name": "Teresa Rodríguez",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0015-02",
+        "id": "P04",
+        "name": "Teresa Rodríguez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0027",
+    "canonical_name": "Maria Josepha de los Dolores",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": false,
+      "origin": "Boston",
+      "age": "twenty-three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0016-01",
+        "id": "P02",
+        "name": "Maria Josepha de los Dolores",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0028",
+    "canonical_name": "Catalina Gerónima Porras",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0016-01",
+        "id": "P04",
+        "name": "Catalina Gerónima Porras",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0029",
+    "canonical_name": "Syrus Tomson",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "ethnicity": "North America",
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0016-02",
+        "id": "P02",
+        "name": "Syrus Tomson",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0030",
+    "canonical_name": "Mariana Biset",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "ethnicity": "North America",
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0016-02",
+        "id": "P03",
+        "name": "Mariana Biset",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0031",
+    "canonical_name": "Maria Dolores",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": true,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0016-02",
+        "id": "P04",
+        "name": "Maria Dolores",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0032",
+    "canonical_name": "María Ortegas",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false,
+      "ethnicity": "Guinea",
+      "origin": "Guinea"
+    },
+    "mentions": [
+      {
+        "entry": "0017-01",
+        "id": "P02",
+        "name": "María Ortegas",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0033",
+    "canonical_name": "Sebastián Ortegas",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0017-01",
+        "id": "P03",
+        "name": "Sebastián Ortegas",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0034",
+    "canonical_name": "María Teresa",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": false,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0017-01",
+        "id": "P04",
+        "name": "María Teresa",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0035",
+    "canonical_name": "Juan Martinely",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0017-01",
+        "id": "P05",
+        "name": "Juan Martinely",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0036",
+    "canonical_name": "Mariana Cavedo",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0017-01",
+        "id": "P06",
+        "name": "Mariana Cavedo",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0037",
+    "canonical_name": "Margarita Cepar",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": true,
+      "ethnicity": "mulata",
+      "origin": "Providence"
+    },
+    "mentions": [
+      {
+        "entry": "0017-02",
+        "id": "P02",
+        "name": "Margarita Cepar",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0038",
+    "canonical_name": "Isabel Francisca",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "parda",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0017-02",
+        "id": "P03",
+        "name": "Isabel Francisca",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0039",
+    "canonical_name": "Isabel Pridavets",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0017-02",
+        "id": "P04",
+        "name": "Isabel Pridavets",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0040",
+    "canonical_name": "Juana Leslie",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0018-01",
+        "id": "P02",
+        "name": "Juana Leslie",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0041",
+    "canonical_name": "Joseph Manuel",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "three months old"
+    },
+    "mentions": [
+      {
+        "entry": "0018-01",
+        "id": "P04",
+        "name": "Joseph Manuel",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0042",
+    "canonical_name": "María Guadalupe de Rubio",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "mulata",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0018-01",
+        "id": "P05",
+        "name": "María Guadalupe de Rubio",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0043",
+    "canonical_name": "María Dolores",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0018-02",
+        "id": "P02",
+        "name": "María Dolores",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0044",
+    "canonical_name": "Mateo Guadarrama",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0016-01",
+        "id": "P03",
+        "name": "Mateo Guadarama",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0018-02",
+        "id": "P03",
+        "name": "Mateo Guadarrama",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0045",
+    "canonical_name": "Eusebio José Ramón",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0018-02",
+        "id": "P04",
+        "name": "Eusebio José Ramón",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0046",
+    "canonical_name": "Pedro Miranda",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0018-02",
+        "id": "P05",
+        "name": "Pedro Miranda",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0047",
+    "canonical_name": "María Dolores Miranda",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0018-02",
+        "id": "P06",
+        "name": "María Dolores Miranda",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0048",
+    "canonical_name": "Antonio Joseph Dimas Paten",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "ethnicity": "Guinea",
+      "origin": "Guinea",
+      "age": "about fifty years old"
+    },
+    "mentions": [
+      {
+        "entry": "0019-01",
+        "id": "P02",
+        "name": "Antonio Joseph Dimas Paten",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0049",
+    "canonical_name": "Antonio Joseph Dimas Paten",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "Guinea",
+      "age": "about fifty years old"
+    },
+    "mentions": [
+      {
+        "entry": "0019-02",
+        "id": "P02",
+        "name": "Antonio Joseph Dimas Paten",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0050",
+    "canonical_name": "Dimas Pérez",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0019-01",
+        "id": "P03",
+        "name": "Dimas Pérez",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-02",
+        "id": "P03",
+        "name": "Dimas Pérez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0051",
+    "canonical_name": "Margarita Pérez",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0019-01",
+        "id": "P04",
+        "name": "Margarita Pérez",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-02",
+        "id": "P04",
+        "name": "Margarita Pérez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0052",
+    "canonical_name": "María Dolores Judith Smith",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": true,
+      "origin": "South Carolina",
+      "age": "thirty-six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0019-03",
+        "id": "P02",
+        "name": "María Dolores Judith Smith",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0053",
+    "canonical_name": "María Dolores Judith Smith",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "South Carolina",
+      "age": "thirty-six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0019-04",
+        "id": "P02",
+        "name": "María Dolores Judith Smith",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0054",
+    "canonical_name": "Rosa de la Luz",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0019-03",
+        "id": "P03",
+        "name": "Rosa de la Luz",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-04",
+        "id": "P03",
+        "name": "Rosa de la Luz",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0055",
+    "canonical_name": "Juan Nepomuceno",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0020-01",
+        "id": "P04",
+        "name": "Juan Nepomuceno",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0056",
+    "canonical_name": "María Josefa Verpal",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0020-01",
+        "id": "P02",
+        "name": "María Josefa Verpal",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-02",
+        "id": "P02",
+        "name": "María Josefa Verpal",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0057",
+    "canonical_name": "Juana Verpal",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0020-01",
+        "id": "P03",
+        "name": "Juana Verpal",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-02",
+        "id": "P03",
+        "name": "Juana Verpal",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0058",
+    "canonical_name": "Juan Nepomuceno",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0020-02",
+        "id": "P04",
+        "name": "Juan Nepomuceno",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0059",
+    "canonical_name": "María Dolores Salcedo",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0020-01",
+        "id": "P05",
+        "name": "María Dolores Salcedo",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-02",
+        "id": "P05",
+        "name": "María Dolores Salcedo",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0060",
+    "canonical_name": "Pedro Salcedo",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0020-01",
+        "id": "P06",
+        "name": "Pedro Salcedo",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-02",
+        "id": "P06",
+        "name": "Pedro Salcedo",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0061",
+    "canonical_name": "Pedro Vonz",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "Virginia"
+    },
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P02",
+        "name": "Pedro Vonz",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0062",
+    "canonical_name": "Anna Vonz",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "Charleston"
+    },
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P03",
+        "name": "Anna Vonz",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0063",
+    "canonical_name": "Juan Bautista Antonio",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true,
+      "legitimate": true,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P04",
+        "name": "Juan Bautista Antonio",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0064",
+    "canonical_name": "Juan Gutiérrez",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P05",
+        "name": "Juan Gutiérrez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0065",
+    "canonical_name": "Ágada Venz",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P06",
+        "name": "Ágada Venz",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0066",
+    "canonical_name": "Antonio Verpal",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "ethnicity": "Carolina del Sur",
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0021-01",
+        "id": "P02",
+        "name": "Antonio Verpal",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0067",
+    "canonical_name": "Anna Aventrot",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "ethnicity": "Carolina del Sur",
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0021-01",
+        "id": "P03",
+        "name": "Anna Aventrot",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0068",
+    "canonical_name": "Mariana Guadalupe",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": true,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0021-01",
+        "id": "P04",
+        "name": "Mariana Guadalupe",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0069",
+    "canonical_name": "Juan Baptista Huiten",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0016-02",
+        "id": "P05",
+        "name": "Juan Baptista Huiten",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0021-01",
+        "id": "P05",
+        "name": "Juan Baptista Huiten",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0070",
+    "canonical_name": "Maria Rafaela Quinty",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0016-02",
+        "id": "P06",
+        "name": "Maria Rafaela Quinty",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0021-01",
+        "id": "P06",
+        "name": "Maria Rafaela Quinty",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0071",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "ethnicity": "América del Norte"
+    },
+    "mentions": [
+      {
+        "entry": "0021-02",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0072",
+    "canonical_name": "Judith Hernández",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "mulata",
+      "free": false,
+      "ethnicity": "América del Norte"
+    },
+    "mentions": [
+      {
+        "entry": "0021-02",
+        "id": "P03",
+        "name": "Judith Hernández",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0073",
+    "canonical_name": "Martín Hernández",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0021-02",
+        "id": "P04",
+        "name": "Martín Hernández",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0074",
+    "canonical_name": "Mariana Basilia Anastacia",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "parda",
+      "free": false,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0021-02",
+        "id": "P05",
+        "name": "Mariana Basilia Anastacia",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0075",
+    "canonical_name": "Anna Pérez",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0021-02",
+        "id": "P07",
+        "name": "Anna Pérez",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0076",
+    "canonical_name": "Juan Bautista",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "ethnicity": "Jamaica",
+      "origin": "Jamaica",
+      "age": "about fifty years old"
+    },
+    "mentions": [
+      {
+        "entry": "0022-01",
+        "id": "P02",
+        "name": "Juan Bautista",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0077",
+    "canonical_name": "Juan Bautista",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "Jamaica",
+      "age": "about fifty years old"
+    },
+    "mentions": [
+      {
+        "entry": "0022-02",
+        "id": "P01",
+        "name": "Juan Bautista",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0078",
+    "canonical_name": "Miguel Lorenzo Isnardy",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0022-01",
+        "id": "P03",
+        "name": "Miguel Lorenzo Isnardy",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-02",
+        "id": "P02",
+        "name": "Miguel Lorenzo Isnardy",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0079",
+    "canonical_name": "Roberto",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0022-03",
+        "id": "P02",
+        "name": "Roberto",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0080",
+    "canonical_name": "Roberto Macquien",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0022-04",
+        "id": "P01",
+        "name": "Roberto Macquien",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0081",
+    "canonical_name": "Roberto",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0022-04",
+        "id": "P03",
+        "name": "Roberto",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0082",
+    "canonical_name": "Roberto",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0022-03",
+        "id": "P03",
+        "name": "Roberto",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-04",
+        "id": "P04",
+        "name": "Roberto",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0083",
+    "canonical_name": "Elionora",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0022-03",
+        "id": "P04",
+        "name": "Elionora",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-04",
+        "id": "P05",
+        "name": "Elionora",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0084",
+    "canonical_name": "Thomas Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0023-01",
+        "id": "P01",
+        "name": "Thomas Macqueen",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0085",
+    "canonical_name": "Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "ethnicity": "North America",
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0023-01",
+        "id": "P06",
+        "name": "Thomas",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0086",
+    "canonical_name": "Catarina Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0023-02",
+        "id": "P01",
+        "name": "Catarina Macqueen",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0087",
+    "canonical_name": "Smart",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0023-01",
+        "id": "P03",
+        "name": "Smart",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-02",
+        "id": "P03",
+        "name": "Smart",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0088",
+    "canonical_name": "Hanna Macqueen",
+    "n_mentions": 2,
+    "chunks": [
+      "p13-23"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0023-01",
+        "id": "P04",
+        "name": "Hanna Macqueen",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-02",
+        "id": "P04",
+        "name": "Hanna Macqueen",
+        "chunk": "p13-23"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0089",
+    "canonical_name": "Alexandro",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0024-01",
+        "id": "P02",
+        "name": "Alexandro",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0090",
+    "canonical_name": "Lucía Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0024-01",
+        "id": "P04",
+        "name": "Lucía Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0091",
+    "canonical_name": "Juana",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0024-01",
+        "id": "P05",
+        "name": "Juana",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0092",
+    "canonical_name": "Benjamin",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "three and a half years old"
+    },
+    "mentions": [
+      {
+        "entry": "0024-02",
+        "id": "P05",
+        "name": "Benjamin",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0093",
+    "canonical_name": "Benjamin",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "ethnicity": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0024-02",
+        "id": "P02",
+        "name": "Benjamin",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-01",
+        "id": "P02",
+        "name": "Benjamin",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0094",
+    "canonical_name": "Ysabel Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0025-01",
+        "id": "P03",
+        "name": "Ysabel Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0095",
+    "canonical_name": "Pablo",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0025-01",
+        "id": "P05",
+        "name": "Pablo",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0096",
+    "canonical_name": "María Josefa",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0025-02",
+        "id": "P03",
+        "name": "María Josefa",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0097",
+    "canonical_name": "Dafney Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0025-02",
+        "id": "P04",
+        "name": "Dafney Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0098",
+    "canonical_name": "Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0026-01",
+        "id": "P05",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0099",
+    "canonical_name": "Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0026-02",
+        "id": "P05",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0100",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0026-03",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0101",
+    "canonical_name": "",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0026-03",
+        "id": "P05",
+        "name": "",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0102",
+    "canonical_name": "Juan",
+    "n_mentions": 4,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0025-02",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-01",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-02",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-04",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0103",
+    "canonical_name": "Dafiny Macqueen",
+    "n_mentions": 4,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0026-01",
+        "id": "P04",
+        "name": "Dafiny Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-02",
+        "id": "P04",
+        "name": "Dafiny Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-03",
+        "id": "P03",
+        "name": "Dafiny Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-04",
+        "id": "P03",
+        "name": "Dafiny Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0104",
+    "canonical_name": "Dorotea",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0026-04",
+        "id": "P04",
+        "name": "Dorotea",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0105",
+    "canonical_name": "Ricardo",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0027-01",
+        "id": "P02",
+        "name": "Ricardo",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0106",
+    "canonical_name": "Carlota Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0027-01",
+        "id": "P04",
+        "name": "Carlota Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0107",
+    "canonical_name": "Andrés",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0027-01",
+        "id": "P05",
+        "name": "Andrés",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0108",
+    "canonical_name": "",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "thirteen months old"
+    },
+    "mentions": [
+      {
+        "entry": "0027-02",
+        "id": "P05",
+        "name": "",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0109",
+    "canonical_name": "María",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false,
+      "age": "thirteen months old"
+    },
+    "mentions": [
+      {
+        "entry": "0027-03",
+        "id": "P05",
+        "name": "María",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0110",
+    "canonical_name": "Ysabel Macqueen",
+    "n_mentions": 3,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0027-02",
+        "id": "P03",
+        "name": "Ysabel Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-03",
+        "id": "P04",
+        "name": "Ysabel Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-01",
+        "id": "P03",
+        "name": "Isabel Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0111",
+    "canonical_name": "Simón",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "three months old"
+    },
+    "mentions": [
+      {
+        "entry": "0028-01",
+        "id": "P05",
+        "name": "Simón",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0112",
+    "canonical_name": "Ysabel",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "ethnicity": "negro",
+      "origin": "North America",
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0024-02",
+        "id": "P03",
+        "name": "Ysabel",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-02",
+        "id": "P05",
+        "name": "Ysabel",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0113",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0029-01",
+        "id": "P05",
+        "name": "Juan",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0114",
+    "canonical_name": "Andrés",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0028-02",
+        "id": "P02",
+        "name": "Andrés",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-02",
+        "id": "P01",
+        "name": "Andrés",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0115",
+    "canonical_name": "Mayna Macqueen",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0028-02",
+        "id": "P04",
+        "name": "Mayna Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-02",
+        "id": "P02",
+        "name": "Mayna Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0116",
+    "canonical_name": "Isabel",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0029-02",
+        "id": "P04",
+        "name": "Isabel",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0117",
+    "canonical_name": "Abraham",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0029-01",
+        "id": "P02",
+        "name": "Abraham",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-03",
+        "id": "P02",
+        "name": "Abraham",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0118",
+    "canonical_name": "Judith Macqueen",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0029-01",
+        "id": "P04",
+        "name": "Judith Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-03",
+        "id": "P04",
+        "name": "Judith Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0119",
+    "canonical_name": "Patricio",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "two years old"
+    },
+    "mentions": [
+      {
+        "entry": "0029-03",
+        "id": "P05",
+        "name": "Patricio",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0120",
+    "canonical_name": "Sara",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0030-01",
+        "id": "P05",
+        "name": "Sara",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0121",
+    "canonical_name": "Sara",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": false,
+      "legitimate": false,
+      "age": "three years old"
+    },
+    "mentions": [
+      {
+        "entry": "0030-02",
+        "id": "P05",
+        "name": "Sara",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0122",
+    "canonical_name": "",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eighteen months old"
+    },
+    "mentions": [
+      {
+        "entry": "0030-03",
+        "id": "P03",
+        "name": "",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0123",
+    "canonical_name": "Thomas Macqueen Hassett",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "cleric",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0030-02",
+        "id": "P01",
+        "name": "Thomas Macqueen Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-04",
+        "id": "P01",
+        "name": "Thomas Macqueen Hassett",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0124",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eighteen months old"
+    },
+    "mentions": [
+      {
+        "entry": "0030-04",
+        "id": "P03",
+        "name": "Juan",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0125",
+    "canonical_name": "Rachael Macqueen",
+    "n_mentions": 4,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0030-01",
+        "id": "P04",
+        "name": "Rachael Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-02",
+        "id": "P03",
+        "name": "Rachael Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-03",
+        "id": "P04",
+        "name": "Rachael Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-04",
+        "id": "P04",
+        "name": "Rachael Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0126",
+    "canonical_name": "Andrés",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0031-01",
+        "id": "P05",
+        "name": "Andrés",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0127",
+    "canonical_name": "Smart",
+    "n_mentions": 6,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0030-01",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-02",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-03",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-04",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-01",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-02",
+        "id": "P02",
+        "name": "Smart",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0128",
+    "canonical_name": "Rachael",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0031-01",
+        "id": "P04",
+        "name": "Rachael",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-02",
+        "id": "P04",
+        "name": "Rachael",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0129",
+    "canonical_name": "Andrés",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0031-02",
+        "id": "P05",
+        "name": "Andrés",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0130",
+    "canonical_name": "Henrique",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0031-03",
+        "id": "P02",
+        "name": "Henrique",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0131",
+    "canonical_name": "Juana",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "four years old"
+    },
+    "mentions": [
+      {
+        "entry": "0031-03",
+        "id": "P05",
+        "name": "Juana",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0132",
+    "canonical_name": "Matilda",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0032-01",
+        "id": "P05",
+        "name": "Matilda",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0133",
+    "canonical_name": "Matilda Thomas Hassett",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "cleric",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0032-02",
+        "id": "P01",
+        "name": "Matilda Thomas Hassett",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0134",
+    "canonical_name": "Henerique",
+    "n_mentions": 2,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0032-01",
+        "id": "P02",
+        "name": "Henerique",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-02",
+        "id": "P02",
+        "name": "Henerique",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0135",
+    "canonical_name": "Susana Macqueen",
+    "n_mentions": 3,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0031-03",
+        "id": "P03",
+        "name": "Susana Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-01",
+        "id": "P04",
+        "name": "Susana Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-02",
+        "id": "P04",
+        "name": "Susana Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0136",
+    "canonical_name": "Matilda",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0032-02",
+        "id": "P05",
+        "name": "Matilda",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0137",
+    "canonical_name": "Sorrow",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0032-03",
+        "id": "P02",
+        "name": "Sorrow",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0138",
+    "canonical_name": "María Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0032-03",
+        "id": "P03",
+        "name": "María Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0139",
+    "canonical_name": "Dionicia",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "nine months old"
+    },
+    "mentions": [
+      {
+        "entry": "0032-03",
+        "id": "P04",
+        "name": "Dionicia",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0140",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0033-01",
+        "id": "P02",
+        "name": "Juan",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0141",
+    "canonical_name": "Rosa Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0033-01",
+        "id": "P04",
+        "name": "Rosa Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0142",
+    "canonical_name": "Dorothea",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "eight months old"
+    },
+    "mentions": [
+      {
+        "entry": "0033-01",
+        "id": "P05",
+        "name": "Dorothea",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0143",
+    "canonical_name": "Martha Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0033-02",
+        "id": "P03",
+        "name": "Martha Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0144",
+    "canonical_name": "",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false,
+      "age": "five months old"
+    },
+    "mentions": [
+      {
+        "entry": "0033-02",
+        "id": "P04",
+        "name": "",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0145",
+    "canonical_name": "Francisco",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0034-01",
+        "id": "P02",
+        "name": "Francisco",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0146",
+    "canonical_name": "Ysabel Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0034-01",
+        "id": "P04",
+        "name": "Ysabel Macqueen",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0147",
+    "canonical_name": "Manuel",
+    "n_mentions": 1,
+    "chunks": [
+      "p24-34"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "four years old"
+    },
+    "mentions": [
+      {
+        "entry": "0034-01",
+        "id": "P05",
+        "name": "Manuel",
+        "chunk": "p24-34"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0148",
+    "canonical_name": "Thomas",
+    "n_mentions": 5,
+    "chunks": [
+      "p24-34",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0027-02",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-03",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-01",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-02",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0035-01",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0149",
+    "canonical_name": "Jacob",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0035-02",
+        "id": "P02",
+        "name": "Jacob",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0150",
+    "canonical_name": "Ysabel Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0035-02",
+        "id": "P03",
+        "name": "Ysabel Macqueen",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0151",
+    "canonical_name": "Ysabela",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0035-02",
+        "id": "P05",
+        "name": "Ysabela",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0152",
+    "canonical_name": "Bacos",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0035-03",
+        "id": "P02",
+        "name": "Bacos",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0153",
+    "canonical_name": "Juana Macqueen",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0035-03",
+        "id": "P03",
+        "name": "Juana Macqueen",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0154",
+    "canonical_name": "Juan Macquien",
+    "n_mentions": 35,
+    "chunks": [
+      "p13-23",
+      "p24-34",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0022-03",
+        "id": "P05",
+        "name": "Juan Macquien",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-04",
+        "id": "P06",
+        "name": "Juan Macquien",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-01",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-02",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0024-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0024-02",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-01",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-02",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-02",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-03",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-04",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-02",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-03",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-01",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-02",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-02",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-03",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-02",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-04",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-02",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-03",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-02",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-03",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-02",
+        "id": "P05",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0034-01",
+        "id": "P03",
+        "name": "Juan Macqueen",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0035-01",
+        "id": "P01",
+        "name": "Juan Macqueen",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-02",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-03",
+        "id": "P04",
+        "name": "Juan Macqueen",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0155",
+    "canonical_name": "Juana",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0035-03",
+        "id": "P05",
+        "name": "Juana",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0156",
+    "canonical_name": "Thomas Sterling",
+    "n_mentions": 32,
+    "chunks": [
+      "p13-23",
+      "p24-34",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "doctor",
+      "titles": [
+        "Doctor",
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0022-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-04",
+        "id": "P07",
+        "name": "Thomas Sterling",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-01",
+        "id": "P07",
+        "name": "Thomas Sterling",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0024-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0024-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-04",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-02",
+        "id": "P05",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-04",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0034-01",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0035-01",
+        "id": "P03",
+        "name": "Thomas Sterling",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-02",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-03",
+        "id": "P06",
+        "name": "Thomas Sterling",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0157",
+    "canonical_name": "Dionicia Antonia",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": true,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P05",
+        "name": "Dionicia Antonia",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0158",
+    "canonical_name": "Dionicia Antonia Friay",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0036-02",
+        "id": "P01",
+        "name": "Dionicia Antonia Friay",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0159",
+    "canonical_name": "Thomas Friay",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "ethnicity": "Carolina del Sur",
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P02",
+        "name": "Thomas Friay",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P03",
+        "name": "Thomas Friay",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0160",
+    "canonical_name": "Bartolomé Suárez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P03",
+        "name": "Bartolomé Suárez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P04",
+        "name": "Bartolomé Suárez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0161",
+    "canonical_name": "Anna Friay",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": true,
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P04",
+        "name": "Anna Friay",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P05",
+        "name": "Anna Friay",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0162",
+    "canonical_name": "Pedro Casaly",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P06",
+        "name": "Pedro Casaly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P06",
+        "name": "Pedro Casaly",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0163",
+    "canonical_name": "Josepha Manuela Sánchez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0036-01",
+        "id": "P07",
+        "name": "Josepha Manuela Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P07",
+        "name": "Josepha Manuela Sánchez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0164",
+    "canonical_name": "María Matilda",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false,
+      "origin": "North America",
+      "age": "twenty-six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0036-03",
+        "id": "P02",
+        "name": "María Matilda",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0165",
+    "canonical_name": "Joseph Phelipe",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "Guinea",
+      "age": "forty-five years old"
+    },
+    "mentions": [
+      {
+        "entry": "0037-01",
+        "id": "P06",
+        "name": "Joseph Phelipe",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0166",
+    "canonical_name": "María Matilda",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": false,
+      "ethnicity": "negra",
+      "origin": "North America",
+      "age": "twenty-six years old"
+    },
+    "mentions": [
+      {
+        "entry": "0037-02",
+        "id": "P01",
+        "name": "María Matilda",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0167",
+    "canonical_name": "Joseph Phelipe Sanchez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "Guinea",
+      "age": [
+        "adult",
+        "forty-five years old"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0037-01",
+        "id": "P01",
+        "name": "Joseph Phelipe Sanchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-03",
+        "id": "P01",
+        "name": "Joseph Phelipe",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0168",
+    "canonical_name": "María Felicia",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false,
+      "origin": "Guinea",
+      "age": "thirty-four years old"
+    },
+    "mentions": [
+      {
+        "entry": "0037-04",
+        "id": "P01",
+        "name": "María Felicia",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0169",
+    "canonical_name": "Tomás Joseph Alvarez",
+    "n_mentions": 3,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0037-01",
+        "id": "P04",
+        "name": "Tomás Joseph Alvarez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-03",
+        "id": "P03",
+        "name": "Tomás Joseph Álvarez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-04",
+        "id": "P03",
+        "name": "Tomás José Álvarez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0170",
+    "canonical_name": "María Gracia",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0038-01",
+        "id": "P03",
+        "name": "María Gracia",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0171",
+    "canonical_name": "Abraham Benigal",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0038-01",
+        "id": "P01",
+        "name": "Abraham Benigal",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-02",
+        "id": "P02",
+        "name": "Abraham Benigal",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0172",
+    "canonical_name": "Mila Niagel",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": [
+        "negra",
+        "negro"
+      ],
+      "free": true,
+      "origin": "South Carolina"
+    },
+    "mentions": [
+      {
+        "entry": "0038-01",
+        "id": "P02",
+        "name": "Mila Niagel",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-02",
+        "id": "P03",
+        "name": "Mila Niagel",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0173",
+    "canonical_name": "María Gracia",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true,
+      "legitimate": false,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0038-02",
+        "id": "P04",
+        "name": "María Gracia",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0174",
+    "canonical_name": "María Gracia Pospal",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0038-01",
+        "id": "P04",
+        "name": "María Gracia Pospal",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-02",
+        "id": "P05",
+        "name": "María Gracia Pospal",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0175",
+    "canonical_name": "Juana Francisca",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "legitimate": true
+    },
+    "mentions": [
+      {
+        "entry": "0038-03",
+        "id": "P05",
+        "name": "Juana Francisca",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0176",
+    "canonical_name": "Domingo José",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0039-01",
+        "id": "P04",
+        "name": "Domingo José",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0177",
+    "canonical_name": "Juan Joseph Sánchez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0038-03",
+        "id": "P02",
+        "name": "Juan Joseph Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P02",
+        "name": "Juan Joseph Sánchez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0178",
+    "canonical_name": "María del Rosario Sánchez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false,
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0038-03",
+        "id": "P03",
+        "name": "María del Rosario Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P03",
+        "name": "María del Rosario Sánchez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0179",
+    "canonical_name": "Francisco Xavier Sanchez",
+    "n_mentions": 5,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0037-01",
+        "id": "P03",
+        "name": "Francisco Xavier Sanchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-03",
+        "id": "P02",
+        "name": "Francisco Xavier Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-04",
+        "id": "P02",
+        "name": "Francisco Xavier Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-03",
+        "id": "P04",
+        "name": "Francisco Xavier Sánchez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P04",
+        "name": "Francisco Xavier Sánchez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0180",
+    "canonical_name": "Juana Francisca",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "free": false,
+      "legitimate": true
+    },
+    "mentions": [
+      {
+        "entry": "0039-02",
+        "id": "P05",
+        "name": "Juana Francisca",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0181",
+    "canonical_name": "Joseph de Arrivas",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "mulato",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0038-03",
+        "id": "P06",
+        "name": "Joseph de Arrivas",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P06",
+        "name": "Joseph de Arrivas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0182",
+    "canonical_name": "María Matilda Espinosa",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": [
+        "negro",
+        "negra"
+      ],
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0039-01",
+        "id": "P02",
+        "name": "María Matilda Espinosa",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-03",
+        "id": "P02",
+        "name": "María Matilda Espinosa",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0183",
+    "canonical_name": "Josefa de Espinosa",
+    "n_mentions": 4,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0036-03",
+        "id": "P03",
+        "name": "Josefa Espinosa",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-02",
+        "id": "P02",
+        "name": "Josefa Espinosa",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-01",
+        "id": "P03",
+        "name": "Josefa de Espinosa",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-03",
+        "id": "P03",
+        "name": "Josefa de Espinosa",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0184",
+    "canonical_name": "Domingo José",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0039-03",
+        "id": "P04",
+        "name": "Domingo José",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0185",
+    "canonical_name": "María de la Luz Ruiz",
+    "n_mentions": 9,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": [
+        "morena",
+        "negro",
+        "negra"
+      ],
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0036-03",
+        "id": "P04",
+        "name": "María de Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-01",
+        "id": "P05",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-02",
+        "id": "P03",
+        "name": "María de Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-03",
+        "id": "P04",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-04",
+        "id": "P04",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-03",
+        "id": "P07",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-01",
+        "id": "P05",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P07",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-03",
+        "id": "P05",
+        "name": "María de la Luz Ruiz",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0186",
+    "canonical_name": "Corsiga",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro"
+    },
+    "mentions": [
+      {
+        "entry": "0040-01",
+        "id": "P02",
+        "name": "Corsiga",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0187",
+    "canonical_name": "Lorenzo Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-01",
+        "id": "P04",
+        "name": "Lorenzo Thomas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0188",
+    "canonical_name": "Corsiga",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro"
+    },
+    "mentions": [
+      {
+        "entry": "0040-02",
+        "id": "P02",
+        "name": "Corsiga",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0189",
+    "canonical_name": "Andrés Playm",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0040-01",
+        "id": "P03",
+        "name": "Andrés Playm",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-02",
+        "id": "P03",
+        "name": "Andrés Playm",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0190",
+    "canonical_name": "Lorenzo Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-02",
+        "id": "P04",
+        "name": "Lorenzo Thomas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0191",
+    "canonical_name": "Antonia Cla",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0040-01",
+        "id": "P06",
+        "name": "Antonia Cla",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-02",
+        "id": "P06",
+        "name": "Antonia Cla",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0192",
+    "canonical_name": "Miguel",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-03",
+        "id": "P02",
+        "name": "Miguel",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0193",
+    "canonical_name": "Dominga Josefa",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-03",
+        "id": "P04",
+        "name": "Dominga Josefa",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0194",
+    "canonical_name": "Miguel",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro"
+    },
+    "mentions": [
+      {
+        "entry": "0040-04",
+        "id": "P02",
+        "name": "Miguel",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0195",
+    "canonical_name": "Josefa Leslie",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-03",
+        "id": "P03",
+        "name": "Josefa Leslie",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-04",
+        "id": "P03",
+        "name": "Josefa Leslie",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0196",
+    "canonical_name": "Dominga Josefa",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "morena",
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0040-04",
+        "id": "P04",
+        "name": "Dominga Josefa",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0197",
+    "canonical_name": "Juan Leslie",
+    "n_mentions": 3,
+    "chunks": [
+      "p13-23",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0018-01",
+        "id": "P03",
+        "name": "Juan Leslie",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0040-03",
+        "id": "P05",
+        "name": "Juan Leslie",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-04",
+        "id": "P05",
+        "name": "Juan Leslie",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0198",
+    "canonical_name": "Luis Almanza",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro"
+    },
+    "mentions": [
+      {
+        "entry": "0040-04",
+        "id": "P06",
+        "name": "Luis Almanza",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0199",
+    "canonical_name": "Francisco Joseph Hipólito",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0041-01",
+        "id": "P04",
+        "name": "Francisco Joseph Hipólito",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0200",
+    "canonical_name": "Juan Mayas",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": true,
+      "origin": "Guinea"
+    },
+    "mentions": [
+      {
+        "entry": "0041-01",
+        "id": "P02",
+        "name": "Juan Mayas",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-02",
+        "id": "P02",
+        "name": "Juan Mayas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0201",
+    "canonical_name": "María Josefa Hernández",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": [
+        "negra",
+        "negro"
+      ],
+      "free": true,
+      "origin": "Guinea"
+    },
+    "mentions": [
+      {
+        "entry": "0041-01",
+        "id": "P03",
+        "name": "María Josefa Hernández",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-02",
+        "id": "P03",
+        "name": "María Josefa Hernández",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0202",
+    "canonical_name": "Francisco Joseph Hipólito",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true,
+      "legitimate": true,
+      "age": "infant"
+    },
+    "mentions": [
+      {
+        "entry": "0041-02",
+        "id": "P04",
+        "name": "Francisco Joseph Hipólito",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0203",
+    "canonical_name": "Francisco Ruiz del Canto",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0041-01",
+        "id": "P05",
+        "name": "Francisco Ruiz del Canto",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-02",
+        "id": "P05",
+        "name": "Francisco Ruiz del Canto",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0204",
+    "canonical_name": "Francisca Isabel Honeycut",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0041-01",
+        "id": "P06",
+        "name": "Francisca Isabel Honeycut",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-02",
+        "id": "P06",
+        "name": "Francisca Isabel Honeycut",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0205",
+    "canonical_name": "Juana Josefa Rafaela",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "parda",
+      "free": true,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0041-03",
+        "id": "P03",
+        "name": "Juana Josefa Rafaela",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0206",
+    "canonical_name": "Juan Nepomuceno Eustaquio",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "pardo",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0042-01",
+        "id": "P04",
+        "name": "Juan Nepomuceno Eustaquio",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0207",
+    "canonical_name": "Juana Joaquina González",
+    "n_mentions": 3,
+    "chunks": [
+      "p13-23",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "mulata",
+      "free": true,
+      "ethnicity": "mulata",
+      "origin": "Guatemala"
+    },
+    "mentions": [
+      {
+        "entry": "0014-01",
+        "id": "P06",
+        "name": "Juana Joaquina González",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0041-03",
+        "id": "P02",
+        "name": "Juana Joaquina Gonzales",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-02",
+        "id": "P01",
+        "name": "Juana Joaquina Gonzales",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0208",
+    "canonical_name": "Juana Josefa Rafaela",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0042-02",
+        "id": "P02",
+        "name": "Juana Josefa Rafaela",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0209",
+    "canonical_name": "Josepho Barreiro",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "soldier",
+      "rank": "cadete",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0041-03",
+        "id": "P04",
+        "name": "Josepho Barreiro",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-02",
+        "id": "P03",
+        "name": "Josepho Barreyro",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0210",
+    "canonical_name": "Miguel Nepomuceno O'Reilly",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "cleric",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0042-03",
+        "id": "P01",
+        "name": "Miguel Nepomuceno O'Reilly",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0211",
+    "canonical_name": "Maria del Carmen Salcedo",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negra",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0042-01",
+        "id": "P02",
+        "name": "Maria del Carmen Salcedo",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-03",
+        "id": "P02",
+        "name": "María del Carmen Salcedo",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0212",
+    "canonical_name": "Pedro Josepho Salcedo",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "rank": "captain",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0042-01",
+        "id": "P03",
+        "name": "Pedro Josepho Salcedo",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-03",
+        "id": "P03",
+        "name": "Pedro Josepho Salcedo",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0213",
+    "canonical_name": "Juan Nepomuceno Eustaquio",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "pardo",
+      "free": false,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0042-03",
+        "id": "P04",
+        "name": "Juan Nepomuceno Eustaquio",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0214",
+    "canonical_name": "Anna Cherez",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0042-01",
+        "id": "P06",
+        "name": "Anna Cherez",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-03",
+        "id": "P06",
+        "name": "Anna Cherez",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0215",
+    "canonical_name": "Juan Jerónimo",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0043-01",
+        "id": "P04",
+        "name": "Juan Jerónimo",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0216",
+    "canonical_name": "Santiago Escrin",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0043-01",
+        "id": "P02",
+        "name": "Santiago Escrin",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-02",
+        "id": "P02",
+        "name": "Santiago Escrin",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0217",
+    "canonical_name": "María Escrin",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0043-01",
+        "id": "P03",
+        "name": "María Escrin",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-02",
+        "id": "P03",
+        "name": "María Escrin",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0218",
+    "canonical_name": "Juan Gerónimo",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": true
+    },
+    "mentions": [
+      {
+        "entry": "0043-02",
+        "id": "P04",
+        "name": "Juan Gerónimo",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0219",
+    "canonical_name": "Juan Antonio Guadarrama",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0043-01",
+        "id": "P05",
+        "name": "Juan Antonio Guadarrama",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-02",
+        "id": "P05",
+        "name": "Juan Antonio Guadarrama",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0220",
+    "canonical_name": "Juana Paredes",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0043-01",
+        "id": "P06",
+        "name": "Juana Paredes",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-02",
+        "id": "P06",
+        "name": "Juana Paredes",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0221",
+    "canonical_name": "Juan Nepomuceno de Quesada",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "rank": "gobernador y comandante general",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0043-03",
+        "id": "P04",
+        "name": "Juan Nepomuceno de Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0222",
+    "canonical_name": "María Rafaela Quesada",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "legitimate": true
+    },
+    "mentions": [
+      {
+        "entry": "0043-03",
+        "id": "P05",
+        "name": "María Rafaela Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0223",
+    "canonical_name": "Miguel O'Reilly",
+    "n_mentions": 45,
+    "chunks": [
+      "p13-23",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "cleric",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0013-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0013-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0014-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0014-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0015-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0015-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0016-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0016-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0017-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0017-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0018-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0018-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0019-04",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0020-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0021-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-02",
+        "id": "P03",
+        "name": "Miguel O'Reilly",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0036-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-02",
+        "id": "P02",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0036-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-01",
+        "id": "P02",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-02",
+        "id": "P04",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-03",
+        "id": "P05",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0037-04",
+        "id": "P05",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-01",
+        "id": "P05",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-04",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0041-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-02",
+        "id": "P04",
+        "name": "Miguel Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-01",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-02",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-03",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-04",
+        "id": "P01",
+        "name": "Miguel O'Reilly",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0224",
+    "canonical_name": "Andrés de Quesada",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0043-03",
+        "id": "P02",
+        "name": "Andrés de Quesada",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-04",
+        "id": "P02",
+        "name": "Andrés de Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0225",
+    "canonical_name": "María de Jesús Quesada",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0043-03",
+        "id": "P03",
+        "name": "María de Jesús Quesada",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-04",
+        "id": "P03",
+        "name": "María de Jesús Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0226",
+    "canonical_name": "Juan Nepomuceno de Quesada",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "rank": "governor and commander general",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0043-04",
+        "id": "P04",
+        "name": "Juan Nepomuceno de Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0227",
+    "canonical_name": "María Rafaela Quesada",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": true
+    },
+    "mentions": [
+      {
+        "entry": "0043-04",
+        "id": "P05",
+        "name": "María Rafaela Quesada",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0228",
+    "canonical_name": "María Belén Almanza",
+    "n_mentions": 2,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "free": false
+    },
+    "mentions": [
+      {
+        "entry": "0043-03",
+        "id": "P06",
+        "name": "María Belén Almanza",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-04",
+        "id": "P06",
+        "name": "María Belén Almanza",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0229",
+    "canonical_name": "Manuel de Almanza",
+    "n_mentions": 3,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0040-04",
+        "id": "P07",
+        "name": "Manuel de Almanza",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-03",
+        "id": "P07",
+        "name": "Manuel de Almanza",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0043-04",
+        "id": "P07",
+        "name": "Manuel de Almanza",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0230",
+    "canonical_name": "Henerieta Raphaela Llull",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false,
+      "age": "two years old"
+    },
+    "mentions": [
+      {
+        "entry": "0044-01",
+        "id": "P02",
+        "name": "Henerieta Raphaela Llull",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0231",
+    "canonical_name": "Pedro Llull",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0044-01",
+        "id": "P03",
+        "name": "Pedro Llull",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0232",
+    "canonical_name": "Sara Llull",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro"
+    },
+    "mentions": [
+      {
+        "entry": "0044-01",
+        "id": "P04",
+        "name": "Sara Llull",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0233",
+    "canonical_name": "Lorenzo Capo",
+    "n_mentions": 7,
+    "chunks": [
+      "p13-23",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0014-01",
+        "id": "P05",
+        "name": "Lorenzo Capo",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0021-02",
+        "id": "P06",
+        "name": "Lorenzo Capó",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0040-01",
+        "id": "P05",
+        "name": "Lorenzo Capo",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0040-02",
+        "id": "P05",
+        "name": "Lorenzo Capo",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-01",
+        "id": "P05",
+        "name": "Lorenzo Capó",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0042-03",
+        "id": "P05",
+        "name": "Lorenzo Capó",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0044-01",
+        "id": "P05",
+        "name": "Lorenzo Casò",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0234",
+    "canonical_name": "Raphaela Casò",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {},
+    "mentions": [
+      {
+        "entry": "0044-01",
+        "id": "P06",
+        "name": "Raphaela Casò",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0235",
+    "canonical_name": "Thomas Hassett",
+    "n_mentions": 39,
+    "chunks": [
+      "p13-23",
+      "p24-34",
+      "p35-44"
+    ],
+    "cross_chunk": true,
+    "needs_review": false,
+    "attributes": {
+      "occupation": "cleric",
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0020-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0021-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0022-04",
+        "id": "P02",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-01",
+        "id": "P02",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0023-02",
+        "id": "P02",
+        "name": "Thomas Hassett",
+        "chunk": "p13-23"
+      },
+      {
+        "entry": "0024-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0024-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0025-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0026-04",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0027-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0028-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-02",
+        "id": "P06",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0029-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0030-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0031-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0032-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0033-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0034-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p24-34"
+      },
+      {
+        "entry": "0035-01",
+        "id": "P04",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0035-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0038-03",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0039-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0044-01",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      },
+      {
+        "entry": "0044-02",
+        "id": "P01",
+        "name": "Thomas Hassett",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0236",
+    "canonical_name": "Thomas",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0044-02",
+        "id": "P02",
+        "name": "Thomas",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0237",
+    "canonical_name": "Artamisa Fatio",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "negro",
+      "origin": "North America"
+    },
+    "mentions": [
+      {
+        "entry": "0044-02",
+        "id": "P03",
+        "name": "Artamisa Fatio",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0238",
+    "canonical_name": "Juan",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "phenotype": "moreno",
+      "free": false,
+      "legitimate": false
+    },
+    "mentions": [
+      {
+        "entry": "0044-02",
+        "id": "P04",
+        "name": "Juan",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0239",
+    "canonical_name": "Francisco Felipe Fatio",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Don"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0044-02",
+        "id": "P05",
+        "name": "Francisco Felipe Fatio",
+        "chunk": "p35-44"
+      }
+    ]
+  },
+  {
+    "person_id": "V239746-0240",
+    "canonical_name": "María Magdalena",
+    "n_mentions": 1,
+    "chunks": [
+      "p35-44"
+    ],
+    "cross_chunk": false,
+    "needs_review": false,
+    "attributes": {
+      "titles": [
+        "Doña"
+      ]
+    },
+    "mentions": [
+      {
+        "entry": "0044-02",
+        "id": "P06",
+        "name": "María Magdalena",
+        "chunk": "p35-44"
+      }
+    ]
+  }
+]

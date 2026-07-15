@@ -1,0 +1,153 @@
+"""Offline tests for entry segmentation (Task 3) against the REAL gold pairs."""
+import json
+import os
+import re
+import sys
+
+from difflib import SequenceMatcher
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from ssda_nlp_tools.segment import (
+    classify_line, join_lines, load_pages, segment_page, segment_volume)
+from ssda_nlp_tools.segeval import evaluate_segmentation, margin_number_check
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+FIX = os.path.join(HERE, "fixtures")
+ROOT = os.path.dirname(HERE)
+
+
+def _nsp(s):
+    return re.sub(r"\s+", "", s).lower()
+
+
+def _sim(a, b):
+    return SequenceMatcher(None, _nsp(a), _nsp(b)).ratio()
+
+
+# ---- the two authoritative gold pairs ----------------------------------------
+
+def _run_pair(n):
+    ext = "md" if n == 1 else "json"
+    gold = json.load(open(os.path.join(FIX, f"output_{n}.json"), encoding="utf-8"))
+    pages = load_pages(os.path.join(FIX, f"input_{n}.{ext}"))
+    pred = segment_page(pages[0][1], image=gold["image"])
+    return gold, pred
+
+
+def test_gold_pair_1_portuguese_baptisms_with_trailing_partial():
+    gold, pred = _run_pair(1)
+    assert len(pred["entries"]) == len(gold["entries"]) == 4
+    for g, p in zip(gold["entries"], pred["entries"]):
+        assert _sim(g["text"], p["text"]) >= 0.92
+        assert g["partial"] == p["partial"]
+    assert pred["entries"][-1]["partial"] is True          # the trailing fragment
+
+
+def test_gold_pair_2_portuguese_burials_with_interleaved_margins():
+    gold, pred = _run_pair(2)
+    assert len(pred["entries"]) == len(gold["entries"]) == 4
+    for g, p in zip(gold["entries"], pred["entries"]):
+        assert _sim(g["text"], p["text"]) >= 0.92
+        assert g["partial"] == p["partial"]
+
+
+def test_margin_prefix_stripped_from_opener():
+    _, pred = _run_pair(1)
+    assert pred["entries"][2]["text"].startswith("Aos vinte e cinco")   # not "Pedro Aos"
+
+
+# ---- line classification rules ------------------------------------------------
+
+def test_junk_lines():
+    for line in ("1793.", "pag. 40", "47..", "3.", "Julho nada", "Agosto",
+                 "=ma", "=ceno", "+ Miercoles"):
+        assert classify_line(line, "between") == "junk", line
+
+
+def test_margin_name_junk_only_between_entries():
+    assert classify_line("Maria", "between") == "junk"
+    assert classify_line("Maria", "inside") == "text"      # interleaved -> keep
+
+
+def test_opener_detection_incl_split_month():
+    assert classify_line("Em vinte edous de Junho de mil Sete Centos",
+                         "between") == "opener_strong"
+    # month broken at the line wrap: needs the lookahead
+    assert classify_line("Domingo, dia veinte y quatro de Noviem", "between",
+                         lookahead="bre de Mil, Setecientos, Noventa y tres. Yo Don"
+                         ) == "opener_strong"
+
+
+def test_margin_line_above_opener_does_not_become_the_opener():
+    # "Friay." + next line "Domingo, dia..." — the margin line must stay junk
+    assert classify_line("Friay.", "between",
+                         lookahead="Domingo, dia quinze de Junio de Mil,") == "junk"
+
+
+def test_mid_entry_date_mention_does_not_split():
+    text = ("Aos vinte e quatro de Dezembro de mil oitocentos e cincoenta e oito, "
+            "Baptisei solemnimente, e pus os Santos Oleos a Maria,\n"
+            "nascida a vinte e dous de Novembro do dito anno, filha legitima\n"
+            "de Manoel Joao; forao Padrinhos Manoel Joao. E para constar fiz este "
+            "assento, que assigno.\nO Vigr.o Joaquim Conrado")
+    pred = segment_page(text, image="x.jpg")
+    assert len(pred["entries"]) == 1                       # birth date != new entry
+
+
+def test_join_lines_continuation_marks():
+    assert join_lines(["Setecien", "-tos, Noventa"]) == "Setecientos, Noventa"
+    assert join_lines(["y la puse por nom", "=bre Dionicia"]) == "y la puse por nombre Dionicia"
+    assert join_lines(["Yo Don Mig=", "=uel O Reilly"]) == "Yo Don Miguel O Reilly"
+    # end-"=" as a STOP before the signature must NOT glue
+    assert join_lines(["y lo firme en dicho dia, mes, y Año=", "Thomas Hassett"]) \
+        == "y lo firme en dicho dia, mes, y Año= Thomas Hassett"
+
+
+# ---- cross-page stitching -------------------------------------------------------
+
+def test_volume_mode_stitches_cross_page_entry():
+    p1 = ("Em vinte e dous de Junho de mil Sete Centos Setenta e tres faleceo "
+          "da Vida prezente Bernardo menor filho de Bernardo da Silva foy por mim")
+    p2 = ("encomendado e Sepultado no Cemiterio desta Matriz de q fiz este asento\n"
+          "O Vigr.o Joze da Costa Lopes\n"
+          "Em tres de Julho de mil Sete Centos Setenta e tres faleceo da Vida "
+          "prezente Faustina preta forra foy por mim encomendada e Sepultada de q "
+          "fiz este asento\nO Vigr.o Joze da Costa Lopes")
+    res = segment_volume([("v-0001.jpg", p1), ("v-0002.jpg", p2)])
+    assert res["stats"]["entries"] == 2
+    first = res["entries"][0]
+    assert first["partial"] is False                       # stitched to completion
+    assert first["source_images"] == ["v-0001.jpg", "v-0002.jpg"]
+    assert "encomendado e Sepultado" in first["text"]
+
+
+def test_catchword_dropped_not_emitted():
+    pred = segment_page("=ma\nEm vinte de Junho de mil Sete Centos Setenta "
+                        "faleceo Bernardo de q fiz este asento\nO Vigr.o Joze",
+                        image="x.jpg")
+    assert len(pred["entries"]) == 1
+    assert pred["leading_fragment"] is None
+
+
+# ---- real-volume regression guards ---------------------------------------------
+
+def test_spanish_volume_chunk1_perfect_vs_reference():
+    from ssda_nlp_tools.segeval import load_reference_entries
+    pages = load_pages(os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json"))
+    res = segment_volume(pages)
+    ref = load_reference_entries(
+        os.path.join(ROOT, "Sample_output/Generated_0013_0023_4o_prompt_V2.json"))
+    rep = evaluate_segmentation(ref, res["entries"])
+    assert rep["recall"] >= 0.95
+    assert rep["coverage_recall"] >= 0.99
+
+
+def test_structural_margin_agreement_100pct():
+    total = agree = 0
+    for tag in ("0013_0023", "0024_0034", "0035_0044"):
+        pages = load_pages(os.path.join(ROOT, f"Text data/SSDA_{tag}_Gemini_V2.json"))
+        res = segment_volume(pages)
+        mc = margin_number_check(pages, res["per_image"])
+        total += mc["pages"]; agree += mc["agree"]
+    assert agree == total == 32

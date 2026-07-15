@@ -1,0 +1,11 @@
+# regenerable corpus outputs (see README): 230+ MB, rebuilt in ~1 minute
+out_corpus/
+out_batches/
+
+__pycache__/
+*.pyc
+.pytest_cache/
+identities.json
+network.graphml
+network.json
+resolved.json

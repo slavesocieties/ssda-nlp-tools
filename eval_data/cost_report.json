@@ -1,0 +1,74 @@
+{
+  "target": 0.01,
+  "metric": "transcription_plus_normalization",
+  "min_shots": 5,
+  "n_meeting": 476,
+  "cheapest": {
+    "scenario": {
+      "model": "gpt-4o-mini",
+      "trans_model": "gemini-flash-lite",
+      "shots": 5,
+      "cached": true,
+      "batch": 1,
+      "normalize": "none",
+      "entries_per_image": null,
+      "images_per_volume": 300,
+      "trans_image_tokens": 1290,
+      "trans_prompt_tokens": 400
+    },
+    "entries_per_image": 2.45,
+    "per_image": {
+      "transcription": 0.0003,
+      "normalization": 0.0,
+      "extraction": 0.00205,
+      "total": 0.00235,
+      "transcription_plus_normalization": 0.0003
+    },
+    "extract_calls_per_volume": 735,
+    "prefix_tokens": 5156,
+    "metric_value": 0.0003
+  },
+  "recommended": {
+    "scenario": {
+      "model": "gemini-flash",
+      "trans_model": "gemini-flash-lite",
+      "shots": 5,
+      "cached": true,
+      "batch": 10,
+      "normalize": "folded",
+      "entries_per_image": null,
+      "images_per_volume": 300,
+      "trans_image_tokens": 1290,
+      "trans_prompt_tokens": 400
+    },
+    "entries_per_image": 2.45,
+    "per_image": {
+      "transcription": 0.0003,
+      "normalization": 0.00018,
+      "extraction": 0.00076,
+      "total": 0.00124,
+      "transcription_plus_normalization": 0.00048
+    },
+    "extract_calls_per_volume": 74,
+    "prefix_tokens": 5156,
+    "metric_value": 0.00048
+  },
+  "components": {
+    "sys_extract": 1252,
+    "sys_normalize": 489,
+    "instructions": 219,
+    "shot_avg": 737,
+    "n_shots_available": 15,
+    "entry_in": 183,
+    "entry_out": 691,
+    "norm_in": 191,
+    "norm_out": 183,
+    "entries_per_image": 2.45,
+    "transcription_out": 579,
+    "detail": {
+      "tokenizer": "heuristic(conservative)",
+      "sample_volume": ".\\Sample_output/Generated_0013_0023_4o_prompt_V2.json",
+      "shots_measured": 15
+    }
+  }
+}

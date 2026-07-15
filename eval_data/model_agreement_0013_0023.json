@@ -1,0 +1,79 @@
+[
+  {
+    "variant": "4o_merged",
+    "entries": "27/27",
+    "people_f1": 1.0,
+    "events_f1": 1.0,
+    "rels_f1": 1.0,
+    "date_acc": 1.0,
+    "phenotype": 1.0,
+    "ethnicity": 1.0,
+    "age": 1.0
+  },
+  {
+    "variant": "less_ex_4o",
+    "entries": "25/29",
+    "people_f1": 0.8506,
+    "events_f1": 0.9722,
+    "rels_f1": 0.7302,
+    "date_acc": 0.7714,
+    "phenotype": 0.2917,
+    "ethnicity": 0.1333,
+    "age": 0.8333
+  },
+  {
+    "variant": "less_ex_5.4",
+    "entries": "27/39",
+    "people_f1": 0.7857,
+    "events_f1": 0.9474,
+    "rels_f1": 0.2537,
+    "date_acc": 0.8889,
+    "phenotype": 0.8444,
+    "ethnicity": 0.0,
+    "age": 0.7778
+  },
+  {
+    "variant": "reduce_skip_4o",
+    "entries": "26/31",
+    "people_f1": 0.8456,
+    "events_f1": 0.9867,
+    "rels_f1": 0.7081,
+    "date_acc": 0.8919,
+    "phenotype": 0.5745,
+    "ethnicity": 0.0,
+    "age": 0.6316
+  },
+  {
+    "variant": "reduce_skip_5.4",
+    "entries": "25/34",
+    "people_f1": 0.7985,
+    "events_f1": 0.973,
+    "rels_f1": 0.5205,
+    "date_acc": 0.8889,
+    "phenotype": 0.6042,
+    "ethnicity": 0.1667,
+    "age": 0.6471
+  },
+  {
+    "variant": "merge_4o",
+    "entries": "27/30",
+    "people_f1": 0.9319,
+    "events_f1": 0.9873,
+    "rels_f1": 0.7333,
+    "date_acc": 0.9487,
+    "phenotype": 0.6981,
+    "ethnicity": 0.0667,
+    "age": 0.3684
+  },
+  {
+    "variant": "merge_5.4mini",
+    "entries": "27/35",
+    "people_f1": 0.8561,
+    "events_f1": 0.9737,
+    "rels_f1": 0.28,
+    "date_acc": 0.9189,
+    "phenotype": 0.2353,
+    "ethnicity": 0.0769,
+    "age": 0.3333
+  }
+]
