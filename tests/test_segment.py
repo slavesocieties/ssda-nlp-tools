@@ -57,6 +57,70 @@ def test_margin_prefix_stripped_from_opener():
     assert pred["entries"][2]["text"].startswith("Aos vinte e cinco")   # not "Pedro Aos"
 
 
+# ---- Daniel's manual examples (newer gold format: flat list + images[]) --------
+
+def _run_manual(stem):
+    """New-format gold: a flat list of {id, text, images}. Score BOUNDARIES, since
+    the gold also silently corrects the transcription (see below) and therefore
+    contains text absent from the input — no segmenter can match it exactly."""
+    from ssda_nlp_tools.segment import segment_volume
+    gold = json.load(open(os.path.join(FIX, f"{stem}_sample_output.json"), encoding="utf-8"))
+    pages = load_pages(os.path.join(FIX, f"{stem}_sample.json"))
+    pred = segment_volume(pages)["entries"]
+    return gold, pred
+
+
+def _boundary_hits(gold, pred, head=60, threshold=0.9):
+    """Did we START each gold record in the right place?
+
+    Deliberately compares only the first `head` normalized characters. Full-text
+    similarity would conflate boundary accuracy with two things that are NOT
+    segmentation: the unresolved margin-name convention (we currently retain the
+    interleaved margin words, which appear mid-body) and the gold's silent
+    transcription corrections. Record starts are unaffected by both.
+    """
+    used, hits = set(), 0
+    for g in gold:
+        gh = _nsp(g["text"])[:head]
+        best, bi = 0.0, None
+        for i, p in enumerate(pred):
+            if i in used:
+                continue
+            s = SequenceMatcher(None, gh, _nsp(p["text"])[:head]).ratio()
+            if s > best:
+                best, bi = s, i
+        if bi is not None and best >= threshold:
+            used.add(bi); hits += 1
+    return hits
+
+
+def test_manual_gold_65858_portuguese_all_boundaries_found():
+    gold, pred = _run_manual("65858")
+    assert len(gold) == 10
+    assert _boundary_hits(gold, pred) == 10      # every record located
+
+
+def test_manual_gold_420550_colombia_all_boundaries_found():
+    gold, pred = _run_manual("420550")
+    assert len(gold) == 8
+    assert len(pred) == 8
+    assert _boundary_hits(gold, pred) == 8       # "En la parroquia de … á tres de Abril" opener
+
+
+def test_manual_gold_contains_corrections_absent_from_the_raw():
+    """Guards the finding that the gold is not a pure segmentation target: it
+    repairs Gemini's dropped characters, so exact-text scoring is not meaningful
+    and boundary scoring is the right metric."""
+    pages = load_pages(os.path.join(FIX, "420550_sample.json"))
+    raw = _nsp(" ".join(t for _, t in pages))
+    gold = json.load(open(os.path.join(FIX, "420550_sample_output.json"), encoding="utf-8"))
+    gold_txt = _nsp(" ".join(g["text"] for g in gold))
+    # Gemini wrote "ochocien noventa"; the gold writes "ochocientos noventa"
+    assert "ochocienn" in raw                      # raw is missing "tos"
+    assert "ochocientosnoventa" in gold_txt        # gold silently inserts it
+    assert "ochocienn" not in gold_txt
+
+
 # ---- line classification rules ------------------------------------------------
 
 def test_junk_lines():
