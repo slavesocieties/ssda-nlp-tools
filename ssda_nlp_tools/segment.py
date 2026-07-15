@@ -38,10 +38,18 @@ _MONTHS = (r"Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Se[pt]t?iembre|"
 _WEEKDAYS = (r"Lunes|Martes|Mi[eé]rcoles|Jue[bv]es|[BV]iernes|S[aá][bv]ado|Domingo|"
              r"Segunda|Ter[cç]a|Quarta|Quinta|Sexta")
 
+# opener keywords: weekday-led ("Lunes, dia…"), "En/Em/Aos/Ao…", and the very
+# common Spanish "El día…" / "La día…" / "El primero de…" forms used by whole
+# dioceses (e.g. Cienfuegos vol 176899). "El/La día" is only treated as an entry
+# start via the same year-strength / between-entry guards, so an in-body "nació
+# el día veinte…" does not trigger a false split.
+_OPENER_KW = (rf"(?:{_WEEKDAYS})\b[.,]?\s*(?:d[ií]a\b)?|"
+              r"[EL][la]\s+d[ií]a|El\s+primero|En|Em|Aos|Ao|A\s?os|Á\s?os")
+
 # strong opener: full date formula near line start (allows a short margin prefix)
 _OPENER = re.compile(
     rf"^(?P<pre>[^\n]{{0,24}}?\s)??"
-    rf"(?P<kw>(?:{_WEEKDAYS})\b[.,]?\s*(?:d[ií]a\b)?|En|Em|Aos|Ao|A\s?os|Á\s?os)"
+    rf"(?P<kw>{_OPENER_KW})"
     rf"[\s,]{{0,3}}"
     rf"(?P<body>(?:la\s+ciudad[^\n]{{0,40}}?|el\s+d[ií]a\s+)?[\w\s,.yeéí]{{0,70}}?)"
     rf"\s+de\s+(?:{_MONTHS})\b", re.IGNORECASE)
@@ -54,7 +62,7 @@ _YEARISH = re.compile(r"\bmil\b|\b1[5-9]\d\d\b", re.IGNORECASE)
 # year/weekday evidence in the two-line probe (see classify_line).
 _OPENER_LOOSE = re.compile(
     rf"^(?P<pre>[^\n]{{0,24}}?\s)??"
-    rf"(?P<kw>(?:{_WEEKDAYS})\b[.,]?\s*(?:d[ií]a\b)?|En|Em|Aos|Ao|A\s?os|Á\s?os)"
+    rf"(?P<kw>{_OPENER_KW})"
     rf"[\s,]{{0,3}}"
     rf"(?P<body>(?:la\s+ciudad[^\n]{{0,40}}?|el\s+d[ií]a\s+)?[\w\s,.yeéí]{{0,70}}?)"
     rf"\s+de\s+[A-Za-zÀ-ÿ]{{3,12}}\b", re.IGNORECASE)
@@ -122,8 +130,17 @@ def classify_line(line: str, state: str, lookahead: str = "") -> str:
         if lm and (weekday_led or _YEARISH.search(probe)):
             m = lm
     if m:
-        # strong = carries a year ("mil ..."/"1773") or a weekday+dia formula
-        if _YEARISH.search(probe) or weekday_led:
+        # "El día…" / "La día…" are common IN-BODY ("nació el día quinze de
+        # Junio…"), unlike a weekday which almost always begins a record. So an
+        # El/La-día opener only counts when it carries a year ("…de mil…"); the
+        # weekday and En/Aos openers stay weak-eligible.
+        kw = (m.group("kw") or "").lower()
+        el_dia_family = bool(re.match(r"[el]l?a?\s+d[ií]a|el\s+primero", kw)) \
+            and not weekday_led
+        has_year = bool(_YEARISH.search(probe))
+        if el_dia_family and not has_year:
+            return "text"
+        if has_year or weekday_led:
             return "opener_strong"
         return "opener"
     if _CLOSER.search(s):

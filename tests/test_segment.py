@@ -85,6 +85,32 @@ def test_margin_line_above_opener_does_not_become_the_opener():
                          lookahead="Domingo, dia quinze de Junio de Mil,") == "junk"
 
 
+def test_el_dia_opener_only_counts_with_a_year():
+    # Cienfuegos-style opener ("El dia … de mil ochocientos…") IS an entry start
+    assert classify_line("El dia treinta y uno de Julio de mil ochocientos ochenta",
+                         "between") == "opener_strong"
+    assert classify_line("N.o 3. El dia treinta y uno de Julio de mil ochocientos",
+                         "between") == "opener_strong"
+    # but an in-body birth date ("nació el dia … del presente año", no year) must
+    # NOT be treated as a new entry — this was the false-split we had to guard
+    assert classify_line("nació el dia quinze de Junio del presente año, hija",
+                         "inside") == "text"
+    assert classify_line("que nació el dia quatro del presente mes, y Año,",
+                         "inside") == "text"
+
+
+def test_el_dia_recovers_a_whole_page_of_entries():
+    # a Cienfuegos-format page: three "El dia … de mil …" baptisms in a row
+    body = ("N. 1.\nJose Felipe.\nEl dia treinta y uno de Julio de mil ochocientos "
+            "ochenta y siete, bautice a un nino Jose Felipe, hijo de Lutgardo. "
+            "Y para que conste lo firmamos = Francisco Angulo\n"
+            "N.o 2.\nMaria.\nEl dia primero de Agosto de mil ochocientos ochenta y "
+            "siete, bautice a una nina Maria. Y para que conste lo firmamos = "
+            "Francisco Angulo")
+    pred = segment_page(body, image="176899-0003.jpg")
+    assert len(pred["entries"]) == 2
+
+
 def test_mid_entry_date_mention_does_not_split():
     text = ("Aos vinte e quatro de Dezembro de mil oitocentos e cincoenta e oito, "
             "Baptisei solemnimente, e pus os Santos Oleos a Maria,\n"
