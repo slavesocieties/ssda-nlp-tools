@@ -363,10 +363,15 @@ def segment_volume(pages: List[Tuple[str, str]], min_split_len: int = 150) -> Di
             if pg["confidence"] < 0.85 and not pg["entries"]:
                 pg["confidence"] = 0.85
         elif frag:
-            # orphan continuation with nothing to attach to — surface, don't
-            # drop, and leave the page low-confidence (LLM-fallback candidate)
+            # Nothing to attach to. Usually a continuation from a page we don't
+            # have — but NOT always: some registers open a record with no date at
+            # all (740018-0006-01 starts "El R.do P.e fr. Sebastian…"), and the
+            # manual gold counts those as complete records. "partial" must mean
+            # "runs off the page", so decide it from the evidence: a fragment
+            # carrying its own closing formula/signature is complete.
+            complete = bool(_CLOSER.search(frag) or _SIGNATURE.search(frag))
             merged.append({"id": f"{_stem(pg['image'])}-00", "text": frag,
-                           "partial": True, "orphan": True,
+                           "partial": not complete, "orphan": True,
                            "source_images": [pg["image"]]})
         for e in pg["entries"]:
             merged.append({**e, "source_images": [pg["image"]]})

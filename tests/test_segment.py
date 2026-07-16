@@ -172,6 +172,19 @@ def test_740018_all_eleven_records_found_including_demil_year():
         assert len(names(g["text"]) & names(p["text"])) >= 2
 
 
+def test_partial_means_runs_off_the_page_not_missing_opener():
+    """A leading fragment with no date opener is NOT automatically partial. Some
+    registers open a record without a date (740018-0006-01); the manual gold
+    counts those complete. 'partial' must mean 'the text runs off the page', so
+    a fragment carrying its own closer/signature is complete — while a genuinely
+    truncated trailing record stays partial."""
+    from ssda_nlp_tools.segment import segment_volume
+    p740 = segment_volume(load_pages(os.path.join(FIX, "740018_sample.json")))["entries"]
+    assert p740[0]["partial"] is False        # has its closing formula + signature
+    p658 = segment_volume(load_pages(os.path.join(FIX, "65858_sample.json")))["entries"]
+    assert p658[-1]["partial"] is True        # really does continue onto page 0005
+
+
 def test_demil_counts_as_a_year_marker():
     from ssda_nlp_tools.segment import _YEARISH
     assert _YEARISH.search("En dies y seis de Maio demil sett.os y veinte iocho")
