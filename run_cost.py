@@ -13,8 +13,8 @@ import argparse
 import json
 
 from ssda_nlp_tools.cost import (
-    Scenario, format_cost, format_waterfall, lever_waterfall, load_pricing,
-    measure_components, optimize, scenario_cost)
+    Scenario, format_cost, format_quality_first, format_waterfall, lever_waterfall,
+    load_pricing, measure_components, optimize, optimize_for_quality, scenario_cost)
 
 
 def main(argv=None):
@@ -30,12 +30,27 @@ def main(argv=None):
                              "extraction", "transcription", "normalization"])
     ap.add_argument("--model", default="claude-haiku-4.5", help="extraction model for the waterfall")
     ap.add_argument("--corpus", type=int, default=750_000, help="corpus size for totals")
+    ap.add_argument("--quality-first", action="store_true",
+                    help="one-time-run mode: maximize output quality within --target "
+                         "instead of minimizing cost within a quality floor. Never cuts "
+                         "shots; sweeps vendor Batch API + prompt caching on every model.")
     ap.add_argument("--json", metavar="PATH")
     args = ap.parse_args(argv)
 
     pricing = load_pricing(args.pricing)
     comp = measure_components(args.repo)
     base = Scenario(images_per_volume=args.images)
+
+    if args.quality_first:
+        qreport = optimize_for_quality(comp, pricing, budget=args.target, base=base)
+        print(format_quality_first(qreport))
+        if args.json:
+            slim = {k: v for k, v in qreport.items() if k != "all_ranked"}
+            with open(args.json, "w", encoding="utf-8") as f:
+                json.dump(slim, f, ensure_ascii=False, indent=2, default=str)
+            print(f"\nreport -> {args.json}")
+        return 0
+
     report = optimize(comp, pricing, target=args.target, min_shots=args.min_shots,
                       metric=args.metric, base=base)
     print(format_cost(report, comp))

@@ -26,7 +26,7 @@ import os
 import sys
 import time
 
-from ssda_nlp_tools.batch_extract import parse_response
+from ssda_nlp_tools.batch_extract import parse_response, merge_with_faithful
 from ssda_nlp_tools.cost import DEFAULT_PRICING, count_tokens
 
 
@@ -103,11 +103,15 @@ def main(argv=None):
 
     # ---- live run --------------------------------------------------------------
     totals = {"prompt": 0, "cached": 0, "completion": 0, "usd": 0.0}
-    results, failures = [], []
+    results, failures, merged_records = [], [], []
     for i, r in enumerate(rows, 1):
         messages = header["prefix_messages"] + [r["tail_message"]]
         payload = json.loads(r["tail_message"]["content"])
         ids = [e["entry"] for e in payload["entries"]]
+        # the segmenter's FAITHFUL text, in canonical form, so we can keep both
+        # faithful and normalized in the output (confirmed decision, 2026-07-16)
+        canonical = [{"id": e["entry"], "images": [e["entry"].rsplit("-", 1)[0] + ".jpg"],
+                     "text": e["transcription"]} for e in payload["entries"]]
         t0 = time.time()
         resp = client.chat.completions.create(
             model=model, messages=messages, temperature=0,
@@ -133,6 +137,7 @@ def main(argv=None):
             "prompt": u.prompt_tokens, "cached": cached,
             "completion": u.completion_tokens, "usd": cost},
             "parsed": parsed, "missing": missing})
+        merged_records.extend(merge_with_faithful(canonical, parsed))
         failures.extend(missing)
         if totals["usd"] >= args.max_usd:
             print(f"  STOP: actual spend ${totals['usd']:.2f} reached --max-usd cap")
@@ -154,9 +159,14 @@ def main(argv=None):
     with open(args.out, "w", encoding="utf-8") as fh:
         json.dump({"volume": header["volume"], "model": model,
                    "totals": totals, "per_image_usd": per_image,
-                   "per_entry_usd": per_entry, "results": results},
+                   "per_entry_usd": per_entry, "results": results,
+                   # confirmed 2026-07-16: keep BOTH faithful (what Archivault
+                   # produced) and normalized (the LLM's cleaned-up version) —
+                   # neither replaces the other in the final record
+                   "records": merged_records},
                   fh, ensure_ascii=False, indent=1)
-    print(f"-> {args.out}")
+    print(f"-> {args.out}  ({len(merged_records)} records, each with "
+          f"text_faithful + text_normalized + data)")
     return 0
 
 

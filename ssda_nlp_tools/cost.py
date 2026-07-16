@@ -58,9 +58,23 @@ def count_tokens(text: str) -> int:
 @dataclass
 class Price:
     input: float          # $/1M input tokens
-    cached: float         # $/1M cached input tokens (prompt-cache hit)
+    cached: float         # $/1M INTERACTIVE cached-input tokens (prompt-cache hit)
     output: float         # $/1M output tokens
     note: str = ""
+    batch_mult: float = 0.5   # vendor async Batch API discount (confirmed 0.5 for
+                              # OpenAI/Google/Anthropic as of 2026-07-16 — applies to
+                              # BOTH input and output when the request goes through
+                              # the vendor's batch endpoint; independent of prompt
+                              # caching, see cached_batch_mult)
+    cached_batch_mult: Optional[float] = None   # fraction of BASE input price for
+        # tokens that are BOTH cache-hits AND sent via the batch endpoint. The two
+        # discounts do NOT combine the same way for every vendor — Anthropic states
+        # directly that a cached+batched request can cost "as little as 5%" of
+        # standard (0.5 batch x 0.1 cache, fully multiplicative); OpenAI's own
+        # reporting gives cached+batched GPT-5.4 input at $0.625 vs $2.50 base = 25%,
+        # NOT the naive 5% you'd get multiplying their individual discounts. Where
+        # this isn't independently verified (Gemini), leave None and fall back to
+        # the naive multiplicative estimate — flagged in reports as unverified.
 
 
 # Verified 2026-07-16 against each vendor's own pricing docs (not aggregator
@@ -72,22 +86,29 @@ class Price:
 # page on the day you run it.
 DEFAULT_PRICING: Dict[str, Price] = {
     # OpenAI — developers.openai.com/api/docs/pricing ; cached = 10% of input
-    "gpt-5.6-sol":    Price(5.00, 0.50, 30.00, "OpenAI flagship, GA 2026-07-09"),
-    "gpt-5.6-terra":  Price(2.50, 0.25, 15.00, "OpenAI mid tier, GA 2026-07-09"),
-    "gpt-5.6-luna":   Price(1.00, 0.10, 6.00, "OpenAI light tier, GA 2026-07-09"),
-    "gpt-5.4-mini":   Price(0.75, 0.075, 4.50, "OpenAI prior-gen mid tier"),
-    "gpt-5.4-nano":   Price(0.20, 0.02, 1.25, "OpenAI prior-gen nano; cheapest OpenAI"),
-    # Google — ai.google.dev/gemini-api/docs/pricing ; "cached" = context-cache
-    # hourly-storage model, approximated here as the batch input rate since the
-    # $/token cache-read rate isn't separately published the way OpenAI/Anthropic do
-    "gemini-3.5-flash":     Price(1.50, 0.75, 9.00, "Google newest Flash, GA 2026-05-19"),
-    "gemini-2.5-flash":     Price(0.30, 0.15, 2.50, "Google prior Flash; best-benchmarked here"),
-    "gemini-2.5-flash-lite": Price(0.10, 0.05, 0.40, "cheapest of any vendor here"),
+    # (interactive); cached_batch_mult=0.25 verified via OpenAI's own reporting
+    # of stacked GPT-5.4 pricing ($0.625/M = 25% of $2.50 base), NOT 5%.
+    "gpt-5.6-sol":    Price(5.00, 0.50, 30.00, "OpenAI flagship, GA 2026-07-09", cached_batch_mult=0.25),
+    "gpt-5.6-terra":  Price(2.50, 0.25, 15.00, "OpenAI mid tier, GA 2026-07-09", cached_batch_mult=0.25),
+    "gpt-5.6-luna":   Price(1.00, 0.10, 6.00, "OpenAI light tier, GA 2026-07-09", cached_batch_mult=0.25),
+    "gpt-5.4-mini":   Price(0.75, 0.075, 4.50, "OpenAI prior-gen mid tier", cached_batch_mult=0.25),
+    "gpt-5.4-nano":   Price(0.20, 0.02, 1.25, "OpenAI prior-gen nano; cheapest OpenAI", cached_batch_mult=0.25),
+    # Google — ai.google.dev/gemini-api/docs/pricing. Batch rate verified for
+    # both models (exact 50% off input+output). "cached" is an ESTIMATE:
+    # Google's context caching is priced as a separate per-token caching charge
+    # plus $1/M-tokens/hour storage, which doesn't map cleanly onto a simple
+    # cache-hit $/M rate the way OpenAI/Anthropic publish — approximated here as
+    # ~10% of input, matching the other vendors' ratio, but NOT independently
+    # verified. cached_batch_mult intentionally left unset (unverified stacking).
+    "gemini-3.5-flash":     Price(1.50, 0.15, 9.00, "Google newest Flash, GA 2026-05-19; batch $0.75/$4.50 confirmed; cache rate estimated"),
+    "gemini-2.5-flash":     Price(0.30, 0.03, 2.50, "Google prior Flash; best-benchmarked extraction score found; cache rate per Google's own 'caching price' line, not a clean $/M-input-equivalent"),
+    "gemini-2.5-flash-lite": Price(0.10, 0.01, 0.40, "cheapest of any vendor here; cache rate estimated"),
     # Anthropic — platform.claude.com/docs/en/about-claude/pricing ; cached =
-    # cache-HIT rate (10% of input); batch discount (50%) STACKS on top of that
-    "claude-fable-5":  Price(10.00, 1.00, 50.00, "Anthropic flagship reasoning"),
-    "claude-sonnet-5": Price(2.00, 0.20, 10.00, "intro pricing through 2026-08-31; $3/$15 after"),
-    "claude-haiku-4.5": Price(1.00, 0.10, 5.00, "Anthropic light tier"),
+    # cache-HIT rate (10% of input, verified); cached_batch_mult=0.05 stated
+    # directly by Anthropic ("as little as 5% of a standard non-cached request").
+    "claude-fable-5":  Price(10.00, 1.00, 50.00, "Anthropic flagship reasoning", cached_batch_mult=0.05),
+    "claude-sonnet-5": Price(2.00, 0.20, 10.00, "intro pricing through 2026-08-31; $3/$15 after", cached_batch_mult=0.05),
+    "claude-haiku-4.5": Price(1.00, 0.10, 5.00, "Anthropic light tier", cached_batch_mult=0.05),
 }
 
 
@@ -208,7 +229,9 @@ class Scenario:
     trans_model: str = "gemini-2.5-flash"
     shots: int = 5
     cached: bool = False
-    batch: int = 1                     # entries per extraction call
+    batch: int = 1                     # entries per extraction call (prefix amortization)
+    vendor_batch_api: bool = False     # use the vendor's ASYNC batch endpoint (separate
+                                       # discount from `cached`; the two stack, see Price)
     normalize: str = "separate"        # separate | folded | none
     entries_per_image: Optional[float] = None
     images_per_volume: int = 300       # amortization horizon for prompt cache
@@ -216,20 +239,46 @@ class Scenario:
     trans_prompt_tokens: int = 400     # transcription instruction tokens
 
 
+def _rates(price: Price, cached: bool, vendor_batch_api: bool) -> Tuple[float, float, float]:
+    """(uncached_input_rate, cached_input_rate, output_rate) for this discount
+    combination. `vendor_batch_api` discounts EVERY token (input and output);
+    `cached` only discounts the repeated static prefix on calls 2..N. When both
+    apply, the repeated prefix gets the vendor's verified STACKED rate
+    (price.cached_batch_mult), not a naive product of the two discounts —
+    see the Price docstring for why that distinction is real money."""
+    if vendor_batch_api:
+        base_in = price.input * price.batch_mult
+        out = price.output * price.batch_mult
+        if cached:
+            cb = (price.cached_batch_mult if price.cached_batch_mult is not None
+                  else (price.cached / price.input) * price.batch_mult)  # unverified fallback
+            cached_in = price.input * cb
+        else:
+            cached_in = base_in
+    else:
+        base_in = price.input
+        out = price.output
+        cached_in = price.cached if cached else price.input
+    return base_in, cached_in, out
+
+
 def _pass_cost(comp: Components, price: Price, *, sys_toks: int, shots: int,
-               cached: bool, batch: int, entries: float, per_entry_in: int,
-               per_entry_out: int) -> Dict[str, float]:
+               cached: bool, batch: int, vendor_batch_api: bool, entries: float,
+               per_entry_in: int, per_entry_out: int) -> Dict[str, float]:
     """Cost of one LLM pass (extraction OR normalization) over `entries`."""
     prefix = sys_toks + comp.instructions + shots * comp.shot_avg
     calls = math.ceil(entries / max(1, batch))
     batch_overhead = 20 * batch                       # per-entry framing tokens
+    in_rate, cached_in_rate, out_rate = _rates(price, cached, vendor_batch_api)
     if cached:
-        prefix_cost = (prefix * price.input + (calls - 1) * prefix * price.cached) / 1e6
+        prefix_cost = (prefix * in_rate + (calls - 1) * prefix * cached_in_rate) / 1e6
     else:
-        prefix_cost = calls * prefix * price.input / 1e6
-    input_cost = prefix_cost + entries * (per_entry_in + 20) * price.input / 1e6 \
-        + calls * batch_overhead * price.input / 1e6
-    output_cost = entries * per_entry_out * price.output / 1e6
+        prefix_cost = calls * prefix * in_rate / 1e6
+    # per-entry content changes every call, so it is never a cache hit —
+    # billed at in_rate (which already reflects vendor_batch_api if active)
+    input_cost = prefix_cost + entries * (per_entry_in + 20) * in_rate / 1e6 \
+        + calls * batch_overhead * in_rate / 1e6
+    output_cost = entries * per_entry_out * out_rate / 1e6
     return {"input": input_cost, "output": output_cost, "total": input_cost + output_cost,
             "calls": calls, "prefix_tokens": prefix}
 
@@ -241,23 +290,25 @@ def scenario_cost(comp: Components, pricing: Dict[str, Price], sc: Scenario) -> 
     price = pricing[sc.model]
 
     extract = _pass_cost(comp, price, sys_toks=comp.sys_extract, shots=sc.shots,
-                         cached=sc.cached, batch=sc.batch, entries=E,
-                         per_entry_in=comp.entry_in, per_entry_out=comp.entry_out)
+                         cached=sc.cached, batch=sc.batch, vendor_batch_api=sc.vendor_batch_api,
+                         entries=E, per_entry_in=comp.entry_in, per_entry_out=comp.entry_out)
 
     if sc.normalize == "separate":
         norm = _pass_cost(comp, price, sys_toks=comp.sys_normalize, shots=sc.shots,
-                          cached=sc.cached, batch=sc.batch, entries=E,
-                          per_entry_in=comp.norm_in, per_entry_out=comp.norm_out)
+                          cached=sc.cached, batch=sc.batch, vendor_batch_api=sc.vendor_batch_api,
+                          entries=E, per_entry_in=comp.norm_in, per_entry_out=comp.norm_out)
         norm_total = norm["total"]
     elif sc.normalize == "folded":
         # normalization folded into extraction: only the extra output tokens
-        norm_total = E * comp.norm_out * price.output / 1e6
+        _, _, out_rate = _rates(price, sc.cached, sc.vendor_batch_api)
+        norm_total = E * comp.norm_out * out_rate / 1e6
     else:  # none
         norm_total = 0.0
 
     tp = pricing[sc.trans_model]
-    trans_per_image = ((sc.trans_image_tokens + sc.trans_prompt_tokens) * tp.input
-                       + comp.transcription_out * tp.output) / 1e6
+    t_in, _, t_out = _rates(tp, False, sc.vendor_batch_api)   # transcription prompt isn't cached
+    trans_per_image = ((sc.trans_image_tokens + sc.trans_prompt_tokens) * t_in
+                       + comp.transcription_out * t_out) / 1e6
     trans_total = trans_per_image * V
 
     total = extract["total"] + norm_total + trans_total
@@ -301,20 +352,114 @@ def optimize(comp: Components, pricing: Dict[str, Price], *,
         for tmodel in trans_models:
             for shots in sorted({min_shots, comp.n_shots_available}):
                 for cached in (True, False):
-                    for batch in (1, 5, 10, 20):
-                        for normalize in ("separate", "folded", "none"):
-                            sc = Scenario(model=model, trans_model=tmodel, shots=shots,
-                                          cached=cached, batch=batch, normalize=normalize,
-                                          entries_per_image=base.entries_per_image,
-                                          images_per_volume=base.images_per_volume)
-                            r = scenario_cost(comp, pricing, sc)
-                            r["metric_value"] = r["per_image"][metric]
-                            results.append(r)
+                    for vendor_batch_api in (True, False):
+                        for batch in (1, 5, 10, 20):
+                            for normalize in ("separate", "folded", "none"):
+                                sc = Scenario(model=model, trans_model=tmodel, shots=shots,
+                                              cached=cached, batch=batch,
+                                              vendor_batch_api=vendor_batch_api, normalize=normalize,
+                                              entries_per_image=base.entries_per_image,
+                                              images_per_volume=base.images_per_volume)
+                                r = scenario_cost(comp, pricing, sc)
+                                r["metric_value"] = r["per_image"][metric]
+                                results.append(r)
     results.sort(key=lambda r: r["metric_value"])
     meeting = [r for r in results if r["metric_value"] <= target]
     return {"target": target, "metric": metric, "min_shots": min_shots,
             "n_meeting": len(meeting), "cheapest": results[0],
             "recommended": _recommend(meeting, results), "all_ranked": results}
+
+
+# Model quality weights: independently-sourced JSON-extraction benchmark signal
+# (see eval_data/llm_model_research.md — one blog benchmark, not peer-reviewed,
+# not run on this project's specific task). Deliberately a coarse 1-4 scale, not
+# false precision: this is directional evidence, not a certified ranking.
+MODEL_QUALITY = {
+    "gemini-2.5-flash": 4,       # 97.1% on the one extraction benchmark found
+    "claude-haiku-4.5": 4,       # 95.9% + called out for instruction-following reliability
+    "claude-sonnet-5": 4,        # more capable than Haiku; not in that specific benchmark
+    "gemini-3.5-flash": 3,       # newest Google Flash; no extraction benchmark yet (too new)
+    "gpt-5.6-terra": 3,          # GA one week before this research; no benchmark yet
+    "gpt-5.4-mini": 3,
+    "gpt-5.6-luna": 2,           # OpenAI's light tier; "single-digit gap" framing applies loosely
+    "gpt-5.4-nano": 2,           # explicitly "single-digit accuracy gap" vs premium, unspecified magnitude
+    "gemini-2.5-flash-lite": 1,  # cheapest tier; no accuracy evidence, assume weakest here
+}
+
+
+def optimize_for_quality(comp: Components, pricing: Dict[str, Price], *,
+                         budget: float = 0.01, metric: str = "total",
+                         base: Optional[Scenario] = None) -> Dict[str, Any]:
+    """Quality-first mode: for a ONE-TIME production run, the right question is
+    'best available output for <= budget', not 'cheapest output that clears a
+    minimum quality bar'. Always uses the FULL few-shot set (no shot-cutting —
+    this project's own bake-off found that measurably costs accuracy for
+    negligible savings at this volume), sweeps every cache/batch-API/model
+    combination, and ranks scenarios AT OR UNDER budget by MODEL_QUALITY first,
+    cost second. If nothing clears budget, returns the cheapest option that
+    exceeds it instead, clearly labeled, rather than silently picking nothing."""
+    base = base or Scenario()
+    reasoning_tier = {"claude-fable-5", "gpt-5.6-sol"}
+    models = [m for m in pricing if m not in reasoning_tier] or list(pricing)
+    trans_models = [m for m in ("gemini-2.5-flash", "gemini-2.5-flash-lite") if m in pricing] or [base.trans_model]
+    results = []
+    for model in models:
+        for tmodel in trans_models:
+            for cached in (True, False):
+                for vendor_batch_api in (True, False):
+                    for batch in (1, 10, 20):
+                        sc = Scenario(model=model, trans_model=tmodel, shots=comp.n_shots_available,
+                                      cached=cached, batch=batch, vendor_batch_api=vendor_batch_api,
+                                      normalize="folded", entries_per_image=base.entries_per_image,
+                                      images_per_volume=base.images_per_volume)
+                        r = scenario_cost(comp, pricing, sc)
+                        r["metric_value"] = r["per_image"][metric]
+                        r["quality"] = MODEL_QUALITY.get(model, 0)
+                        results.append(r)
+    under = [r for r in results if r["metric_value"] <= budget]
+    pool, over_budget = (under, False) if under else (results, True)
+    best = max(pool, key=lambda r: (r["quality"], -r["metric_value"]))
+    # cheapest-among-equal-top-quality, for a second reference point
+    top_q = max(pool, key=lambda r: r["quality"])["quality"]
+    cheapest_top_quality = min((r for r in pool if r["quality"] == top_q),
+                               key=lambda r: r["metric_value"])
+    return {"budget": budget, "metric": metric, "over_budget": over_budget,
+            "best": best, "cheapest_at_top_quality": cheapest_top_quality,
+            "n_under_budget": len(under), "all_ranked": sorted(
+                results, key=lambda r: (-r["quality"], r["metric_value"]))}
+
+
+def format_quality_first(report: Dict[str, Any], top: int = 8) -> str:
+    L = ["=" * 78, "Quality-first recipe (one-time run: maximize output quality <= budget)",
+         "=" * 78]
+    if report["over_budget"]:
+        L.append(f"** NOTHING cleared the ${report['budget']:.3f}/image budget — "
+                 f"showing the cheapest option instead, clearly over. **")
+    L.append(f"budget: ${report['budget']:.3f}/image ({report['metric']})   "
+             f"scenarios under budget: {report['n_under_budget']}")
+    L.append("")
+
+    def line(r):
+        s = r["scenario"]
+        return (f"q={r['quality']}  {s['model']:<18} {s['trans_model']:<18} "
+                f"cache={'Y' if s['cached'] else 'N'} vendor-batch={'Y' if s['vendor_batch_api'] else 'N'} "
+                f"batch={s['batch']:<2} | ${r['metric_value']:.4f}/image")
+
+    L.append("BEST (highest quality that fits the budget):")
+    L.append("  " + line(report["best"]))
+    pi = report["best"]["per_image"]
+    L.append(f"     breakdown: transcription ${pi['transcription']:.4f} + "
+             f"normalization ${pi['normalization']:.4f} + extraction ${pi['extraction']:.4f}")
+    if report["cheapest_at_top_quality"] is not report["best"]:
+        L.append("")
+        L.append("cheapest recipe AT THE SAME quality tier as BEST:")
+        L.append("  " + line(report["cheapest_at_top_quality"]))
+    L.append("")
+    L.append(f"top {top} by quality (ties broken by cost):")
+    for r in report["all_ranked"][:top]:
+        L.append("  " + line(r))
+    L.append("=" * 78)
+    return "\n".join(L)
 
 
 def _recommend(meeting: List[dict], allr: List[dict]) -> Optional[dict]:
@@ -325,18 +470,8 @@ def _recommend(meeting: List[dict], allr: List[dict]) -> Optional[dict]:
     benchmark, not vendor marketing) rather than raw cheapness."""
     if not meeting:
         return None
-    # relative weight, not a hard ranking: gemini-2.5-flash had the best
-    # directly-comparable extraction-quality score found (97.1%); claude-haiku-4.5
-    # is called out specifically for instruction-following reliability, which
-    # matters more than raw accuracy for a rules-heavy normalization task;
-    # gpt-5.4/5.6 light tiers are "single-digit accuracy gap" vs premium at a
-    # fraction of the cost. All of this is one benchmark's signal, not gospel —
-    # see the doc for the honest caveat and why run_live_test.py exists.
-    MODEL_QUALITY = {
-        "gemini-2.5-flash": 3, "claude-haiku-4.5": 3, "claude-sonnet-5": 3,
-        "gpt-5.6-terra": 2, "gpt-5.4-mini": 2, "gpt-5.6-luna": 1, "gpt-5.4-nano": 1,
-        "gemini-3.5-flash": 2, "gemini-2.5-flash-lite": 1,
-    }
+    # uses the module-level MODEL_QUALITY (single source of truth, shared with
+    # optimize_for_quality) rather than a second, divergent local copy
     def quality(r):
         s = r["scenario"]
         q = 0
@@ -425,7 +560,7 @@ def format_cost(report: Dict[str, Any], comp: Components) -> str:
 
 
 def format_waterfall(rows: List[dict], pricing_note: str = "",
-                     corpus: int = 750_000, model: str = "gpt-4o-mini") -> str:
+                     corpus: int = 750_000, model: str = "claude-haiku-4.5") -> str:
     L = ["", "=" * 70, f"LEVER WATERFALL  (extraction model = {model})", "=" * 70,
          f"{'step':<58}{'t+n/img':>9}{'total/img':>10}"]
     L.append("-" * 70)

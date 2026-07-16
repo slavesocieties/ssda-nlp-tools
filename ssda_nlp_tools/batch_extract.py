@@ -134,6 +134,37 @@ def plan_batches(entries: List[dict], batch_size: int = 10) -> List[List[dict]]:
     return [entries[i:i + batch_size] for i in range(0, len(entries), batch_size)]
 
 
+def merge_with_faithful(canonical_entries: List[dict],
+                        parsed: Dict[str, dict]) -> List[dict]:
+    """Join the segmenter's FAITHFUL text (exactly what Archivault produced —
+    see segment.to_canonical) with the LLM's NORMALIZED text + extracted data,
+    by entry id. Confirmed decision (2026-07-16): keep BOTH, not just the
+    normalized version — faithful is the auditable record of truth (free,
+    reproducible, no model-invented text), normalized is what a researcher
+    actually wants to read. Neither replaces the other in the output.
+
+    canonical_entries: the output of segment.to_canonical() — [{id, text,
+        images, partial?}, ...] where "text" is the faithful segmented text.
+    parsed: the output of parse_response() — {id: {normalized, data}}.
+
+    Entries with no matching parsed result (not yet sent, or the model dropped
+    them) still appear, with normalized/data left null — never silently
+    dropped, consistent with how partial records are handled elsewhere here.
+    """
+    merged = []
+    for e in canonical_entries:
+        eid = e["id"]
+        p = parsed.get(eid)
+        row = {"id": eid, "images": e.get("images", []),
+              "text_faithful": e["text"],
+              "text_normalized": p["normalized"] if p else None,
+              "data": p["data"] if p else None}
+        if e.get("partial"):
+            row["partial"] = True
+        merged.append(row)
+    return merged
+
+
 def token_report(entries: List[dict], examples: List[dict], instructions: List[dict],
                  batch_size: int = 10, shots: Optional[int] = None) -> Dict[str, Any]:
     """Compare per-entry vs batched INPUT tokens on real data (offline proof)."""

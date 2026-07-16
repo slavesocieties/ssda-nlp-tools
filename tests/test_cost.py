@@ -3,6 +3,8 @@ import json
 import os
 import sys
 
+import pytest
+
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ssda_nlp_tools import cost
@@ -111,8 +113,110 @@ def test_parse_handles_fences_and_reports_missing():
     assert set(parsed) == {"A"} and set(missing) == {"B", "C"}
 
 
+def test_merge_with_faithful_keeps_both_texts():
+    canonical = [{"id": "V-0001-01", "text": "raw archivault text", "images": ["V-0001.jpg"]}]
+    parsed = {"V-0001-01": {"normalized": "Cleaned Text.", "data": {"people": [], "events": []}}}
+    merged = bx.merge_with_faithful(canonical, parsed)
+    assert len(merged) == 1
+    r = merged[0]
+    assert r["text_faithful"] == "raw archivault text"      # unchanged from the segmenter
+    assert r["text_normalized"] == "Cleaned Text."           # the LLM's version, NOT overwriting it
+    assert r["data"] == {"people": [], "events": []}
+    assert r["images"] == ["V-0001.jpg"]
+
+
+def test_merge_with_faithful_keeps_unmatched_entries_not_drops_them():
+    canonical = [{"id": "V-0001-01", "text": "raw text", "images": ["V-0001.jpg"], "partial": True}]
+    merged = bx.merge_with_faithful(canonical, {})    # model never returned this entry
+    assert len(merged) == 1                            # present, not silently dropped
+    assert merged[0]["text_faithful"] == "raw text"
+    assert merged[0]["text_normalized"] is None
+    assert merged[0]["data"] is None
+    assert merged[0]["partial"] is True
+
+
 def test_token_report_shows_large_reduction():
     examples, vol = _fixtures()
     tr = bx.token_report(vol, examples, [{"text": "x"}], batch_size=10)
     assert tr["input_reduction_x"] >= 3.0                   # batching is a big lever
     assert tr["separate_normalization_calls_saved"] == tr["entries"]
+
+
+# ---- vendor Batch API + prompt-caching stacking -------------------------------
+# Regression tests pinning the exact numbers vendors state in their own docs
+# (2026-07-16): Anthropic says a cached+batched request can cost "as little as
+# 5%" of standard; OpenAI's own reported example puts cached+batched GPT-5.4
+# input at $0.625/M vs a $2.50 base = 25%, NOT the naive 5% you'd get by just
+# multiplying the two individual discounts. Getting this wrong silently
+# understates OpenAI cost or overstates the caching benefit.
+
+def test_vendor_batch_alone_halves_every_rate():
+    p = cost.DEFAULT_PRICING["claude-sonnet-5"]
+    in_rate, cached_rate, out_rate = cost._rates(p, cached=False, vendor_batch_api=True)
+    assert in_rate == p.input * 0.5
+    assert out_rate == p.output * 0.5
+    assert cached_rate == in_rate            # no caching active -> same as uncached
+
+
+def test_anthropic_cached_plus_batch_stacks_to_5_percent():
+    p = cost.DEFAULT_PRICING["claude-sonnet-5"]      # $2.00 input, cached_batch_mult=0.05
+    _, cached_and_batched, _ = cost._rates(p, cached=True, vendor_batch_api=True)
+    assert cached_and_batched == pytest.approx(0.10)  # 5% of $2.00, per Anthropic's own claim
+
+
+def test_openai_cached_plus_batch_stacks_to_25_percent_not_5():
+    p = cost.DEFAULT_PRICING["gpt-5.4-mini"]         # $0.75 input, cached_batch_mult=0.25
+    _, cached_and_batched, _ = cost._rates(p, cached=True, vendor_batch_api=True)
+    assert cached_and_batched == pytest.approx(0.1875)   # 25% of $0.75
+    naive_multiplicative = 0.75 * (p.cached / p.input) * p.batch_mult   # what you'd get wrong
+    assert cached_and_batched != pytest.approx(naive_multiplicative)
+
+
+def test_no_vendor_batch_api_reproduces_original_interactive_rates():
+    p = cost.DEFAULT_PRICING["claude-sonnet-5"]
+    in_rate, cached_rate, out_rate = cost._rates(p, cached=True, vendor_batch_api=False)
+    assert (in_rate, cached_rate, out_rate) == (p.input, p.cached, p.output)
+
+
+def test_vendor_batch_api_lowers_scenario_cost():
+    comp = _comp()
+    sc_off = cost.Scenario(model="claude-sonnet-5", cached=True, vendor_batch_api=False, batch=10)
+    sc_on = cost.Scenario(model="claude-sonnet-5", cached=True, vendor_batch_api=True, batch=10)
+    off = cost.scenario_cost(comp, cost.DEFAULT_PRICING, sc_off)["per_image"]["total"]
+    on = cost.scenario_cost(comp, cost.DEFAULT_PRICING, sc_on)["per_image"]["total"]
+    assert on < off
+
+
+# ---- quality-first optimizer (one-time-run framing) ---------------------------
+
+def test_optimize_for_quality_stays_within_budget_when_possible():
+    comp = _comp()
+    r = cost.optimize_for_quality(comp, cost.DEFAULT_PRICING, budget=0.01)
+    assert r["n_under_budget"] > 0
+    assert not r["over_budget"]
+    assert r["best"]["metric_value"] <= 0.01
+
+
+def test_optimize_for_quality_prefers_quality_over_cheapness():
+    comp = _comp()
+    r = cost.optimize_for_quality(comp, cost.DEFAULT_PRICING, budget=0.01)
+    best_quality = r["best"]["quality"]
+    cheapest_under_budget = min((x for x in r["all_ranked"] if x["metric_value"] <= 0.01),
+                                key=lambda x: x["metric_value"])
+    # best must be at least as high quality as the cheapest option that fits —
+    # the whole point of this mode is not defaulting to "cheapest that fits"
+    assert best_quality >= cheapest_under_budget["quality"]
+
+
+def test_optimize_for_quality_never_cuts_shots():
+    comp = _comp()
+    r = cost.optimize_for_quality(comp, cost.DEFAULT_PRICING, budget=0.01)
+    for row in r["all_ranked"]:
+        assert row["scenario"]["shots"] == comp.n_shots_available
+
+
+def test_optimize_for_quality_flags_when_nothing_fits():
+    comp = _comp()
+    r = cost.optimize_for_quality(comp, cost.DEFAULT_PRICING, budget=0.0000001)
+    assert r["over_budget"] is True
+    assert r["n_under_budget"] == 0
