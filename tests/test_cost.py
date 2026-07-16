@@ -65,7 +65,7 @@ def test_optimizer_finds_recipe_under_target():
 
 def test_waterfall_is_monotonically_cheaper_through_quality_levers():
     c = _comp(); p = cost.DEFAULT_PRICING
-    rows = cost.lever_waterfall(c, p, model="gpt-4o-mini")
+    rows = cost.lever_waterfall(c, p, model="claude-haiku-4.5")
     # baseline -> cache -> batch -> fold : each step no more expensive than the last
     totals = [r["total"] for r in rows[:4]]
     assert totals == sorted(totals, reverse=True)

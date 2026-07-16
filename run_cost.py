@@ -28,7 +28,7 @@ def main(argv=None):
     ap.add_argument("--metric", default="transcription_plus_normalization",
                     choices=["transcription_plus_normalization", "total",
                              "extraction", "transcription", "normalization"])
-    ap.add_argument("--model", default="gpt-4o-mini", help="extraction model for the waterfall")
+    ap.add_argument("--model", default="claude-haiku-4.5", help="extraction model for the waterfall")
     ap.add_argument("--corpus", type=int, default=750_000, help="corpus size for totals")
     ap.add_argument("--json", metavar="PATH")
     args = ap.parse_args(argv)
@@ -40,10 +40,11 @@ def main(argv=None):
                       metric=args.metric, base=base)
     print(format_cost(report, comp))
 
-    note = ("prices: representative early-2026 list rates — override with --pricing; "
+    note = ("prices: verified 2026-07-16 against vendor docs, see "
+            "eval_data/llm_model_research.md — override with --pricing; "
             "levers are robust to exact prices." if not args.pricing
             else f"prices: {args.pricing}")
-    for m in dict.fromkeys([args.model, "gpt-4o"]):
+    for m in dict.fromkeys([args.model, "gemini-2.5-flash", "claude-sonnet-5"]):
         if m in pricing:
             rows = lever_waterfall(comp, pricing, model=m, images_per_volume=args.images)
             print(format_waterfall(rows, pricing_note=note, corpus=args.corpus, model=m))

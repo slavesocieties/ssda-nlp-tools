@@ -63,15 +63,31 @@ class Price:
     note: str = ""
 
 
-# Representative early-2026 public list prices. Override via --pricing JSON.
+# Verified 2026-07-16 against each vendor's own pricing docs (not aggregator
+# sites — see eval_data/llm_model_research.md for the full sourcing + the case
+# study in why that distinction matters). "cached" here is the input rate,
+# INTERACTIVE (not batch); pair with Scenario(cached=True, batch=N) for the
+# stacked discount both OpenAI and Anthropic offer. Re-verify before a real
+# spend — prices move; this file is not a substitute for checking the vendor
+# page on the day you run it.
 DEFAULT_PRICING: Dict[str, Price] = {
-    "gpt-4o":            Price(2.50, 1.25, 10.00, "flagship"),
-    "gpt-4o-mini":       Price(0.15, 0.075, 0.60, "mid tier"),
-    "gpt-4.1-nano":      Price(0.10, 0.025, 0.40, "nano tier"),
-    "gemini-flash":      Price(0.10, 0.025, 0.40, "vision + text"),
-    "gemini-flash-lite": Price(0.075, 0.01875, 0.30, "cheapest vision"),
-    "claude-haiku":      Price(0.80, 0.08, 4.00, "cache 10x cheaper"),
-    "claude-sonnet":     Price(3.00, 0.30, 15.00, "flagship, cache 10x"),
+    # OpenAI — developers.openai.com/api/docs/pricing ; cached = 10% of input
+    "gpt-5.6-sol":    Price(5.00, 0.50, 30.00, "OpenAI flagship, GA 2026-07-09"),
+    "gpt-5.6-terra":  Price(2.50, 0.25, 15.00, "OpenAI mid tier, GA 2026-07-09"),
+    "gpt-5.6-luna":   Price(1.00, 0.10, 6.00, "OpenAI light tier, GA 2026-07-09"),
+    "gpt-5.4-mini":   Price(0.75, 0.075, 4.50, "OpenAI prior-gen mid tier"),
+    "gpt-5.4-nano":   Price(0.20, 0.02, 1.25, "OpenAI prior-gen nano; cheapest OpenAI"),
+    # Google — ai.google.dev/gemini-api/docs/pricing ; "cached" = context-cache
+    # hourly-storage model, approximated here as the batch input rate since the
+    # $/token cache-read rate isn't separately published the way OpenAI/Anthropic do
+    "gemini-3.5-flash":     Price(1.50, 0.75, 9.00, "Google newest Flash, GA 2026-05-19"),
+    "gemini-2.5-flash":     Price(0.30, 0.15, 2.50, "Google prior Flash; best-benchmarked here"),
+    "gemini-2.5-flash-lite": Price(0.10, 0.05, 0.40, "cheapest of any vendor here"),
+    # Anthropic — platform.claude.com/docs/en/about-claude/pricing ; cached =
+    # cache-HIT rate (10% of input); batch discount (50%) STACKS on top of that
+    "claude-fable-5":  Price(10.00, 1.00, 50.00, "Anthropic flagship reasoning"),
+    "claude-sonnet-5": Price(2.00, 0.20, 10.00, "intro pricing through 2026-08-31; $3/$15 after"),
+    "claude-haiku-4.5": Price(1.00, 0.10, 5.00, "Anthropic light tier"),
 }
 
 
@@ -188,8 +204,8 @@ def _all_text_tokens(o) -> int:
 
 @dataclass
 class Scenario:
-    model: str = "gpt-4o-mini"
-    trans_model: str = "gemini-flash"
+    model: str = "claude-haiku-4.5"
+    trans_model: str = "gemini-2.5-flash"
     shots: int = 5
     cached: bool = False
     batch: int = 1                     # entries per extraction call
@@ -273,8 +289,13 @@ def optimize(comp: Components, pricing: Dict[str, Price], *,
     """Sweep the lever space; return recipes meeting `target` on `metric`,
     ranked cheapest first, keeping shots >= min_shots (accuracy guardrail)."""
     base = base or Scenario()
-    models = [m for m in pricing if m not in ("claude-sonnet", "gpt-4o")] or list(pricing)
-    trans_models = [m for m in ("gemini-flash-lite", "gemini-flash") if m in pricing] or [base.trans_model]
+    # exclude the flagship/reasoning tier from the sweep — see
+    # eval_data/llm_model_research.md: no evidence they extract more accurately
+    # on this task, and at 4-10x the mid-tier price they cannot be the answer to
+    # a <1c/image target regardless of quality
+    reasoning_tier = {"claude-fable-5", "gpt-5.6-sol"}
+    models = [m for m in pricing if m not in reasoning_tier] or list(pricing)
+    trans_models = [m for m in ("gemini-2.5-flash-lite", "gemini-2.5-flash") if m in pricing] or [base.trans_model]
     results = []
     for model in models:
         for tmodel in trans_models:
@@ -298,23 +319,37 @@ def optimize(comp: Components, pricing: Dict[str, Price], *,
 
 def _recommend(meeting: List[dict], allr: List[dict]) -> Optional[dict]:
     """Pick the highest-quality recipe that still meets target: prefer folded
-    over none (keeps normalization), prefer caching+batch over shot cuts, prefer
-    a non-nano model when it still fits."""
+    over none (keeps normalization), prefer caching+batch over shot cuts, and
+    weight models by the extraction-quality evidence in
+    eval_data/llm_model_research.md (independently-sourced JSON-extraction
+    benchmark, not vendor marketing) rather than raw cheapness."""
     if not meeting:
         return None
+    # relative weight, not a hard ranking: gemini-2.5-flash had the best
+    # directly-comparable extraction-quality score found (97.1%); claude-haiku-4.5
+    # is called out specifically for instruction-following reliability, which
+    # matters more than raw accuracy for a rules-heavy normalization task;
+    # gpt-5.4/5.6 light tiers are "single-digit accuracy gap" vs premium at a
+    # fraction of the cost. All of this is one benchmark's signal, not gospel —
+    # see the doc for the honest caveat and why run_live_test.py exists.
+    MODEL_QUALITY = {
+        "gemini-2.5-flash": 3, "claude-haiku-4.5": 3, "claude-sonnet-5": 3,
+        "gpt-5.6-terra": 2, "gpt-5.4-mini": 2, "gpt-5.6-luna": 1, "gpt-5.4-nano": 1,
+        "gemini-3.5-flash": 2, "gemini-2.5-flash-lite": 1,
+    }
     def quality(r):
         s = r["scenario"]
         q = 0
         q += {"folded": 2, "separate": 1, "none": 0}[s["normalize"]]   # keep normalization
         q += 2 if s["cached"] else 0
         q += 1 if s["batch"] >= 10 else 0
-        q += {"gpt-4o-mini": 2, "gemini-flash": 2, "claude-haiku": 1}.get(s["model"], 0)
+        q += MODEL_QUALITY.get(s["model"], 0)
         return q
     return sorted(meeting, key=lambda r: (-quality(r), r["metric_value"]))[0]
 
 
 def lever_waterfall(comp: Components, pricing: Dict[str, Price],
-                    model: str = "gpt-4o-mini", trans_model: str = "gemini-flash",
+                    model: str = "claude-haiku-4.5", trans_model: str = "gemini-2.5-flash",
                     images_per_volume: int = 300) -> List[dict]:
     """Apply cost levers one at a time from the current-style baseline, so each
     lever's marginal saving is visible. Order: cache -> batch -> folded norm."""

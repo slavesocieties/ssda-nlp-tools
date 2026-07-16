@@ -3,7 +3,7 @@
 batches (the only paid step of the pipeline), priced before you spend a cent.
 
     python run_corpus_prompts.py [--corpus out_corpus] [--outdir out_batches]
-                                 [--batch 10] [--shots 15] [--model gpt-4o-mini]
+                                 [--batch 10] [--shots 15] [--model claude-haiku-4.5]
                                  [--volumes 100800 239746 ...] [--limit N]
 
 For every out_corpus/<vol>.segmented.json this writes a COMPACT batch file
@@ -41,7 +41,7 @@ def main(argv=None):
     ap.add_argument("--outdir", default="out_batches")
     ap.add_argument("--batch", type=int, default=10)
     ap.add_argument("--shots", type=int, default=15)
-    ap.add_argument("--model", default="gpt-4o-mini")
+    ap.add_argument("--model", default="claude-haiku-4.5")
     ap.add_argument("--training", default="training_data.json")
     ap.add_argument("--instructions", default=None)
     ap.add_argument("--volumes", nargs="*", default=None, help="only these volume ids")
