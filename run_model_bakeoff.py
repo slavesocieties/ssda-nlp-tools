@@ -26,13 +26,23 @@ MODELS = {
     # Standard (interactive) USD / million tokens.  The test is interactive so
     # that outputs and provider usage are available immediately; production may
     # later use each provider's asynchronous Batch API at its published rate.
+    # "id" is the wire model id sent to the provider when it differs from the
+    # friendly name (Anthropic's Haiku 4.5 requires the dated id).
     "gemini-2.5-flash": {"provider": "gemini", "input": 0.30, "output": 2.50, "key": "GEMINI_API_KEY"},
     "gemini-3.5-flash": {"provider": "gemini", "input": 1.50, "output": 9.00, "key": "GEMINI_API_KEY"},
     "gpt-5.4-mini": {"provider": "openai", "input": 0.75, "output": 4.50, "key": "OPENAI_API_KEY"},
     "gpt-5.6-luna": {"provider": "openai", "input": 1.00, "output": 6.00, "key": "OPENAI_API_KEY", "fixed_temperature": False},
-    "claude-haiku-4-5": {"provider": "anthropic", "input": 1.00, "output": 5.00, "key": "ANTHROPIC_API_KEY"},
+    "claude-haiku-4-5": {"provider": "anthropic", "input": 1.00, "output": 5.00, "key": "ANTHROPIC_API_KEY",
+                          "id": "claude-haiku-4-5-20251001"},
     "claude-sonnet-5": {"provider": "anthropic", "input": 2.00, "output": 10.00, "key": "ANTHROPIC_API_KEY", "fixed_temperature": False},
 }
+
+
+class ProviderRejected(RuntimeError):
+    """The provider returned a definitive 4xx: the request was refused, so it
+    was NOT billed and its spend reservation can be safely released. Network
+    failures and 5xx responses stay ambiguous (the request may have been
+    processed) and keep their reservation."""
 
 
 def _request(url, headers, payload):
@@ -45,6 +55,8 @@ def _request(url, headers, payload):
         # Provider error bodies describe model/parameter access failures. They
         # never contain our Authorization header; cap the saved/displayed text.
         detail = exc.read().decode("utf-8", errors="replace")[:600]
+        if 400 <= exc.code < 500:
+            raise ProviderRejected(f"HTTP {exc.code}: {detail}") from exc
         raise RuntimeError(f"HTTP {exc.code}: {detail}") from exc
 
 
@@ -70,8 +82,11 @@ def _gemini(messages, model, max_tokens):
 
 def _call(cfg, messages, model, key, max_tokens):
     provider = cfg["provider"]
+    # The wire id is what the provider expects; it differs from the friendly
+    # name only when a provider requires a dated id (e.g. Anthropic's Haiku 4.5).
+    wire = cfg.get("id", model)
     if provider == "openai":
-        body = {"model": model, "messages": messages,
+        body = {"model": wire, "messages": messages,
                 "max_completion_tokens": max_tokens,
                 "response_format": {"type": "json_object"}}
         if cfg.get("fixed_temperature", True):
@@ -82,13 +97,15 @@ def _call(cfg, messages, model, key, max_tokens):
         usage = raw.get("usage", {})
         return raw["choices"][0]["message"]["content"], int(usage.get("prompt_tokens", 0)), int(usage.get("completion_tokens", 0))
     if provider == "anthropic":
+        body = _anthropic(messages, model, max_tokens)
+        body["model"] = wire
         raw = _request("https://api.anthropic.com/v1/messages",
                        {"x-api-key": key, "anthropic-version": "2023-06-01", "Content-Type": "application/json"},
-                       _anthropic(messages, model, max_tokens))
+                       body)
         usage = raw.get("usage", {})
         text = "".join(block.get("text", "") for block in raw.get("content", []) if block.get("type") == "text")
         return text, int(usage.get("input_tokens", 0)), int(usage.get("output_tokens", 0))
-    raw = _request(f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent",
+    raw = _request(f"https://generativelanguage.googleapis.com/v1beta/models/{wire}:generateContent",
                    {"x-goog-api-key": key, "Content-Type": "application/json"},
                    _gemini(messages, model, max_tokens))
     usage = raw.get("usageMetadata", {})
@@ -232,12 +249,12 @@ def main(argv=None):
             eligible.append(model)
     if len(eligible) != sum(bool(os.environ.get(MODELS[m]["key"])) for m in args.models):
         return 2
-    # Reserve every possible request before the first network call. If this
-    # process is interrupted, the next run sees that reservation and cannot
-    # silently spend the same budget again.
-    for model in eligible:
-        _reserve(ledger, model, plans[model])
-    _write_ledger(ledger_path, ledger)
+    # Reservations are made PER BATCH, immediately before each request (see the
+    # batch loop). A reservation covering requests that were never sent taught
+    # us the hard way (2026-07-16): an interrupt then strands the model's whole
+    # budget. Per-batch granularity keeps the same guarantee — an interrupted
+    # run can never silently double-spend — while limiting a stranded
+    # reservation to the single request that was actually in flight.
 
     report = {"heldout": args.heldout, "entries": tested_entries, "batch_size": args.batch_size,
               "start_batch": args.start_batch,
@@ -255,14 +272,29 @@ def main(argv=None):
         unresolved_reservation = False
         for index, (batch, messages) in enumerate(zip(batches, prepared), 1):
             started = time.time()
+            # Reserve exactly this request's worst case before sending it.
+            _reserve(ledger, model, batch_maxima[model][index - 1])
+            _write_ledger(ledger_path, ledger)
             try:
                 text, inp, out = _call(cfg, messages, model, key, args.max_output_tokens)
+            except ProviderRejected as exc:
+                # A definitive 4xx (bad model id, malformed request, auth): the
+                # provider refused it, so it was NOT billed. Release exactly
+                # this request's reservation so a corrected re-run is not
+                # blocked by phantom spend. Reservations stranded by OTHER
+                # interrupted runs are deliberately left untouched.
+                print(f"ERROR {model} batch {index}: {exc}")
+                rows.append({"batch": index, "error": str(exc)})
+                _settle(ledger, model, batch_maxima[model][index - 1], 0.0)
+                _write_ledger(ledger_path, ledger)
+                break
             except (urllib.error.URLError, urllib.error.HTTPError, RuntimeError, KeyError, IndexError, ValueError) as exc:
                 print(f"ERROR {model} batch {index}: {exc}")
                 rows.append({"batch": index, "error": str(exc)})
-                # The provider may have received a request even though the
-                # response was lost. Leave this and all later reservations
-                # in the ledger until billing can be reviewed.
+                # The provider may have received this request even though the
+                # response was lost. Leave this batch's reservation in the
+                # ledger until billing can be reviewed against the provider's
+                # usage dashboard.
                 unresolved_reservation = True
                 break
             expected = [e["entry"] for e in batch]

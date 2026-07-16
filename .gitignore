@@ -16,3 +16,4 @@ gold_sheets/
 *_batch_job.json
 *_bakeoff_results.json
 model_bakeoff_spend_ledger.json
+batch_jobs_status.json
