@@ -70,26 +70,38 @@ def _run_manual(stem):
     return gold, pred
 
 
-def _boundary_hits(gold, pred, head=60, threshold=0.9):
-    """Did we START each gold record in the right place?
+def _proper_names(s):
+    """Capitalized tokens, accent-stripped. These survive the gold's
+    normalization; abbreviations and archaic spellings do not."""
+    import unicodedata
+    s = unicodedata.normalize("NFKD", s)
+    s = "".join(c for c in s if not unicodedata.combining(c))
+    return {t.lower() for t in re.findall(r"\b[A-Z][a-z]{3,}", s)}
 
-    Deliberately compares only the first `head` normalized characters. Full-text
-    similarity would conflate boundary accuracy with two things that are NOT
-    segmentation: the unresolved margin-name convention (we currently retain the
-    interleaved margin words, which appear mid-body) and the gold's silent
-    transcription corrections. Record starts are unaffected by both.
+
+def _boundary_hits(gold, pred, min_shared=2):
+    """Did we locate each gold record?
+
+    Matched on shared proper names, NOT on text similarity — deliberately. The
+    manual gold is segmentation + normalization: it expands abbreviations
+    ("R.do P.e" -> "Reverendo Padre"), modernizes archaic spelling
+    ("dezasete" -> "dezessete"), strips the interleaved margin column, and even
+    repairs characters Archivault dropped ("ochocien" -> "ochocientos"). A
+    segmenter cannot and should not reproduce any of that, so character
+    similarity measures the normalizer, not the splitter. Names are the part of
+    the record that survives both sides.
     """
     used, hits = set(), 0
     for g in gold:
-        gh = _nsp(g["text"])[:head]
-        best, bi = 0.0, None
+        gn = _proper_names(g["text"])
+        best, bi = 0, None
         for i, p in enumerate(pred):
             if i in used:
                 continue
-            s = SequenceMatcher(None, gh, _nsp(p["text"])[:head]).ratio()
-            if s > best:
-                best, bi = s, i
-        if bi is not None and best >= threshold:
+            n = len(gn & _proper_names(p["text"]))
+            if n > best:
+                best, bi = n, i
+        if bi is not None and best >= min_shared:
             used.add(bi); hits += 1
     return hits
 
@@ -119,6 +131,52 @@ def test_manual_gold_contains_corrections_absent_from_the_raw():
     assert "ochocienn" in raw                      # raw is missing "tos"
     assert "ochocientosnoventa" in gold_txt        # gold silently inserts it
     assert "ochocienn" not in gold_txt
+
+
+def test_manual_gold_is_normalized_not_raw_segmentation():
+    """The manual examples are the target for segmentation + NORMALIZATION, not
+    segmentation alone: the gold expands abbreviations and modernizes archaic
+    spelling, which a rule-based splitter cannot and should not attempt. Pinning
+    this so nobody 'fixes' the segmenter to chase an unreachable text score."""
+    pages = load_pages(os.path.join(FIX, "740018_sample.json"))
+    raw = " ".join(t for _, t in pages)
+    gold = json.load(open(os.path.join(FIX, "740018_sample_output.json"), encoding="utf-8"))
+    gtxt = " ".join(g["text"] for g in gold)
+    # abbreviations present in the transcription, expanded in the gold
+    for abbrev, expanded in (("R.do P.e", "Reverendo Padre"), ("leg.mo", "legítimo"),
+                             ("fuer.n", "fueron"), ("Padr.os", "Padrinos")):
+        assert abbrev in raw, abbrev
+        assert abbrev not in gtxt
+        assert expanded in gtxt, expanded
+
+
+def test_740018_all_eleven_records_found_including_demil_year():
+    """18th-c. Spanish, heavy abbreviation, margin column, and a first record with
+    NO date opener. Also covers the 'demil' regression: the transcriber runs
+    'de mil' together, which used to leave the opener 'weak' so it never split
+    and a whole record was silently swallowed."""
+    from ssda_nlp_tools.segment import segment_volume
+    gold = json.load(open(os.path.join(FIX, "740018_sample_output.json"), encoding="utf-8"))
+    pages = load_pages(os.path.join(FIX, "740018_sample.json"))
+    pred = segment_volume(pages)["entries"]
+    assert len(gold) == 11
+    assert len(pred) == 11                       # was 10 before the demil fix
+    # 1:1 in order, verified via proper names (they survive normalization; the
+    # abbreviations do not, so token/text similarity is useless here)
+    def names(s):
+        import unicodedata
+        s = unicodedata.normalize("NFKD", s)
+        s = "".join(c for c in s if not unicodedata.combining(c))
+        return {t.lower() for t in re.findall(r"\b[A-Z][a-z]{3,}", s)}
+    for g, p in zip(gold, pred):
+        assert len(names(g["text"]) & names(p["text"])) >= 2
+
+
+def test_demil_counts_as_a_year_marker():
+    from ssda_nlp_tools.segment import _YEARISH
+    assert _YEARISH.search("En dies y seis de Maio demil sett.os y veinte iocho")
+    assert _YEARISH.search("de mil setecientos")
+    assert not _YEARISH.search("en la ciudad de Santa Cruz")
 
 
 # ---- line classification rules ------------------------------------------------

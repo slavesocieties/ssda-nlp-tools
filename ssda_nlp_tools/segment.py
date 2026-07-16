@@ -54,8 +54,12 @@ _OPENER = re.compile(
     rf"(?P<body>(?:la\s+ciudad[^\n]{{0,40}}?|el\s+d[ií]a\s+)?[\w\s,.yeéí]{{0,70}}?)"
     rf"\s+de\s+(?:{_MONTHS})\b", re.IGNORECASE)
 
-# extra strength markers inside an opener line (spelled-out or digit year)
-_YEARISH = re.compile(r"\bmil\b|\b1[5-9]\d\d\b", re.IGNORECASE)
+# Extra strength markers inside an opener line (spelled-out or digit year).
+# "demil" is not a typo on our side: the transcriber frequently runs "de mil"
+# together ("En dies y seis de Maio demil sett.os…"), which a bare \bmil\b misses
+# — and since a weak opener never splits mid-entry, that silently swallowed whole
+# records in 18th-c. volumes. Accept the concatenated form explicitly.
+_YEARISH = re.compile(r"\b(?:de)?mil\b|\b1[5-9]\d\d\b", re.IGNORECASE)
 
 # loose opener: same formula shape but the month word may be TRUNCATED by the
 # line wrap ("...de Noviem" / "bre de Mil..."). Only accepted with corroborating
