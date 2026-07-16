@@ -6,9 +6,10 @@ people/events data**, **resolved cross-entry identities**, and the
 **person/relationship social graph** — with evaluation, QA, cost modeling, and
 a human review loop at every step.
 
-**Design rule: nothing in this repo calls an LLM.** Every tool either works
-deterministically ($0) or *prepares and prices* LLM work so the only paid step
-is deliberately sending prepared batches. The full test suite (67 tests) runs
+**Design rule: paid calls are always deliberate.** The pipeline tools work
+deterministically ($0) or *prepare and price* LLM work. The opt-in live
+runners (`run_live_test.py` and `run_model_bakeoff.py`) are dry-run by
+default and need an explicit `--confirm`. The full test suite (94 tests) runs
 offline in under a second.
 
 ## The pipeline
@@ -19,7 +20,7 @@ Archivault transcriptions (per image)
   ▼
 segmented entries (id / text / partial, cross-page stitched)
   │  run_corpus_prompts.py   priced, ready-to-send extraction batches
-  ▼                          (OpenAI Batch-API JSONL — the ONLY paid step)
+  ▼                          (OpenAI Batch-API JSONL; prepared, not submitted)
 extracted people/events per entry
   │  run_qa.py               duplicates, chronology, dangling refs, drift
   │  run_eval.py             P/R/F1 vs gold or model-vs-model agreement
@@ -53,7 +54,7 @@ run_network.py / run_pipeline.py -> person registry + GraphML social graph
 ## Quick start
 
 ```bash
-python -m pytest tests -q                          # 67 tests, no network, <1s
+python -m pytest tests -q                          # 94 tests, no network, <1s
 
 # segment one volume (Archivault JSON or the paired-example .md format)
 python run_segment.py path/to/VOLUME.json --structural --out segmented.json
@@ -69,6 +70,23 @@ python run_pipeline.py EXTRACTED.json --tag VOL --outdir out_vol
 Requirements: Python 3.10+ standard library only (pytest to run tests;
 `tiktoken` optional for exact token counts). `ssda_nlp_tools/README.md` has the
 full module-by-module documentation.
+
+### Optional live model calibration
+
+`run_model_bakeoff.py` compares the configured providers on held-out entries.
+It never reads a key file: set the relevant provider key in the process
+environment, inspect the default dry run, then add `--confirm` only when a
+live test is approved.
+
+```bash
+python run_model_bakeoff.py --models gpt-5.4-mini --max-batches 1
+python run_model_bakeoff.py --models gpt-5.4-mini --max-batches 1 --confirm
+```
+
+Before a live request it reserves each model's conservative worst-case amount
+in `model_bakeoff_spend_ledger.json`. A lost network response remains reserved,
+so resuming cannot silently reuse the same budget. The ledger and all
+live-provider outputs are gitignored.
 
 ## Repo layout
 

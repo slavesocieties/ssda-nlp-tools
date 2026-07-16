@@ -2,6 +2,7 @@
 import json
 import os
 import sys
+import importlib.util
 
 import pytest
 
@@ -13,12 +14,38 @@ from ssda_nlp_tools import batch_extract as bx
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+def _bakeoff_module():
+    path = os.path.join(ROOT, "run_model_bakeoff.py")
+    spec = importlib.util.spec_from_file_location("run_model_bakeoff", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 # ---- token counting ----------------------------------------------------------
 
 def test_count_tokens_monotonic_and_positive():
     assert cost.count_tokens("") == 0
     assert cost.count_tokens("hola mundo") >= 2
     assert cost.count_tokens("a b c d e") < cost.count_tokens("a b c d e f g h i j")
+
+
+def test_bakeoff_ledger_reserves_then_settles_without_losing_spend(tmp_path):
+    bakeoff = _bakeoff_module()
+    path = tmp_path / "ledger.json"
+    ledger = bakeoff._read_ledger(path)
+    bakeoff._reserve(ledger, "gpt-5.4-mini", 0.80)
+    bakeoff._write_ledger(path, ledger)
+    restarted = bakeoff._read_ledger(path)
+    assert bakeoff._ledger_amounts(restarted, "gpt-5.4-mini") == (0.0, 0.80)
+    bakeoff._settle(restarted, "gpt-5.4-mini", 0.30, 0.021)
+    assert bakeoff._ledger_amounts(restarted, "gpt-5.4-mini") == pytest.approx((0.021, 0.50))
+
+
+def test_bakeoff_input_ceiling_exceeds_raw_prompt_bytes():
+    bakeoff = _bakeoff_module()
+    messages = [{"role": "system", "content": "á"}, {"role": "user", "content": "hello"}]
+    assert bakeoff._input_token_ceiling(messages) > len("áhello".encode("utf-8"))
 
 
 # ---- cost model levers -------------------------------------------------------

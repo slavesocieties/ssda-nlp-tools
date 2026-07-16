@@ -10,3 +10,9 @@ network.graphml
 network.json
 resolved.json
 gold_sheets/
+
+# Live-provider bake-off artifacts: they can contain paid-model output and job IDs.
+*_b[0-9]*.json
+*_batch_job.json
+*_bakeoff_results.json
+model_bakeoff_spend_ledger.json
