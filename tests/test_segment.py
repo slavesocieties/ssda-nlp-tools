@@ -185,6 +185,35 @@ def test_partial_means_runs_off_the_page_not_missing_opener():
     assert p658[-1]["partial"] is True        # really does continue onto page 0005
 
 
+def test_canonical_schema_matches_confirmed_spec():
+    """Daniel (2026-07-16): flat {id, text, images[]}; id inferred from the image
+    list as <stem-of-first-image>-NN; partials kept and flagged, never dropped."""
+    from ssda_nlp_tools.segment import segment_volume, to_canonical
+    pages = load_pages(os.path.join(FIX, "740018_sample.json"))
+    canon = to_canonical(segment_volume(pages)["entries"])
+    gold = json.load(open(os.path.join(FIX, "740018_sample_output.json"), encoding="utf-8"))
+    assert [c["id"] for c in canon] == [g["id"] for g in gold]   # exact id agreement
+    for c in canon:
+        assert set(c) <= {"id", "text", "images", "partial"}
+        assert c["images"] and c["id"].startswith(c["images"][0].rsplit(".", 1)[0])
+        if "partial" in c:
+            assert c["partial"] is True                          # only present when true
+
+
+def test_canonical_cross_page_entry_belongs_to_start_image():
+    from ssda_nlp_tools.segment import segment_volume, to_canonical
+    p1 = ("Em vinte e dous de Junho de mil Sete Centos Setenta e tres faleceo "
+          "Bernardo menor filho de Bernardo da Silva foy por mim")
+    p2 = ("encomendado e Sepultado de q fiz este asento\nO Vigr.o Joze da Costa Lopes\n"
+          "Em tres de Julho de mil Sete Centos Setenta e tres faleceo Faustina "
+          "de q fiz este asento\nO Vigr.o Joze da Costa Lopes")
+    canon = to_canonical(segment_volume([("v-0001.jpg", p1), ("v-0002.jpg", p2)])["entries"])
+    assert canon[0]["id"] == "v-0001-01"                 # numbered under its START image
+    assert canon[0]["images"] == ["v-0001.jpg", "v-0002.jpg"]
+    assert "partial" not in canon[0]                     # stitched -> complete
+    assert canon[1]["id"] == "v-0002-01"
+
+
 def test_demil_counts_as_a_year_marker():
     from ssda_nlp_tools.segment import _YEARISH
     assert _YEARISH.search("En dies y seis de Maio demil sett.os y veinte iocho")

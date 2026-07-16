@@ -393,6 +393,30 @@ def _stem(image: str) -> str:
     return re.sub(r"\.(jpe?g|png|tiff?)$", "", image, flags=re.IGNORECASE)
 
 
+def to_canonical(entries: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """Convert volume-mode entries to the CONFIRMED canonical schema (Daniel,
+    2026-07-16): a flat list of {"id", "text", "images": [...]}, where the id is
+    inferred from the image list — "<stem of first image>-NN", numbered in
+    reading order per starting image (matches the manual gold exactly, e.g.
+    740018-0006-01). "partial" is included only when true: incomplete records
+    are kept and flagged, never dropped (also per Daniel), but complete records
+    don't carry dead fields.
+    """
+    counters: Dict[str, int] = {}
+    out: List[Dict[str, Any]] = []
+    for e in entries:
+        images = e.get("source_images") or []
+        first = _stem(images[0]) if images else _stem(str(e.get("id", "entry")))
+        counters[first] = counters.get(first, 0) + 1
+        row: Dict[str, Any] = {"id": f"{first}-{counters[first]:02d}",
+                               "text": e["text"],
+                               "images": list(images)}
+        if e.get("partial"):
+            row["partial"] = True
+        out.append(row)
+    return out
+
+
 # --------------------------------------------------------------------------- #
 # input loading (all three observed shapes)
 # --------------------------------------------------------------------------- #

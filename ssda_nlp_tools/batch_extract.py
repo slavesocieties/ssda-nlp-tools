@@ -27,19 +27,35 @@ from .cost import count_tokens
 from .fixes import fix_relationships
 
 BATCH_SYSTEM_PROMPT = """
-You are a historical sacramental-register information extraction assistant.
+You are a historical sacramental-register normalization and extraction assistant.
 You will receive SEVERAL numbered entries at once. For EACH entry, return both a
-lightly normalized transcription and structured people/events data.
+normalized transcription and structured people/events data.
 
 Return exactly one JSON object of the form:
 {"results": [
    {"entry": "<the entry id you were given>",
-    "normalized": "<lightly normalized transcription: fix spacing, line-break "
-                  "hyphenation and obvious abbreviations; preserve meaning and names>",
+    "normalized": "<normalized transcription — see rules>",
     "data": {"people": [...], "events": [...]}}
 ]}
 
-Rules:
+Normalization rules (match the project's hand-corrected examples):
+- REMOVE interleaved margin names: register pages have a name column in the left
+  margin that the transcriber merges into the body lines ("...Bernardo Cae
+  da Concepcion tano de Freitas..."). Remove those margin words and re-join the
+  word they interrupt ("Cae"+"tano" -> "Caetano").
+- Heal words broken across line wraps (with or without "-"/"=" marks).
+- Expand scribal abbreviations to full words ("R.do P.e fr." -> "Reverendo Padre
+  fray", "leg.mo" -> "legitimo", "fuer.n sus Padr.os" -> "fueron sus Padrinos").
+- Modernize archaic spelling to standard modern orthography of the entry's own
+  language, with accents ("dezasete" -> "dezessete", "annos" -> "anos",
+  "Xuarez" -> "Juarez"). Do not translate to another language.
+- Repair only OBVIOUS transcription dropouts recoverable from formulaic context
+  ("de mil ochocien noventa" -> "de mil ochocientos noventa"). Never invent
+  names, dates, or facts.
+- If an entry is marked as possibly truncated, normalize what is present; do not
+  guess a continuation.
+
+Extraction rules:
 - One results element per input entry, echoing its exact "entry" id. Do not merge
   or drop entries. If an entry is unreadable, return it with empty people/events.
 - people/events follow the same schema and conventions as the few-shot examples.

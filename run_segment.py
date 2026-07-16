@@ -57,6 +57,8 @@ def main(argv=None):
               f"still partial: {s['still_partial']}")
         print(f"low-confidence pages (route these to the LLM fallback): "
               f"{s['low_confidence_pages']} {res['low_confidence'] or ''}")
+        from ssda_nlp_tools.segment import to_canonical
+        res["canonical"] = to_canonical(res["entries"])   # the confirmed output schema
         payload = res
 
     if args.structural:
