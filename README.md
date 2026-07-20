@@ -9,7 +9,7 @@ a human review loop at every step.
 **Design rule: paid calls are always deliberate.** The pipeline tools work
 deterministically ($0) or *prepare and price* LLM work. The opt-in live
 runners (`run_live_test.py` and `run_model_bakeoff.py`) are dry-run by
-default and need an explicit `--confirm`. The full test suite (94 tests) runs
+default and need an explicit `--confirm`. The full test suite (96 tests) runs
 offline in under a second.
 
 ## The pipeline
@@ -54,7 +54,7 @@ run_network.py / run_pipeline.py -> person registry + GraphML social graph
 ## Quick start
 
 ```bash
-python -m pytest tests -q                          # 94 tests, no network, <1s
+python -m pytest tests -q                          # 96 tests, no network, <1s
 
 # segment one volume (Archivault JSON or the paired-example .md format)
 python run_segment.py path/to/VOLUME.json --structural --out segmented.json

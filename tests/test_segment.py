@@ -119,6 +119,32 @@ def test_manual_gold_420550_colombia_all_boundaries_found():
     assert _boundary_hits(gold, pred) == 8       # "En la parroquia de … á tres de Abril" opener
 
 
+def test_manual_gold_260950_portuguese_1910_exact():
+    """New breaking-fix example (2026-07-20): 13 Portuguese baptisms, Água Doce
+    1910. Segments exactly 13/13 with every boundary located."""
+    gold, pred = _run_manual("260950")
+    assert len(gold) == 13
+    assert len(pred) == 13
+    assert _boundary_hits(gold, pred) == 13
+
+
+def test_manual_gold_544367_page_boundary_redup_is_a_safe_oversplit():
+    """New breaking-fix example (2026-07-20): Archivault re-transcribes the last
+    record's opener across the 0107->0108 page break (with margin names spliced
+    into the body, 'cuatro'->'cuaJuantro'), so the segmenter emits ONE extra
+    record. This is a documented, safe over-split: every real boundary is still
+    found (5/5 recall) and no record is lost. It is deliberately NOT auto-fixed
+    in the segmenter — see eval_data/breaking_examples_20260720.md: every content
+    heuristic that drops this duplicate also deletes the genuine distinct trailing
+    record in 65858 (identical opener formula). The fix belongs in QA/dedup on the
+    completed records, or upstream in Archivault."""
+    gold, pred = _run_manual("544367")
+    assert len(gold) == 5
+    assert _boundary_hits(gold, pred) == 5       # perfect recall: nothing lost
+    assert len(pred) == 6                        # the one known re-transcription over-split
+    assert pred[-1]["partial"] is True           # kept + flagged, never dropped
+
+
 def test_manual_gold_contains_corrections_absent_from_the_raw():
     """Guards the finding that the gold is not a pure segmentation target: it
     repairs Gemini's dropped characters, so exact-text scoring is not meaningful
