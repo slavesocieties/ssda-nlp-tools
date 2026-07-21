@@ -22,6 +22,47 @@ def _bakeoff_module():
     return module
 
 
+def _scorer_module():
+    path = os.path.join(ROOT, "score_entity_f1.py")
+    spec = importlib.util.spec_from_file_location("score_entity_f1", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_scorer_merges_batch_files_and_first_file_wins_on_dup_id(tmp_path):
+    """score_entity_f1 stitches a model's per-batch output files into one
+    prediction set, deduping by entry id with the earliest file winning (so a
+    re-run/overlap can't silently overwrite a good entry)."""
+    scorer = _scorer_module()
+    def write(name, results):
+        p = tmp_path / name
+        p.write_text(json.dumps(
+            {"models": {"gpt-5.6-luna": {"batches": [{"results": results}]}}}),
+            encoding="utf-8")
+        return str(p)
+    a = write("a.json", [{"entry": "E1", "normalized": "keep", "data": {"people": []}}])
+    b = write("b.json", [{"entry": "E1", "normalized": "DROP", "data": {"people": [{"id": "P"}]}},
+                         {"entry": "E2", "normalized": "y", "data": {"people": []}}])
+    preds = scorer._model_predictions([a, b])["gpt-5.6-luna"]
+    assert set(preds) == {"E1", "E2"}
+    assert preds["E1"]["normalized"] == "keep"      # earliest file wins on the dup id
+
+
+def test_scorer_ignores_skipped_model_rows(tmp_path):
+    """A model row the bake-off marked 'skipped' (no key set) contributes no
+    predictions rather than an empty entry that would score as a total miss."""
+    scorer = _scorer_module()
+    p = tmp_path / "s.json"
+    p.write_text(json.dumps({"models": {
+        "gpt-5.6-luna": {"status": "skipped", "reason": "no key"},
+        "gpt-5.4-mini": {"batches": [{"results": [
+            {"entry": "E1", "normalized": "x", "data": {"people": []}}]}]},
+    }}), encoding="utf-8")
+    preds = scorer._model_predictions([str(p)])
+    assert set(preds) == {"gpt-5.4-mini"}       # skipped luna absent entirely
+
+
 # ---- token counting ----------------------------------------------------------
 
 def test_count_tokens_monotonic_and_positive():
@@ -46,6 +87,53 @@ def test_bakeoff_input_ceiling_exceeds_raw_prompt_bytes():
     bakeoff = _bakeoff_module()
     messages = [{"role": "system", "content": "á"}, {"role": "user", "content": "hello"}]
     assert bakeoff._input_token_ceiling(messages) > len("áhello".encode("utf-8"))
+
+
+def test_bakeoff_4xx_is_provider_rejected_but_5xx_stays_ambiguous():
+    """A definitive 4xx means the request was refused and NOT billed, so its
+    reservation can be released; a 5xx (or network error) may have been
+    processed, so it must stay a plain RuntimeError and keep its reservation."""
+    import io
+    import urllib.error
+    import unittest.mock as mock
+    bakeoff = _bakeoff_module()
+
+    def _fake(code):
+        return urllib.error.HTTPError("http://x", code, "m", {}, io.BytesIO(b'{"error":"e"}'))
+
+    for code in (400, 404, 422):
+        with mock.patch("urllib.request.urlopen", side_effect=_fake(code)):
+            with pytest.raises(bakeoff.ProviderRejected):
+                bakeoff._request("http://x", {}, {})
+    for code in (500, 503):
+        with mock.patch("urllib.request.urlopen", side_effect=_fake(code)):
+            with pytest.raises(RuntimeError) as ei:
+                bakeoff._request("http://x", {}, {})
+            assert not isinstance(ei.value, bakeoff.ProviderRejected)
+
+
+def test_bakeoff_provider_rejected_releases_only_that_reservation(tmp_path):
+    """The 4xx handler releases exactly the in-flight batch's reservation (so a
+    corrected re-run is not blocked), while leaving any OTHER model's stranded
+    reservation untouched."""
+    bakeoff = _bakeoff_module()
+    path = tmp_path / "ledger.json"
+    ledger = bakeoff._read_ledger(path)
+    bakeoff._reserve(ledger, "gpt-5.4-mini", 0.10)      # the in-flight batch
+    bakeoff._reserve(ledger, "gpt-5.6-luna", 0.42)      # unrelated stranded reservation
+    # the 4xx path: settle the in-flight batch's reservation at $0 billed
+    bakeoff._settle(ledger, "gpt-5.4-mini", 0.10, 0.0)
+    assert bakeoff._ledger_amounts(ledger, "gpt-5.4-mini") == pytest.approx((0.0, 0.0))
+    assert bakeoff._ledger_amounts(ledger, "gpt-5.6-luna") == pytest.approx((0.0, 0.42))
+
+
+def test_bakeoff_haiku_sends_dated_wire_id():
+    """Anthropic's Haiku 4.5 requires the dated model id on the wire; the
+    friendly name is kept for internal MODELS lookups."""
+    bakeoff = _bakeoff_module()
+    assert bakeoff.MODELS["claude-haiku-4-5"]["id"] == "claude-haiku-4-5-20251001"
+    # models without an override send their friendly name unchanged
+    assert "id" not in bakeoff.MODELS["gpt-5.4-mini"]
 
 
 # ---- cost model levers -------------------------------------------------------
