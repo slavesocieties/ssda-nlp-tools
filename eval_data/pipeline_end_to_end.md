@@ -47,7 +47,25 @@ heuristic:
    65858's distinct 21-May record at the text level correctly keeps records
    apart here because their principals differ.
 
-Conclusion: the pipeline is **complete and sound end-to-end** on real output for
-the extraction → QA → identity → graph path. Residual quality (relationships,
-fine attributes) is surfaced by QA and routed to human review by design, not
-silently accepted.
+## What QA actually flagged (the review worklist)
+
+Across 78 entries, 6 structural defects — all in relationship/event linkage,
+which corroborates the 0.84 relationship F1 (the weak dimension), and none in
+people/events themselves:
+
+- **5 dangling relationships** — a person points at a `related_person` id the
+  model never emitted as a person (0035: P03→P05; 0013: P02/P03→P04 ×2 each).
+- **1 event-shape violation** — a baptism with 0 principals (the baptized
+  person wasn't linked to the event).
+
+These are machine-detectable with zero gold labels, so at corpus scale they
+become a per-volume worklist rather than silent database pollution — which is
+the point of the QA stage.
+
+## Conclusion
+
+The pipeline is **complete and sound end-to-end** on real output for the
+extraction → QA → identity → graph path. Residual quality (relationships, fine
+attributes) is surfaced by QA and routed to human review by design, not silently
+accepted. The dominant human cost is identity-merge review (268 borderline pairs
+for 3 volumes), not extraction correctness (6 structural defects).
