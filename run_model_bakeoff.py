@@ -183,6 +183,9 @@ def main(argv=None):
                     help="limit batches after --start-batch (use 1 for a single capped call)")
     ap.add_argument("--max-output-tokens", type=int, default=10000)
     ap.add_argument("--max-usd-per-model", type=float, default=1.00)
+    ap.add_argument("--system-prompt-file", default=None,
+                    help="override the extraction system prompt with this file's "
+                         "contents (for A/B-testing prompt variants; scored offline)")
     ap.add_argument("--confirm", action="store_true")
     ap.add_argument("--out", default="model_bakeoff_results.json")
     ap.add_argument("--ledger", default="model_bakeoff_spend_ledger.json",
@@ -209,6 +212,18 @@ def main(argv=None):
     if args.max_batches is not None:
         batches = batches[:args.max_batches]
     prepared = [build_messages(batch, examples, []) for batch in batches]
+    if args.system_prompt_file:
+        # A/B the extraction prompt: replace the leading system turn (the
+        # BATCH_SYSTEM_PROMPT) with a variant, keeping the cache-ordered
+        # few-shot prefix and dynamic tail identical. Score both runs offline
+        # with score_entity_f1.py. See eval_data/prompt_improvements_proposal.md.
+        variant = Path(args.system_prompt_file).read_text(encoding="utf-8").strip()
+        for messages in prepared:
+            for m in messages:
+                if m["role"] == "system":
+                    m["content"] = variant
+                    break
+        print(f"system-prompt override: {args.system_prompt_file} ({len(variant)} chars)")
     batch_maxima = {}
     tested_entries = sum(len(b) for b in batches)
     print(f"held-out entries in this run: {tested_entries}; requests/model: {len(prepared)}; few-shot examples: {len(examples)}")

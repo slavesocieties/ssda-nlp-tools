@@ -127,6 +127,26 @@ def test_bakeoff_provider_rejected_releases_only_that_reservation(tmp_path):
     assert bakeoff._ledger_amounts(ledger, "gpt-5.6-luna") == pytest.approx((0.0, 0.42))
 
 
+def test_bakeoff_system_prompt_override_replaces_only_leading_system_turn():
+    """--system-prompt-file swaps the extraction prompt for A/B testing while
+    keeping the cache-ordered few-shot prefix and dynamic tail intact — so only
+    the first system turn changes."""
+    from ssda_nlp_tools.batch_extract import build_messages, BATCH_SYSTEM_PROMPT
+    examples, vol = _fixtures()
+    messages = build_messages(vol[:3], examples[:2], [])
+    original = [m["content"] for m in messages]
+    assert messages[0]["content"] == BATCH_SYSTEM_PROMPT
+    # the exact loop run_model_bakeoff applies for an override
+    variant = "VARIANT EXTRACTION PROMPT"
+    for m in messages:
+        if m["role"] == "system":
+            m["content"] = variant
+            break
+    assert messages[0]["content"] == variant
+    # every other turn is byte-identical -> the few-shot cache prefix is preserved
+    assert [m["content"] for m in messages[1:]] == original[1:]
+
+
 def test_bakeoff_haiku_sends_dated_wire_id():
     """Anthropic's Haiku 4.5 requires the dated model id on the wire; the
     friendly name is kept for internal MODELS lookups."""
