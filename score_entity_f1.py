@@ -22,42 +22,44 @@ from ssda_nlp_tools.evaluate import evaluate
 
 ROOT = Path(__file__).resolve().parent
 
-# (volume tag, gold file, [candidate bake-off output files, first found wins])
+# (volume tag, gold file, bake-off output patterns; all matches are merged)
 VOLUMES = [
     ("0035_0044", "Sample_output/Generated_0035_0044_4o_prompt_V2.json",
-     ["openai_bakeoff_results.json", "*0035*bakeoff_results.json"]),
+     ["openai_bakeoff_results.json", "gpt56luna_b*.json", "claudehaiku_b*.json",
+      "*0035*bakeoff_results.json"]),
     ("0013_0023", "Sample_output/Generated_0013_0023_4o_prompt_V2.json",
-     ["*0013*bakeoff_results.json"]),
+     ["entity_0013_*_b*.json", "*0013*bakeoff_results.json"]),
     ("0024_0034", "Sample_output/Generated_0024_0034_4o_prompt_V2.json",
-     ["*0024*bakeoff_results.json"]),
+     ["entity_0024_*_b*.json", "*0024*bakeoff_results.json"]),
 ]
 DIMS = ["people", "events", "relationships"]
 
 
-def _find(patterns):
+def _find_all(patterns):
+    found = []
     for pat in patterns:
         hits = sorted(glob.glob(str(ROOT / pat)))
-        if hits:
-            return hits[0]
-    return None
+        for hit in hits:
+            if hit not in found:
+                found.append(hit)
+    return found
 
 
-def _model_predictions(bakeoff_path):
+def _model_predictions(bakeoff_paths):
     """{model: {entry_id: {entry, normalized, data}}} from a bake-off output."""
-    data = json.loads(Path(bakeoff_path).read_text(encoding="utf-8"))
     out = {}
-    for model, row in data.get("models", {}).items():
-        if row.get("status") == "skipped":
-            continue
-        preds = {}
-        for b in row.get("batches", []):
-            for r in b.get("results", []):
-                eid = str(r.get("entry"))
-                if eid and "data" in r and eid not in preds:
-                    preds[eid] = {"entry": eid, "normalized": r.get("normalized", ""),
-                                  "data": r.get("data") or {}}
-        if preds:
-            out[model] = preds
+    for bakeoff_path in bakeoff_paths:
+        data = json.loads(Path(bakeoff_path).read_text(encoding="utf-8"))
+        for model, row in data.get("models", {}).items():
+            if row.get("status") == "skipped":
+                continue
+            preds = out.setdefault(model, {})
+            for b in row.get("batches", []):
+                for r in b.get("results", []):
+                    eid = str(r.get("entry"))
+                    if eid and "data" in r and eid not in preds:
+                        preds[eid] = {"entry": eid, "normalized": r.get("normalized", ""),
+                                      "data": r.get("data") or {}}
     return out
 
 
@@ -68,13 +70,13 @@ def main():
     per_model = {}
     for tag, gold_rel, patterns in VOLUMES:
         gold_path = ROOT / gold_rel
-        bo = _find(patterns)
-        if not bo:
+        bakeoffs = _find_all(patterns)
+        if not bakeoffs:
             print(f"{tag:10s} (no bake-off output found yet — run the model on this volume)")
             continue
         gold = {str(e["entry"]): e for e in
                 json.loads(gold_path.read_text(encoding="utf-8"))["examples"]}
-        for model, preds in sorted(_model_predictions(bo).items()):
+        for model, preds in sorted(_model_predictions(bakeoffs).items()):
             covered = [e for e in preds if e in gold]
             g = {"examples": [gold[e] for e in covered]}
             p = {"examples": [preds[e] for e in covered]}
