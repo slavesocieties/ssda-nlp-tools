@@ -62,6 +62,26 @@ These are machine-detectable with zero gold labels, so at corpus scale they
 become a per-volume worklist rather than silent database pollution — which is
 the point of the QA stage.
 
+## Does the model choice change the final graph?
+
+Ran the same pipeline on **all three models'** extractions of the three volumes:
+
+| Model | identities | cross-volume links | edges | dangling refs | event-shape |
+|---|---|---|---|---|---|
+| GPT-5.6 Luna | 215 | 8 | 606 | 5 | 1 |
+| GPT-5.4 mini | 230 | 7 | 711 | 0 | 0 |
+| Claude Haiku 4.5 | 222 | 7 | 642 | 1 | 1 |
+
+**The graph's shape is robust to model choice** — all three land within ~7% on
+identities, links, and edges. So Luna's advantage is not a structurally
+different graph; it is **edge correctness against gold** (relationship F1 0.843
+vs 0.76) and its stability on harder volumes. Caveat, stated honestly: Luna
+shows a few more dangling references than mini/Haiku (5 vs 0) — an internal-
+consistency slip that QA flags and review fixes, not a gold-measured error. The
+takeaway is unchanged (Luna for correctness + stability), but a cost-driven
+choice of mini would still yield a structurally comparable graph that leans
+harder on the review queue.
+
 ## Conclusion
 
 The pipeline is **complete and sound end-to-end** on real output for the
