@@ -16,7 +16,7 @@ Input: 78 extracted entries (Luna), 432 person-mentions.
 | Cross-chunk linking (`link.py`) | **8 people linked across volumes** |
 | Social graph (`network.py`) | 215 nodes, 606 unique typed edges, largest component 69 people |
 
-Cross-volume links are the meaningful ones and they are correct: priest
+Manual spot checks found plausible cross-volume links: priest
 **Miguel O'Reilly ×39** (0013+0035), priest **Thomas Hassett ×34** (all three),
 enslaver **Juan Macqueen ×33** (all three), **Thomas Sterling ×30**. These are
 the recurring officiants/enslavers that *should* collapse to one identity across
@@ -27,25 +27,19 @@ Relationship types recovered: child 114 / parent 114 / godparent 92 /
 godchild 92 / enslaver 71 / slave 71 / spouse 52 — a coherent kinship +
 enslavement graph, which is the archive's end goal.
 
-## The duplicate-handling story is now closed end to end
+## 544367 correction: the sixth segment is a real record
 
-The 544367 segmentation over-split (an Archivault page-boundary re-transcription)
-is handled correctly by the layered design, *without* any risky segmenter
-heuristic:
+Reinspection of the source fixture disproved the earlier duplicate diagnosis.
+Page 0107's No. 543 closes at the top of page 0108; page 0108 then contains Nos.
+544 and 545 and begins a distinct **No. 546, Juan Alberto**. The supplied
+five-entry reference omits No. 546 because it runs off the final image.
 
-1. **Segmenter** keeps both copies, flags `partial` — safe over-inclusion, never
-   loses a record.
-2. **QA** (`qa.py` duplicate check) is built for exactly this ("LLM window-repair
-   double-reports a record… fuzzy-match"). It flags near-duplicate text **only
-   after checking the sacrament principal**: same principal → confirmed
-   duplicate; different principals → two real records (kept); principal unknown
-   (as in 544367's truncated partial) → flagged **unconfirmed for review**, not
-   dropped. This is the discriminator the segmenter lacks — it needs the
-   *extracted* principal, which only exists post-extraction.
-3. Proof it doesn't over-flag: **0 duplicates flagged across 78 genuinely
-   distinct but formulaic records.** The guard that would have wrongly merged
-   65858's distinct 21-May record at the text level correctly keeps records
-   apart here because their principals differ.
+The segmenter correctly emits six records and marks No. 546 `partial`. A new
+integration regression runs the actual two-page fixture through segmentation,
+adds representative extracted principals, and passes it through principal-aware
+QA. QA preserves all six and emits no duplicate flag. This validates the safe
+behavior for this example; it does not claim that every future duplicate can be
+resolved automatically.
 
 ## What QA actually flagged (the review worklist)
 
@@ -72,20 +66,20 @@ Ran the same pipeline on **all three models'** extractions of the three volumes:
 | GPT-5.4 mini | 230 | 7 | 711 | 0 | 0 |
 | Claude Haiku 4.5 | 222 | 7 | 642 | 1 | 1 |
 
-**The graph's shape is robust to model choice** — all three land within ~7% on
-identities, links, and edges. So Luna's advantage is not a structurally
-different graph; it is **edge correctness against gold** (relationship F1 0.843
-vs 0.76) and its stability on harder volumes. Caveat, stated honestly: Luna
+The broad graph shape is similar, but the spread is material: identities differ
+by up to 7%, cross-volume link counts by 14%, and edge counts by 17%. Luna's
+end-to-end relationship F1 against the GPT-4o-generated references is 0.789,
+versus 0.738 for mini and 0.718 for Haiku. Caveat, stated honestly: Luna
 shows a few more dangling references than mini/Haiku (5 vs 0) — an internal-
 consistency slip that QA flags and review fixes, not a gold-measured error. The
-takeaway is unchanged (Luna for correctness + stability), but a cost-driven
-choice of mini would still yield a structurally comparable graph that leans
-harder on the review queue.
+corrected comparison favors Luna for relationships and mini for event accuracy
+and coverage. Either yields a broadly comparable graph, with different review
+tradeoffs.
 
 ## Conclusion
 
-The pipeline is **complete and sound end-to-end** on real output for the
-extraction → QA → identity → graph path. Residual quality (relationships, fine
-attributes) is surfaced by QA and routed to human review by design, not silently
-accepted. The dominant human cost is identity-merge review (268 borderline pairs
-for 3 volumes), not extraction correctness (6 structural defects).
+The extraction → QA → identity → graph path runs end to end on real output.
+This is an integration validation, not proof of production correctness:
+relationship and fine-attribute quality still require reference evaluation and
+human review. The dominant generated worklist is identity-merge review (268
+borderline pairs for 3 volumes), alongside 6 machine-detected structural defects.

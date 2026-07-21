@@ -128,21 +128,19 @@ def test_manual_gold_260950_portuguese_1910_exact():
     assert _boundary_hits(gold, pred) == 13
 
 
-def test_manual_gold_544367_page_boundary_redup_is_a_safe_oversplit():
-    """New breaking-fix example (2026-07-20): Archivault re-transcribes the last
-    record's opener across the 0107->0108 page break (with margin names spliced
-    into the body, 'cuatro'->'cuaJuantro'), so the segmenter emits ONE extra
-    record. This is a documented, safe over-split: every real boundary is still
-    found (5/5 recall) and no record is lost. It is deliberately NOT auto-fixed
-    in the segmenter — see eval_data/breaking_examples_20260720.md: every content
-    heuristic that drops this duplicate also deletes the genuine distinct trailing
-    record in 65858 (identical opener formula). The fix belongs in QA/dedup on the
-    completed records, or upstream in Archivault."""
+def test_manual_gold_544367_keeps_real_trailing_partial_546():
+    """The supplied reference stops at No. 545, but the source visibly begins a
+    distinct No. 546 for Juan Alberto at the bottom of page 0108. The segmenter
+    must keep that sixth, incomplete record instead of treating it as a duplicate
+    or dropping content merely because the reference omitted the trailing partial."""
     gold, pred = _run_manual("544367")
     assert len(gold) == 5
     assert _boundary_hits(gold, pred) == 5       # perfect recall: nothing lost
-    assert len(pred) == 6                        # the one known re-transcription over-split
-    assert pred[-1]["partial"] is True           # kept + flagged, never dropped
+    assert len(pred) == 6
+    pages = load_pages(os.path.join(FIX, "544367_sample.json"))
+    assert "\n546 " in pages[-1][1]             # source's explicit record number
+    assert "Alberto" in pred[-1]["text"]        # margin number is intentionally stripped
+    assert pred[-1]["partial"] is True           # genuine record kept + flagged
 
 
 def test_manual_gold_contains_corrections_absent_from_the_raw():

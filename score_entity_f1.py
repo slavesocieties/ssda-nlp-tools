@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""score_entity_f1.py — offline entity-level F1 of saved bake-off outputs vs gold,
+"""score_entity_f1.py — offline entity-level F1 of saved bake-off outputs vs reference,
 aggregated across every volume we have. No network, no keys, no spend.
 
-For each (volume-gold, bake-off-output) pair it reshapes the model's saved
-`results` into the {"examples":[...]} form run_eval expects, aligns on the
-entries the model actually produced (so we score extraction quality, not
-coverage), and reports people/events/relationships F1 per model per volume plus
-a corpus-wide micro-average.
+For each (volume-reference, bake-off-output) pair it reshapes the model's saved
+`results` into the {"examples":[...]} form run_eval expects, reports explicit
+entry coverage, and scores missing/spurious entries as false negatives/positives.
+Corpus scores pool TP/FP/FN across volumes before calculating a true
+micro-average.
 
     python score_entity_f1.py
 
@@ -15,10 +15,10 @@ Add pairs to VOLUMES as more bake-off outputs are produced. A pair is skipped
 """
 import glob
 import json
-import os
 from pathlib import Path
 
 from ssda_nlp_tools.evaluate import evaluate
+from ssda_nlp_tools.textmatch import sum_prf
 
 ROOT = Path(__file__).resolve().parent
 
@@ -64,9 +64,9 @@ def _model_predictions(bakeoff_paths):
 
 
 def main():
-    gold_all = {d: [] for d in DIMS}   # for a simple macro-average across volumes
-    print(f"{'volume':10s} {'model':18s} " + " ".join(f"{d[:5]:>7s}" for d in DIMS) + "   n")
-    print("-" * 70)
+    print(f"{'volume':10s} {'model':18s} " + " ".join(f"{d[:5]:>7s}" for d in DIMS)
+          + "   coverage")
+    print("-" * 82)
     per_model = {}
     for tag, gold_rel, patterns in VOLUMES:
         gold_path = ROOT / gold_rel
@@ -77,29 +77,39 @@ def main():
         gold = {str(e["entry"]): e for e in
                 json.loads(gold_path.read_text(encoding="utf-8"))["examples"]}
         for model, preds in sorted(_model_predictions(bakeoffs).items()):
-            covered = [e for e in preds if e in gold]
-            g = {"examples": [gold[e] for e in covered]}
-            p = {"examples": [preds[e] for e in covered]}
+            covered = set(preds) & set(gold)
+            g = {"examples": list(gold.values())}
+            p = {"examples": list(preds.values())}
             rep = evaluate(g, p)
             f1 = {d: (rep.get(d) or {}).get("f1") for d in DIMS}
             cells = " ".join((f"{f1[d]:7.3f}" if f1[d] is not None else f"{'—':>7s}") for d in DIMS)
-            print(f"{tag:10s} {model:18s} {cells}   {len(covered)}")
-            row = per_model.setdefault(model, {d: [] for d in DIMS})
+            print(f"{tag:10s} {model:18s} {cells}   {len(covered)}/{len(gold)}")
+            row = per_model.setdefault(model, {
+                "dimensions": {d: [] for d in DIMS},
+                "returned": 0,
+                "reference": 0,
+                "extra": 0,
+            })
             for d in DIMS:
                 if f1[d] is not None:
-                    row[d].append((f1[d], len(covered)))
-    print("-" * 70)
-    print("weighted mean across volumes (by entries scored):")
+                    row["dimensions"][d].append(rep[d])
+            row["returned"] += len(covered)
+            row["reference"] += len(gold)
+            row["extra"] += len(set(preds) - set(gold))
+    print("-" * 82)
+    print("corpus micro-average (pooled TP/FP/FN; missing entries included):")
     for model, row in sorted(per_model.items()):
         cells = []
         for d in DIMS:
-            xs = row[d]
+            xs = row["dimensions"][d]
             if xs:
-                w = sum(n for _, n in xs)
-                cells.append(f"{sum(v * n for v, n in xs) / w:7.3f}")
+                cells.append(f"{sum_prf(xs)['f1']:7.3f}")
             else:
                 cells.append(f"{'—':>7s}")
-        print(f"{'ALL':10s} {model:18s} {' '.join(cells)}")
+        coverage = f"{row['returned']}/{row['reference']}"
+        if row["extra"]:
+            coverage += f" (+{row['extra']} extra)"
+        print(f"{'ALL':10s} {model:18s} {' '.join(cells)}   {coverage}")
     return 0
 
 

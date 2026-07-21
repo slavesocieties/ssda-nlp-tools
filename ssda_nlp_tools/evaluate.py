@@ -1,6 +1,6 @@
-"""Gold-set evaluation harness for SSDA entity extraction.
+"""Reference-set evaluation harness for SSDA entity extraction.
 
-Scores predicted `data = {people, events}` against a hand-labeled gold set and
+Scores predicted `data = {people, events}` against a supplied reference set and
 reports precision / recall / F1 per dimension:
 
   * people      — did we find the right people (name-aligned)?
@@ -244,6 +244,24 @@ def evaluate(gold_source: Any, pred_source: Any, name_threshold: float = 0.72) -
     ent_matches, ent_ug, ent_up = align_entries(gold, pred)
 
     per_entry = [score_entry(gold[gi], pred[pi], name_threshold) for gi, pi in ent_matches]
+
+    # An entirely missing entry still contains missed entities; an entirely
+    # spurious entry still contains false-positive entities.  Earlier versions
+    # reported the unmatched entry counts but silently omitted their contents
+    # from entity F1, which made incomplete model output look better than it
+    # was. Score each unmatched row against an empty counterpart so the
+    # corpus-level confusion totals measure end-to-end extraction quality.
+    def empty_entry(entry_id: str) -> Dict[str, Any]:
+        return {"id": entry_id, "text": "", "people": [], "events": []}
+
+    per_entry.extend(
+        score_entry(gold[gi], empty_entry(gold[gi]["id"]), name_threshold)
+        for gi in ent_ug
+    )
+    per_entry.extend(
+        score_entry(empty_entry(pred[pi]["id"]), pred[pi], name_threshold)
+        for pi in ent_up
+    )
 
     # micro-average the confusion triples across entries
     def micro(dim):

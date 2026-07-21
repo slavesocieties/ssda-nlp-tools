@@ -3,56 +3,44 @@
 Five paired gold examples from Daniel (`_sample.json` input → `_sample_output.json`
 gold). Three seen before (65858, 420550, 740018), two new (**260950, 544367**).
 
-## Result: perfect recall, two over-splits
+## Result: perfect recall; two supplied references omit trailing partials
 
 | stem | gold | pred | records matched | note |
 |---|---|---|---|---|
 | 65858 | 10 | **11** | 10/10 | +1 trailing partial (real 21-May record gold omits) |
 | 260950 | 13 | 13 | 13/13 | ✓ exact (Portuguese, 1910) |
 | 420550 | 8 | 8 | 8/8 | ✓ exact |
-| 544367 | 5 | **6** | 5/5 | +1 re-transcription duplicate across page break |
+| 544367 | 5 | **6** | 5/5 | +1 real trailing partial (No. 546, Juan Alberto; reference omits it) |
 | 740018 | 11 | 11 | 11/11 | ✓ exact |
 
-**Every gold record boundary is found (47/47 recall).** The two misses are
-*precision* over-splits, both on 2-page inputs, both from the same upstream
-cause: Archivault re-transcribes text at the page boundary.
+**Every reference record boundary is found (47/47 recall).** In both 65858 and
+544367, the apparent extra segment is a genuine record beginning at the bottom
+of the final supplied page. The reference stops before that trailing partial.
 
-- **544367**: page 0107 ends mid-record (partial, no signature); page 0108
-  re-opens with that record's own opener (`En la Parroquia… a los cuatro días…
-  de Octubre… 1895`), plus margin names interleaved into the body
-  (`cuatro`→`cuaJuantro`). The segmenter reads it as a fresh record → duplicate.
+- **544367**: page 0107's No. 543 continues and closes at the top of page 0108.
+  Page 0108 then contains Nos. 544 and 545 and visibly begins **No. 546, Juan
+  Alberto**. No. 546 runs off the supplied image, so keeping it with
+  `partial: true` is correct; the five-entry reference simply omits it.
 - **65858**: the extra record is `Aos vinte e hum dias` (21 May) — a *different*
   date from the preceding `Aos vinte dias` (20 May). It is a **genuine new
   record** that runs off the last provided page (`partial:True`). Gold omits it;
   the segmenter is arguably *more* complete here.
 
-## Why this is NOT auto-fixed in the segmenter
+## Why these are not dropped in the segmenter
 
-Consecutive sacramental records are near-identical in form, so content
-heuristics cannot separate a re-transcription duplicate from two real records:
+Both extras contain anchored new-record evidence and distinct principals. A
+rule that forces prediction count to match an incomplete reference would delete
+real archival records.
 
-| candidate rule | 544367 (want flagged) | 65858 (must NOT) | 420550 (must NOT) |
-|---|---|---|---|
-| opener prefix-similarity | 0.94 | **0.93** | 0.65 |
-| same parsed date as prev | unparseable (`cuaJuantro`) | diff date | **false-flags** |
-
-Every rule aggressive enough to drop 544367's duplicate also deletes the real
-21-May record in 65858 or breaks the already-correct 420550. On 62k pages that
-means silently deleting real baptisms/burials. The segmenter therefore keeps
-both and flags `partial` — the **safe** failure mode (over-inclusion, never
-loss). Correct home for the fix, in order of preference:
-
-1. **Upstream** — Archivault should not duplicate opener text across page
-   boundaries (same family as the known 1,281 API-failure pages).
-2. **QA / dedup** (`run_qa.py` already does "duplicates") — once records are
-   completed by LLM extraction, a full-record duplicate like 544367's is
-   trivially separable from 65858's distinct record; the partial fragment's
-   scarce text is the problem, not the completed entry.
-3. **Human review** (`run_review.py`) for the residue.
+The segmenter therefore keeps both trailing records and flags them `partial`—
+the safe behavior under the confirmed "never drop partials" convention. A
+regression test now runs the real 544367 pages through segmentation and
+principal-aware QA and verifies that all six distinct records survive with no
+duplicate flag.
 
 ## Open convention question for Daniel
 
-Should a trailing partial that runs off the **last provided page** (65858's
-21-May record) be **kept + flagged** (current behavior, matches the 2026-07-16
-"never drop partials" decision) or **dropped** (this gold's convention)? The two
-new examples pull in opposite directions and only Daniel can set the rule.
+The current behavior follows the 2026-07-16 "never drop partials" decision.
+If supplied reference sheets intentionally exclude trailing partials, scoring
+should mark that convention explicitly rather than calling correct segments
+false positives.

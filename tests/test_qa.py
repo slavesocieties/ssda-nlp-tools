@@ -70,3 +70,25 @@ def test_vocabulary_distributions_present():
     vol = {"id": 1, "entries": [_entry("0001-01", "Sara")]}
     rep = qa_volume(vol)
     assert "phenotype" in rep["vocabulary"]
+
+
+def test_544367_segment_to_qa_keeps_distinct_trailing_record():
+    """Regression over the real two-page fixture: No. 546 is a distinct trailing
+    partial, not a page-boundary duplicate of No. 545. Representative extraction
+    principals exercise the same principal-aware QA path used in production."""
+    from ssda_nlp_tools.segment import load_pages, segment_volume
+
+    fixture = os.path.join(os.path.dirname(__file__), "fixtures", "544367_sample.json")
+    entries = segment_volume(load_pages(fixture))["entries"]
+    principals = ["Manuel Salvador", "Francisco Miguel", "Victor Clemente",
+                  "Segundo Guillermo", "Juan Francisco", "Juan Alberto"]
+    assert len(entries) == len(principals) == 6
+    for entry, principal in zip(entries, principals):
+        entry["data"] = {
+            "people": [{"id": "P01", "name": principal}],
+            "events": [{"type": "baptism", "principals": ["P01"]}],
+        }
+
+    rep = qa_volume({"id": "544367", "entries": entries})
+    assert rep["entries"] == 6
+    assert rep["duplicates"] == []

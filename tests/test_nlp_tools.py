@@ -96,6 +96,33 @@ def test_empty_predictions_zero_recall():
     assert r["people"]["tp"] == 0
 
 
+def test_missing_whole_entry_counts_as_false_negatives():
+    gold = {"examples": [
+        {"entry": "1", "data": {"people": [{"id": "P1", "name": "Ana"}],
+                                  "events": [{"type": "baptism", "principals": ["P1"]}]}},
+        {"entry": "2", "data": {"people": [{"id": "P1", "name": "Beatriz"}],
+                                  "events": [{"type": "baptism", "principals": ["P1"]}]}},
+    ]}
+    pred = {"examples": [copy.deepcopy(gold["examples"][0])]}
+    r = ev.evaluate(gold, pred)
+    assert r["entries"]["unaligned_gold"] == 1
+    assert r["people"]["tp"] == 1 and r["people"]["fn"] == 1
+    assert r["events"]["tp"] == 1 and r["events"]["fn"] == 1
+    assert r["people"]["recall"] == 0.5
+
+
+def test_spurious_whole_entry_counts_as_false_positives():
+    gold = {"examples": [{"entry": "1", "data": {"people": [], "events": []}}]}
+    pred = {"examples": [
+        {"entry": "1", "data": {"people": [], "events": []}},
+        {"entry": "extra", "data": {"people": [{"id": "P1", "name": "Invented"}],
+                                      "events": []}},
+    ]}
+    r = ev.evaluate(gold, pred)
+    assert r["entries"]["unaligned_pred"] == 1
+    assert r["people"]["fp"] == 1
+
+
 def test_norm_value_bool_and_accent():
     assert ev.norm_value(True) == "true"
     assert ev.norm_value("Libre") == "libre"
