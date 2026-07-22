@@ -37,6 +37,8 @@ ssda_nlp_tools/
   cost.py         token/cost model + optimizer to hit a $/image target
   batch_extract.py batched, cache-ordered, single-pass extractor (the cost recipe)
   segment.py      Task 3: deterministic Archivault->entry segmentation ($0/image)
+  admin_records.py deterministic administrative dossier/page preparation ($0/image)
+  routing.py      conservative genre + complexity router; emits no-network manifests
   segeval.py      segmentation scoring + margin-number structural validation
   fixes.py        corrected parse_date / complete_date / is_principal / fix_relationships
 run_pipeline.py         ONE COMMAND: qa -> link -> resolve -> network -> review page
@@ -49,6 +51,7 @@ run_review.py           CLI: make review.html / apply decisions.json
 run_cost.py             CLI: cost model + $/image optimizer + lever waterfall
 run_batch.py            CLI: batched-extraction token saving + emit ready messages
 run_segment.py          CLI: Task 3 segmentation (+ --structural / --eval checks)
+run_route_volume.py     CLI: heterogeneous-volume routing manifest (--source-kind auto)
 run_corpus_prompts.py   CLI: segmented corpus -> priced, ready-to-send extraction
                         batches (compact JSONL; --expand emits OpenAI Batch-API files)
 tests/                  67 offline tests (incl. Daniel's gold pairs as fixtures)
@@ -56,6 +59,22 @@ eval_data/model_agreement_0013_0023.{md,json}   compiled model bake-off report
 eval_data/cost_to_penny.md                      how to hit $0.01/image (with recipe)
 eval_data/task3_segmentation.md                 Task 3 results: gold-perfect, 100% structural
 ```
+
+## Heterogeneous-volume routing
+
+Run this before any extraction on a new volume:
+
+```powershell
+python run_route_volume.py VOLUME.json --out routing_manifest.json --source-kind auto
+```
+
+The router is deterministic and never calls a model. It records its genre
+evidence, preserves source-image provenance, and chooses only a pre-approved
+route: high-confidence sacramental pages use the existing local segmenter;
+administrative pages receive a local page index and may be nominated for the
+compact model profile; dense, empty, or uncertain inputs require QA. A separate
+capped, explicitly approved extraction command is still required to contact a
+provider.
 
 The full chain: **extract.py output → QA → disambiguate → resolve → link → network**,
 with a human review loop (review.html → decisions.json → constraints). Each step is
