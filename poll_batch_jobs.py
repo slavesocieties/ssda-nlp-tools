@@ -10,8 +10,9 @@ work. Keys are read from the environment only and are never printed or saved.
 Job receipts read: gemini-3.5-flash_batch_job.json, sonnet_batch_job.json,
 sonnet_cached_batch_job.json (skipped silently if absent).
 
-When a job reports finished usage, update model_bakeoff_spend_ledger.json:
-move that job's reservation into confirmed_usd at the ACTUAL billed amount.
+The provider usage is saved for offline reconciliation. This script does not
+modify model_bakeoff_spend_ledger.json because pricing changes over time and a
+job receipt may omit auxiliary synchronous calls such as cache warm-ups.
 """
 import json
 import os

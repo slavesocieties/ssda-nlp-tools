@@ -93,7 +93,7 @@ live-provider outputs are gitignored.
 ```
 ssda_nlp_tools/     the package (segmentation, eval, QA, identity, network, cost)
 run_*.py            one CLI per pipeline stage (see ssda_nlp_tools/README.md)
-tests/              67 offline tests; tests/fixtures/ = the paired gold examples
+tests/              105 offline tests; tests/fixtures/ = the paired gold examples
 eval_data/          measured reports: segmentation, cost, model bake-off
 Text data/, Sample_output/, Reduction_test/, training_data.json, instructions.json,
 extract.py, normalize.py, utility.py, transcription_json_to_training_*.py

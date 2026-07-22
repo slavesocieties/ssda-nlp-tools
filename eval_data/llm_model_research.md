@@ -1,5 +1,13 @@
 # Which LLM for extraction: cost vs. precision (updated 2026-07-16)
 
+> **2026-07-21 live-result correction:** The Sonnet 5 cached-Batch projection
+> below did not survive a real API test. Two Batch requests reported 20,567
+> cache-write tokens each and **zero cache-read tokens**, and only 1/8 requested
+> records returned valid JSON; the others were incomplete or truncated by
+> adaptive-thinking/output limits. Treat the projected $0.0117/image as an
+> optimistic cost model, not a production measurement. See
+> `eval_data/async_batch_results_20260721.md`.
+
 Second pass on this, after Ronak's follow-up asked for two real fixes and a
 change of framing:
 
@@ -41,7 +49,7 @@ not a guessed product of the two:
 
 | Vendor | Batch alone | Cached + Batch together | Source |
 |---|---:|---:|---|
-| Anthropic | 50% off | **5%** of standard (their own words: "as little as 5%") | [platform.claude.com](https://platform.claude.com/docs/en/about-claude/pricing) |
+| Anthropic | 50% off | Cache multipliers stack with Batch, but only on actual cache hits; concurrent/async requests may each write the cache | [platform.claude.com](https://platform.claude.com/docs/en/about-claude/pricing) |
 | OpenAI | 50% off | **25%** of standard (their own reported example: GPT-5.4 cached+batched input = $0.625/M vs $2.50 base) | search-aggregated from OpenAI's public statements — see caveat below |
 | Google | 50% off (confirmed for both Flash models) | not independently verified — modeled conservatively, flagged in every report | [ai.google.dev](https://ai.google.dev/gemini-api/docs/pricing) |
 
