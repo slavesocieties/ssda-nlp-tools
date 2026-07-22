@@ -17,39 +17,48 @@ _ADMIN_CUES = re.compile(
     r"\b(?:cofrad[ií]a|hermandad|petici[oó]n|solicita|expediente|cabildo|"
     r"mayordomo|constituci[oó]n|licencia|reglamento)\b", re.IGNORECASE)
 _SACRAMENTAL_CUES = re.compile(
-    r"\b(?:bautiz|baptis|matrim[oô]ni|casament|obit|[oó]bitos|sepult|"
-    r"enterr|fallec|defunt|burial|parish\s+(?:burial|baptism|marriage)|"
-    r"livro\s+de\s+(?:obitos|[oó]bitos|baptismos))\b", re.IGNORECASE)
+    r"\b(?:bautiz\w*|baptis\w*|matrim[oô]ni\w*|casament\w*|obit\w*|"
+    r"[oó]bitos?\w*|sepult\w*|enterr\w*|fallec\w*|defunt\w*|burial\w*)\b",
+    re.IGNORECASE)
+_REGISTER_TITLE_CUES = re.compile(
+    r"\b(?:parish|baptism\w*|bautism\w*|marriage|matrim[oô]ni\w*|"
+    r"burial|obit\w*|[oó]bitos?\w*|difuntos?|registros?\s+parroquiales|livro)\b",
+    re.IGNORECASE)
 
 
 def infer_source_kind(items: list[dict[str, Any]], pages: list[tuple[str, str]]) -> dict[str, Any]:
     """Return a conservative source-kind decision and its reproducible evidence."""
     text = "\n".join(text for _, text in pages)
+    titles = "\n".join(str(item.get("title") or "") for item in items)
     admin_cues = len(_ADMIN_CUES.findall(text))
     sacramental_cues = len(_SACRAMENTAL_CUES.findall(text))
+    register_title_cues = len(_REGISTER_TITLE_CUES.findall(titles))
     multi_image_items = sum(1 for item in items if len(item.get("images") or []) > 1)
     page_types = Counter(detect_page_type(text) for _, text in pages)
     registers = page_types["register"]
-    if admin_cues >= 2 and multi_image_items:
+    evidence = {"administrative_cues": admin_cues, "sacramental_cues": sacramental_cues,
+                "register_title_cues": register_title_cues,
+                "multi_image_items": multi_image_items,
+                "detected_page_types": dict(page_types)}
+    # A high density of administrative language without a register title is
+    # enough to recognize a dossier; incidental "licencia" in a marriage
+    # register is not.
+    if (admin_cues >= max(5, sacramental_cues * 3) and not register_title_cues
+            and multi_image_items):
         return {"kind": "administrative", "confidence": 0.95,
-                "evidence": {"administrative_cues": admin_cues,
-                             "sacramental_cues": sacramental_cues,
-                             "multi_image_items": multi_image_items,
-                             "detected_page_types": dict(page_types)}}
+                "evidence": evidence}
     # Large registers may contain cover, index and table pages.  Require both
     # some register-shaped text and corpus-scale sacramental evidence rather
     # than treating a table-heavy volume as unknown.
     strong_sacramental_evidence = sacramental_cues >= max(15, len(pages) * 0.05)
-    if pages and registers / len(pages) >= 0.2 and strong_sacramental_evidence:
+    structured_register_pages = registers + page_types["index"]
+    title_and_shape = ((register_title_cues >= 2 and structured_register_pages / len(pages) >= 0.6)
+                       or (register_title_cues >= 1 and registers / len(pages) >= 0.7)) if pages else False
+    if pages and (title_and_shape or (registers / len(pages) >= 0.2 and strong_sacramental_evidence)):
         return {"kind": "sacramental", "confidence": 0.90,
-                "evidence": {"administrative_cues": admin_cues,
-                             "sacramental_cues": sacramental_cues,
-                             "multi_image_items": multi_image_items,
-                             "detected_page_types": dict(page_types)}}
+                "evidence": evidence}
     return {"kind": "unknown", "confidence": 0.0,
-            "evidence": {"administrative_cues": admin_cues, "sacramental_cues": sacramental_cues,
-                         "multi_image_items": multi_image_items,
-                         "detected_page_types": dict(page_types)}}
+            "evidence": evidence}
 
 
 def route_sacramental(pages: list[tuple[str, str]], *, source: str = "") -> dict[str, Any]:

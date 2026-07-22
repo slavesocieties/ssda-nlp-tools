@@ -31,8 +31,16 @@ def test_source_classifier_accepts_a_table_heavy_parish_register():
     prose = "Livro de óbitos. Aos dez dias se sepultou o defunto. " * 10
     table = "| pessoa | obitos |\n| Ana | sepultou |"
     pages = [(f"p{i}.jpg", table if i < 6 else prose) for i in range(10)]
-    decision = infer_source_kind([{"images": [{"file": image, "transcription": text}
+    decision = infer_source_kind([{"title": "Livro de óbitos parish burial register", "images": [{"file": image, "transcription": text}
                                                  for image, text in pages]}], pages)
+    assert decision["kind"] == "sacramental"
+
+
+def test_source_classifier_does_not_misread_a_marriage_register_as_administrative():
+    text = "Matrimonios con licencia eclesiastica. " * 30
+    pages = [("a.jpg", text), ("b.jpg", text)]
+    decision = infer_source_kind([{"title": "Havana Ecclesiastical Marriage Records", "images": [
+        {"file": image, "transcription": value} for image, value in pages]}], pages)
     assert decision["kind"] == "sacramental"
 
 
