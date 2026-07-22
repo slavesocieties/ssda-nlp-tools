@@ -48,3 +48,14 @@ valid result demonstrates that disabling reasoning is appropriate for this
 bounded metadata task, but a complete administrative extraction requires a
 smaller extraction unit or a narrower page-level schema before another paid
 attempt.
+
+## Page-level retry
+
+A final one-page attempt on the next unprocessed page (`doc-003--p03-03`) used
+the bounded schema, `reasoning_effort: none`, and a 700-token response limit.
+It reached that limit without valid JSON at $0.005248 (1,048 input, 700 output
+tokens), so the runner immediately stopped before sending the other 15 pages.
+Confirmed spend is $0.106550 with no reservation.  This establishes that even
+a page can contain more entities/actions than the current all-fields schema
+can encode in 700 tokens; any future paid continuation must split extraction
+by field group or introduce a compact, page-specific schema.
