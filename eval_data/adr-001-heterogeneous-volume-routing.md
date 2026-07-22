@@ -17,8 +17,9 @@ Use a deterministic router that emits a versioned manifest before any model
 call. Sacramental pages run through the existing free state-machine segmenter;
 only low-confidence pages are nominated for the sacramental fallback.
 Administrative material is grouped deterministically into dossiers and pages,
-then indexed locally. Only bounded administrative pages are nominated for the
-compact Luna index; dense or empty pages require QA.
+then indexed locally. Bounded administrative pages are nominated only for a
+QA-approved compact-index pilot until that profile has completed stratified
+validation; dense or empty pages also require QA.
 
 `auto` classification acts only with strong, recorded evidence. Otherwise the
 manifest is `unknown` and requires review. A caller must separately approve a

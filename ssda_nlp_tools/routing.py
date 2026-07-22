@@ -16,27 +16,38 @@ from .segment import detect_page_type, segment_volume
 _ADMIN_CUES = re.compile(
     r"\b(?:cofrad[ií]a|hermandad|petici[oó]n|solicita|expediente|cabildo|"
     r"mayordomo|constituci[oó]n|licencia|reglamento)\b", re.IGNORECASE)
+_SACRAMENTAL_CUES = re.compile(
+    r"\b(?:bautiz|baptis|matrim[oô]ni|casament|obit|[oó]bitos|sepult|"
+    r"enterr|fallec|defunt|burial|parish\s+(?:burial|baptism|marriage)|"
+    r"livro\s+de\s+(?:obitos|[oó]bitos|baptismos))\b", re.IGNORECASE)
 
 
 def infer_source_kind(items: list[dict[str, Any]], pages: list[tuple[str, str]]) -> dict[str, Any]:
     """Return a conservative source-kind decision and its reproducible evidence."""
     text = "\n".join(text for _, text in pages)
     admin_cues = len(_ADMIN_CUES.findall(text))
+    sacramental_cues = len(_SACRAMENTAL_CUES.findall(text))
     multi_image_items = sum(1 for item in items if len(item.get("images") or []) > 1)
     page_types = Counter(detect_page_type(text) for _, text in pages)
     registers = page_types["register"]
     if admin_cues >= 2 and multi_image_items:
         return {"kind": "administrative", "confidence": 0.95,
                 "evidence": {"administrative_cues": admin_cues,
+                             "sacramental_cues": sacramental_cues,
                              "multi_image_items": multi_image_items,
                              "detected_page_types": dict(page_types)}}
-    if pages and registers / len(pages) >= 0.8 and not multi_image_items:
+    # Large registers may contain cover, index and table pages.  Require both
+    # some register-shaped text and corpus-scale sacramental evidence rather
+    # than treating a table-heavy volume as unknown.
+    strong_sacramental_evidence = sacramental_cues >= max(15, len(pages) * 0.05)
+    if pages and registers / len(pages) >= 0.2 and strong_sacramental_evidence:
         return {"kind": "sacramental", "confidence": 0.90,
                 "evidence": {"administrative_cues": admin_cues,
+                             "sacramental_cues": sacramental_cues,
                              "multi_image_items": multi_image_items,
                              "detected_page_types": dict(page_types)}}
     return {"kind": "unknown", "confidence": 0.0,
-            "evidence": {"administrative_cues": admin_cues,
+            "evidence": {"administrative_cues": admin_cues, "sacramental_cues": sacramental_cues,
                          "multi_image_items": multi_image_items,
                          "detected_page_types": dict(page_types)}}
 
@@ -77,7 +88,10 @@ def route_administrative(items: list[dict[str, Any]], *, source: str = "") -> di
         elif page["text_characters"] > 1600 or density > 14:
             route, reason, review = "qa-admin-dense", "too dense for compact page schema", True
         else:
-            route, reason, review = "luna-admin-compact-index", "bounded compact-index candidate", False
+            # The compact profile is intentionally not auto-promoted: its
+            # schema needs a successful stratified validation before it can be
+            # used outside an explicitly approved pilot.
+            route, reason, review = "qa-admin-compact-pilot", "bounded candidate; profile not production-validated", True
         routes.append({"page_id": page["id"], "document_id": page["document_id"],
                        "source_image": page["source_image"], "route": route,
                        "reason": reason, "requires_review": review,
