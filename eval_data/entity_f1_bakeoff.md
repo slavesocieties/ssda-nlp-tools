@@ -30,6 +30,30 @@ every model. Because coverage differs and the references are model-generated,
 this result supports Luna as the relationship-quality candidate but does not by
 itself settle production model choice.
 
+### The coverage gap is a test-harness artifact, not model reliability
+
+Luna's and Haiku's "missing" entries are **the exact same 8 contiguous entries**
+on volume 0035 (0037-03 … 0039-03) — batch **b1, which was never sent to them**
+in the interrupted July runs (only b0/b2/b3 were saved). mini shows 32/32 on
+0035 only because its full four-batch run was saved. So mini's coverage lead
+(87/88) and part of its events edge are **unequal testing**, not reliability.
+The missing-output penalty (correct in general) is here charging Luna/Haiku for
+entries they were never asked to produce.
+
+**Fair comparison — the 77 entries all three models actually returned** (pooled
+micro-F1, apples-to-apples):
+
+| Dimension | gpt-5.6-luna | gpt-5.4-mini | claude-haiku-4.5 |
+|---|---|---|---|
+| people | **0.986** | 0.925 | 0.944 |
+| events | 0.986 | 0.981 | **1.000** |
+| relationships | **0.837** | 0.728 | 0.749 |
+
+On equal footing Luna leads people and relationships decisively and is
+competitive on events — consistent with every earlier cut. To make the full-88
+table fair too, run Luna/Haiku 0035 batch b1 (~$0.02 each) or restrict scoring
+to the common set. **Recommendation unchanged: Luna.**
+
 ### Single-volume detail (0035_0044, all attributes below)
 
 | Dimension | gpt-5.4-mini (32/32) | gpt-5.6-luna (24/32) | claude-haiku-4.5 (24/32) |
