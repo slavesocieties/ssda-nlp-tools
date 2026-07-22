@@ -22,3 +22,6 @@ out_luna_pipeline/
 out_mini_pipeline/
 out_haiku_pipeline/
 drive_pilots/
+
+# Local Claude handoff — private, never publish
+CLAUDE_HANDOFF.md
