@@ -25,3 +25,6 @@ drive_pilots/
 
 # Local Claude handoff — private, never publish
 CLAUDE_HANDOFF.md
+
+# Deterministic production build outputs (regenerable via run_production.py)
+production/
