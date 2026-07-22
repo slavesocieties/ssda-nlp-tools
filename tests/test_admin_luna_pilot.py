@@ -35,3 +35,11 @@ def test_completed_page_chunks_can_be_excluded_by_id():
     chunks = pilot._chunk(doc, 1)
     remaining = [chunk for chunk in chunks if chunk["id"] not in {"doc-003--p01-01"}]
     assert [chunk["id"] for chunk in remaining] == ["doc-003--p02-02"]
+
+
+def test_compact_profile_has_a_smaller_no_evidence_prompt():
+    doc = {"id": "doc-003--p01-01", "title": "Page", "metadata": {}, "faithful_text": "Text"}
+    compact = pilot._messages(doc, "compact-index")[0]["content"]
+    full = pilot._messages(doc, "full")[0]["content"]
+    assert "roles/evidence" in compact
+    assert len(compact) < len(full)

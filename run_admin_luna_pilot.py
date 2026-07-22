@@ -40,6 +40,25 @@ Return exactly:
 }
 All array fields are required, even when empty.  `iso_date` must be ISO-8601 only when fully stated; otherwise null."""
 
+COMPACT_SYSTEM = """You build a compact page index for Spanish colonial administrative records.
+Return JSON only. This is routing metadata, not a transcription: do not quote,
+summarize a paragraph, infer unstated facts, or include roles/evidence. Use
+source-language spellings. Keep at most 2 document types, 5 people, 5
+organizations, 4 places, 4 dates, 5 action labels, and 2 uncertainties.
+
+Return exactly:
+{
+  "document_id": "...",
+  "document_types": ["petition"],
+  "organizations": ["..."],
+  "people": ["..."],
+  "places": ["..."],
+  "dates": ["..."],
+  "actions": ["petition"],
+  "uncertainties": ["..."]
+}
+All array fields are required, even when empty."""
+
 
 class ProviderRejected(RuntimeError):
     pass
@@ -53,9 +72,9 @@ def _load(path: Path):
     return docs
 
 
-def _messages(doc):
+def _messages(doc, profile="full"):
     return [
-        {"role": "system", "content": SYSTEM},
+        {"role": "system", "content": COMPACT_SYSTEM if profile == "compact-index" else SYSTEM},
         {"role": "user", "content": json.dumps({
             "document_id": doc["id"], "title": doc["title"],
             "metadata": doc.get("metadata", {}), "faithful_text": doc["faithful_text"],
@@ -148,6 +167,8 @@ def main(argv=None):
                     help="already-completed chunk IDs to exclude after page splitting")
     ap.add_argument("--reasoning-effort", choices=("none", "low", "medium", "high", "xhigh", "max"),
                     default="none", help="reasoning budget; none is appropriate for bounded extraction")
+    ap.add_argument("--profile", choices=("full", "compact-index"), default="full",
+                    help="full auditable metadata or compact page-routing index")
     ap.add_argument("--confirm", action="store_true")
     args = ap.parse_args(argv)
     docs = _load(Path(args.input))
@@ -162,7 +183,7 @@ def main(argv=None):
         docs = [doc for doc in docs if doc["id"] not in skipped]
         if not docs:
             ap.error("all selected chunks were skipped")
-    prepared = [(doc, _messages(doc)) for doc in docs]
+    prepared = [(doc, _messages(doc, args.profile)) for doc in docs]
     ceiling = sum(_ceiling(messages, args.max_output_tokens) for _, messages in prepared)
     print(f"dossiers: {len(docs)}; max output/dossier: {args.max_output_tokens}")
     print(f"worst-case new spend: ${ceiling:.4f}; cap: ${args.max_usd:.2f}")
@@ -215,7 +236,7 @@ def main(argv=None):
         if not valid or stop != "stop":
             print("STOPPING: incomplete or invalid response; no further dossiers sent.")
             break
-    payload = {"model": MODEL, "reasoning_effort": args.reasoning_effort,
+    payload = {"model": MODEL, "profile": args.profile, "reasoning_effort": args.reasoning_effort,
                "documents_requested": len(docs), "rows": rows,
                "ledger": ledger, "cap_usd": args.max_usd}
     Path(args.out).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
