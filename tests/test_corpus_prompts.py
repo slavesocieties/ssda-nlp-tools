@@ -63,6 +63,41 @@ def test_compact_write_and_expand_roundtrip(tmp_path):
     assert man["totals"]["prefix_tokens_per_call"] > 5000   # real few-shot pool present
 
 
+def _expand_body(tmp_path, sub, model, reasoning):
+    # isolated corpus per call so the same tmp_path can be reused across levels
+    from ssda_nlp_tools.segment import load_pages, segment_volume
+    base = tmp_path / sub
+    corpus = base / "corpus"
+    corpus.mkdir(parents=True)
+    pages = load_pages(os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json"))
+    res = segment_volume(pages)
+    with open(corpus / "239746.segmented.json", "w", encoding="utf-8") as f:
+        json.dump({"volume": "239746", "stats": res["stats"], "entries": res["entries"]},
+                  f, ensure_ascii=False)
+    out = str(base / "b")
+    assert _run(["--corpus", str(corpus), "--limit", "1", "--outdir", out,
+                 "--model", model, "--reasoning", reasoning]) == 0
+    path = os.path.join(out, next(f for f in os.listdir(out) if f.endswith(".batches.jsonl")))
+    assert _run(["--expand", path]) == 0
+    api = path.replace(".batches.jsonl", ".batchapi.jsonl")
+    return json.loads(open(api, encoding="utf-8").readline())["body"]
+
+
+def test_reasoning_effort_pinned_into_openai_send_body(tmp_path):
+    """The pinned reasoning level lands verbatim in the OpenAI send body, so the
+    production run matches the level the quality numbers were measured at rather
+    than the provider default."""
+    for i, level in enumerate(("minimal", "low", "medium", "high")):
+        body = _expand_body(tmp_path, f"r{i}_{level}", "gpt-5.6-luna", level)
+        assert body["reasoning_effort"] == level
+        assert body["model"] == "gpt-5.6-luna"
+
+
+def test_reasoning_effort_omitted_for_non_openai(tmp_path):
+    body = _expand_body(tmp_path, "r_claude", "claude-haiku-4.5", "high")
+    assert "reasoning_effort" not in body     # Anthropic body must not carry it
+
+
 def test_partial_entries_are_tagged_not_dropped(tmp_path):
     corpus = _mini_corpus(tmp_path)
     out = str(tmp_path / "b2")

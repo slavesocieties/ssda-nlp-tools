@@ -152,17 +152,19 @@ stable across volumes → selected. Cost for these 6 volumes: **~$15 Batch API**
 comfortably under the $0.01/image target. Full detail + caveats:
 `eval_data/entity_f1_bakeoff.md`, `eval_data/llm_model_research.md`.
 
-**Reasoning level (must be pinned before the production run).** The bake-off
-that produced the F1 above calls `gpt-5.6-luna` with **no reasoning parameter**
-(`run_model_bakeoff.py` sends only model/messages/max_completion_tokens/
-response_format), so those numbers were measured at the **OpenAI API default**
-reasoning for Luna. The separate administrative pilot (`run_admin_luna_pilot.py`)
-instead defaults to `reasoning_effort="none"`. These are inconsistent. Before the
-production extraction, **decide and pin one reasoning level and measure at it**,
-because it moves both cost (reasoning tokens bill as output — the ~$15 estimate
-assumes ~900 output tok/entry) and quality (especially the weak relationships
-dimension). Safest: re-score a small sample at the chosen level so the corpus run
-matches the evidence.
+**Reasoning level — PINNED to `low` (2026-07-22).** `run_corpus_prompts.py`
+now takes `--reasoning {minimal,low,medium,high}` (default **low**) and bakes
+`reasoning_effort` into both the staged batches and the expanded Batch-API send
+body (OpenAI only; omitted for Anthropic). `low` is chosen because extraction is
+bounded rule-following (apply the normalization rules, fill the schema per a
+fixed formula), not open-ended reasoning — a little headroom above
+minimal/none for the inference-y relationship edges, without medium/high's
+reasoning-token cost. **Caveat, stated honestly:** the F1 numbers above were
+measured at the API *default* (unset). Before the full run, **confirm F1 at
+`low`** on the staged validation sample (`production/validation_low/`, one
+volume, ~$0.06 Batch API) with `score_entity_f1.py`; adjust the level if it
+regresses. Reasoning tokens bill as output, so the ~$15 estimate (which assumes
+~900 output tok/entry) is a floor at `low`.
 
 ---
 
@@ -174,9 +176,13 @@ $py = 'C:\Users\mahajar\AppData\Local\Programs\Python\Python312\python.exe'
 & $py -m pytest tests -q                                   # 122 tests, offline, <1s
 & $py run_route_volume.py VOL.json --source-kind auto --out manifest.json   # $0
 & $py run_production.py                                     # $0, all 6 volumes -> production/
-& $py run_corpus_prompts.py --corpus production/corpus --model gpt-5.6-luna  # $0, prices the paid step
-# --- paid, only after dry-run + approval ---
-# & $py run_model_bakeoff.py ...            # extraction; keys in env; --confirm required
+# $0: stage priced Luna batches with reasoning pinned (already run -> production/batches/)
+& $py run_corpus_prompts.py --corpus production/corpus --outdir production/batches `
+      --model gpt-5.6-luna --reasoning low
+# $0: expand a volume to the verbatim OpenAI Batch-API upload file (reasoning_effort baked in)
+& $py run_corpus_prompts.py --expand production/batches/701054.batches.jsonl
+# --- paid, only after: confirm F1 at `low` on the sample, then approve ---
+#   OpenAI Batch API: upload production/batches/<vol>.batchapi.jsonl, poll, download.
 & $py run_pipeline.py EXTRACTED.json --tag VOL --outdir out_vol   # $0, QA+identity+graph
 & $py score_entity_f1.py                                   # $0, quality table from saved runs
 ```

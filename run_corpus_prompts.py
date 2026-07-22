@@ -42,6 +42,12 @@ def main(argv=None):
     ap.add_argument("--batch", type=int, default=10)
     ap.add_argument("--shots", type=int, default=15)
     ap.add_argument("--model", default="claude-haiku-4.5")
+    ap.add_argument("--reasoning", default="low",
+                    choices=("minimal", "low", "medium", "high"),
+                    help="reasoning_effort pinned into the staged batches and the "
+                         "expanded send body (default low: this is bounded "
+                         "rule-following extraction, not open-ended reasoning). "
+                         "OpenAI models only; ignored for others.")
     ap.add_argument("--training", default="training_data.json")
     ap.add_argument("--instructions", default=None)
     ap.add_argument("--volumes", nargs="*", default=None, help="only these volume ids")
@@ -58,15 +64,23 @@ def main(argv=None):
             n = 0
             for line in fh:
                 row = json.loads(line)
+                body = {"model": header["model"],
+                        "messages": header["prefix_messages"] + [row["tail_message"]],
+                        "response_format": {"type": "json_object"}}
+                # Pin the reasoning level the batches were staged at, so the
+                # sent request matches the level the quality numbers were
+                # measured at instead of the provider default (OpenAI only).
+                reasoning = header.get("reasoning")
+                if reasoning:
+                    body["reasoning_effort"] = reasoning
                 oh.write(json.dumps({
                     "custom_id": row["custom_id"],
                     "method": "POST", "url": "/v1/chat/completions",
-                    "body": {"model": header["model"],
-                             "messages": header["prefix_messages"] + [row["tail_message"]],
-                             "response_format": {"type": "json_object"}},
+                    "body": body,
                 }, ensure_ascii=False) + "\n")
                 n += 1
-        print(f"expanded {n} requests -> {out}  (upload this to the Batch API)")
+        note = f" (reasoning_effort={header['reasoning']})" if header.get("reasoning") else ""
+        print(f"expanded {n} requests -> {out}{note}  (upload this to the Batch API)")
         return 0
 
     os.makedirs(args.outdir, exist_ok=True)
@@ -84,6 +98,10 @@ def main(argv=None):
 
     price = DEFAULT_PRICING.get(args.model)
     manifest = {"model": args.model, "batch_size": args.batch, "shots": len(examples),
+                "reasoning": args.reasoning if args.model.startswith("gpt-") else None,
+                "cost_note": "output projection assumes ~900 tok/entry; reasoning "
+                             "tokens bill as output and are EXTRA at reasoning>minimal "
+                             "— validate on a sample before the full run",
                 "volumes": {}}
     tot_calls = tot_entries = tot_partial = 0
     tot_in_tokens = tot_prefix = 0
@@ -115,9 +133,12 @@ def main(argv=None):
                 if prefix_tokens is None:   # identical for every batch by design
                     prefix_tokens = sum(count_tokens(m["content"]) for m in msgs[:-1])
                 if bi == 0:                 # store the shared prefix once
-                    fh.write(json.dumps({"header": {
-                        "volume": vol, "model": args.model,
-                        "prefix_messages": msgs[:-1]}}, ensure_ascii=False) + "\n")
+                    header = {"volume": vol, "model": args.model,
+                              "prefix_messages": msgs[:-1]}
+                    # pin reasoning only for providers that accept it (OpenAI)
+                    if args.model.startswith("gpt-"):
+                        header["reasoning"] = args.reasoning
+                    fh.write(json.dumps({"header": header}, ensure_ascii=False) + "\n")
                 vol_tail_tokens += count_tokens(msgs[-1]["content"])
                 fh.write(json.dumps({"custom_id": f"{vol}-b{bi:04d}",
                                      "tail_message": msgs[-1]},
