@@ -15,6 +15,7 @@ gold_sheets/
 *_b[0-9]*.json
 *_batch_job.json
 *_bakeoff_results.json
+model_bakeoff_new_candidates.json
 model_bakeoff_spend_ledger.json
 batch_jobs_status.json
 out_luna_pipeline/

@@ -156,6 +156,20 @@ def test_bakeoff_haiku_sends_dated_wire_id():
     assert "id" not in bakeoff.MODELS["gpt-5.4-mini"]
 
 
+def test_new_candidate_cost_controls_are_encoded_in_provider_payloads():
+    bakeoff = _bakeoff_module()
+    messages = [{"role": "system", "content": "rules"},
+                {"role": "user", "content": "extract"}]
+    gemini = bakeoff._gemini(messages, "gemini-3.6-flash", 10_000)
+    assert "temperature" not in gemini["generationConfig"]
+    assert gemini["generationConfig"]["thinkingConfig"] == {"thinkingLevel": "minimal"}
+
+    sonnet = bakeoff._anthropic(messages, "claude-sonnet-5", 10_000)
+    assert sonnet["output_config"] == {"effort": "medium"}
+    assert sonnet["thinking"] == {"type": "disabled"}
+    assert bakeoff.MODELS["gpt-5.6-terra"]["input"] == 2.50
+
+
 # ---- cost model levers -------------------------------------------------------
 
 def _comp():

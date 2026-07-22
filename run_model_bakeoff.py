@@ -30,11 +30,15 @@ MODELS = {
     # friendly name (Anthropic's Haiku 4.5 requires the dated id).
     "gemini-2.5-flash": {"provider": "gemini", "input": 0.30, "output": 2.50, "key": "GEMINI_API_KEY"},
     "gemini-3.5-flash": {"provider": "gemini", "input": 1.50, "output": 9.00, "key": "GEMINI_API_KEY"},
+    "gemini-3.6-flash": {"provider": "gemini", "input": 1.50, "output": 7.50, "key": "GEMINI_API_KEY",
+                           "thinking_level": "minimal", "fixed_temperature": False},
     "gpt-5.4-mini": {"provider": "openai", "input": 0.75, "output": 4.50, "key": "OPENAI_API_KEY"},
     "gpt-5.6-luna": {"provider": "openai", "input": 1.00, "output": 6.00, "key": "OPENAI_API_KEY", "fixed_temperature": False},
+    "gpt-5.6-terra": {"provider": "openai", "input": 2.50, "output": 15.00, "key": "OPENAI_API_KEY", "fixed_temperature": False},
     "claude-haiku-4-5": {"provider": "anthropic", "input": 1.00, "output": 5.00, "key": "ANTHROPIC_API_KEY",
                           "id": "claude-haiku-4-5-20251001"},
-    "claude-sonnet-5": {"provider": "anthropic", "input": 2.00, "output": 10.00, "key": "ANTHROPIC_API_KEY", "fixed_temperature": False},
+    "claude-sonnet-5": {"provider": "anthropic", "input": 2.00, "output": 10.00, "key": "ANTHROPIC_API_KEY",
+                          "fixed_temperature": False, "effort": "medium", "thinking": "disabled"},
 }
 
 
@@ -65,6 +69,11 @@ def _anthropic(messages, model, max_tokens):
     turns = [{"role": "assistant" if m["role"] == "assistant" else "user", "content": m["content"]}
              for m in messages if m["role"] != "system"]
     body = {"model": model, "max_tokens": max_tokens, "system": system, "messages": turns}
+    cfg = MODELS[model]
+    if cfg.get("effort"):
+        body["output_config"] = {"effort": cfg["effort"]}
+    if cfg.get("thinking"):
+        body["thinking"] = {"type": cfg["thinking"]}
     if MODELS[model].get("fixed_temperature", True):
         body["temperature"] = 0
     return body
@@ -75,9 +84,14 @@ def _gemini(messages, model, max_tokens):
     contents = [{"role": "model" if m["role"] == "assistant" else "user",
                  "parts": [{"text": m["content"]}]}
                 for m in messages if m["role"] != "system"]
+    generation = {"maxOutputTokens": max_tokens, "responseMimeType": "application/json"}
+    cfg = MODELS[model]
+    if cfg.get("fixed_temperature", True):
+        generation["temperature"] = 0
+    if cfg.get("thinking_level"):
+        generation["thinkingConfig"] = {"thinkingLevel": cfg["thinking_level"]}
     return {"systemInstruction": {"parts": [{"text": system}]}, "contents": contents,
-            "generationConfig": {"temperature": 0, "maxOutputTokens": max_tokens,
-                                  "responseMimeType": "application/json"}}
+            "generationConfig": generation}
 
 
 def _call(cfg, messages, model, key, max_tokens):
