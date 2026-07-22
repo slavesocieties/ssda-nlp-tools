@@ -19,48 +19,38 @@ True micro-F1, pooling TP/FP/FN across volumes 0013–0023, 0024–0034,
 
 | Dimension | gpt-5.6-luna | gpt-5.4-mini | claude-haiku-4.5 |
 |---|---|---|---|
-| people | **0.925** | 0.923 | 0.898 |
-| events | 0.916 | **0.979** | 0.939 |
-| relationships | **0.789** | 0.738 | 0.718 |
-| entry coverage | 78/88 (88.6%) | **87/88 (98.9%)** | 80/88 (90.9%) |
+| people | **0.973** | 0.923 | 0.947 |
+| events | 0.971 | 0.979 | **1.000** |
+| relationships | **0.829** | 0.738 | 0.757 |
+| entry coverage | 86/88 (97.7%) | 87/88 (98.9%) | **88/88 (100%)** |
 
-Luna retains the strongest relationship result, while mini leads events and has
-near-complete coverage. Relationships remain the weakest core dimension for
-every model. Because coverage differs and the references are model-generated,
-this result supports Luna as the relationship-quality candidate but does not by
-itself settle production model choice.
+Luna leads people and relationships, while Haiku has perfect event F1 and full
+entry coverage. Relationships remain the weakest core dimension for every
+model. The references are model-generated and single-region, so this result
+supports Luna as the relationship-quality candidate but does not replace human
+gold or cross-language validation.
 
-### The coverage gap is a test-harness artifact, not model reliability
+### Missing 0035 batch completed live (2026-07-21)
 
-Luna's and Haiku's "missing" entries are **the exact same 8 contiguous entries**
-on volume 0035 (0037-03 … 0039-03) — batch **b1, which was never sent to them**
-in the interrupted July runs (only b0/b2/b3 were saved). mini shows 32/32 on
-0035 only because its full four-batch run was saved. So mini's coverage lead
-(87/88) and part of its events edge are **unequal testing**, not reliability.
-The missing-output penalty (correct in general) is here charging Luna/Haiku for
-entries they were never asked to produce.
+The eight-record 0035 b1 gap was closed with one explicitly approved capped
+request per model. Both returned 8/8 parseable records:
 
-**Fair comparison — the 77 entries all three models actually returned** (pooled
-micro-F1, apples-to-apples):
+| Model | Live cost | Cost/record | Cumulative ledger | Cap |
+|---|---:|---:|---:|---:|
+| gpt-5.6-luna | $0.04041 | $0.00505 | $0.57866 | $1.00 |
+| claude-haiku-4.5 | $0.05210 | $0.00651 | $0.69670 | $1.00 |
 
-| Dimension | gpt-5.6-luna | gpt-5.4-mini | claude-haiku-4.5 |
-|---|---|---|---|
-| people | **0.986** | 0.925 | 0.944 |
-| events | 0.986 | 0.981 | **1.000** |
-| relationships | **0.837** | 0.728 | 0.749 |
-
-On equal footing Luna leads people and relationships decisively and is
-competitive on events — consistent with every earlier cut. To make the full-88
-table fair too, run Luna/Haiku 0035 batch b1 (~$0.02 each) or restrict scoring
-to the common set. **Recommendation unchanged: Luna.**
+This removes the unequal-exposure artifact from volume 0035. The remaining
+missing outputs are genuine returned-output gaps from other volumes: Luna 2 on
+0013 and mini 1 on 0024. Haiku returned all 88 entries.
 
 ### Single-volume detail (0035_0044, all attributes below)
 
-| Dimension | gpt-5.4-mini (32/32) | gpt-5.6-luna (24/32) | claude-haiku-4.5 (24/32) |
+| Dimension | gpt-5.4-mini (32/32) | gpt-5.6-luna (32/32) | claude-haiku-4.5 (32/32) |
 |---|---|---|---|
-| people | **0.956** | 0.853 | 0.828 |
-| events | **0.991** | 0.826 | 0.851 |
-| relationships | **0.797** | 0.714 | 0.656 |
+| people | 0.956 | **0.989** | 0.970 |
+| events | 0.991 | 0.962 | **1.000** |
+| relationships | 0.797 | **0.836** | 0.776 |
 | event-date accuracy | 0.889 | **1.000** | **1.000** |
 
 Attribute and date rows below are conditional on matched people/events and do
@@ -70,14 +60,14 @@ not penalize missing entries; interpret them together with coverage.
 
 | Attribute | gpt-5.4-mini | gpt-5.6-luna | claude-haiku-4.5 | verdict |
 |---|---|---|---|---|
-| titles | 0.983 \| .03 | 0.939 \| .00 | 0.980 \| .02 | strong |
-| occupation | 0.969 \| .11 | 0.923 \| .04 | 0.923 \| .04 | strong |
-| free | 0.894 \| **.20** | 0.956 \| **.26** | 1.000 \| **.27** | accurate when present but over-asserts on null |
-| phenotype | 0.696 | 0.732 | 0.774 | mediocre |
-| origin | 0.821 | 0.500 | 1.000 | high variance |
-| legitimate | 0.238 | 0.933 | 0.267 | unstable |
+| titles | 0.983 \| .03 | 0.934 \| .00 | 0.984 \| .06 | strong |
+| occupation | 0.969 \| .11 | 0.939 \| .03 | 0.941 \| .03 | strong |
+| free | 0.894 \| **.20** | 0.971 \| **.21** | 0.985 \| **.19** | accurate when present but over-asserts on null |
+| phenotype | 0.696 | 0.771 | 0.763 | mediocre |
+| origin | 0.821 | 0.667 | 1.000 | high variance |
+| legitimate | 0.238 | 0.952 | 0.286 | unstable |
 | rank | 0.400 | 0.500 | 0.500 | weak (small n) |
-| age | 0.200 \| **.68** | 0.286 \| **.67** | 0.143 \| **.65** | **unreliable — invents ages** |
+| age | 0.200 \| **.68** | 0.300 \| **.66** | 0.200 \| **.64** | **unreliable — invents ages** |
 | ethnicity | 0.000 | 0.000 | 0.000 | **fails (n=3, noisy)** |
 
 ## Takeaways
@@ -89,6 +79,8 @@ not penalize missing entries; interpret them together with coverage.
    and the fine demographic attributes — especially **age** (heavy
    hallucination), **free** (over-asserted on nulls), ethnicity, legitimate,
    rank. `run_review.py` already exists for exactly this queue.
-3. **Model choice on entity quality:** Luna leads end-to-end relationship F1;
-   mini leads event F1 and coverage; their people F1 is effectively tied on this
-   small, single-region reference. Haiku trails both overall.
+3. **Model choice on entity quality:** Luna leads people and relationship F1;
+   Haiku leads events and coverage; mini remains the lower-cost comparison but
+   trails Luna on the archive's hardest dimension. **Recommendation: Luna with
+   the existing QA/review queue; Haiku is the fallback when complete output is
+   valued above relationship accuracy.**

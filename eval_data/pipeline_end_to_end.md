@@ -68,8 +68,9 @@ Ran the same pipeline on **all three models'** extractions of the three volumes:
 
 The broad graph shape is similar, but the spread is material: identities differ
 by up to 7%, cross-volume link counts by 14%, and edge counts by 17%. Luna's
-end-to-end relationship F1 against the GPT-4o-generated references is 0.789,
-versus 0.738 for mini and 0.718 for Haiku. Caveat, stated honestly: Luna
+end-to-end relationship F1 against the GPT-4o-generated references is 0.829,
+versus 0.738 for mini and 0.757 for Haiku after completing the missing 0035
+batch. Caveat, stated honestly: Luna
 shows a few more dangling references than mini/Haiku (5 vs 0) — an internal-
 consistency slip that QA flags and review fixes, not a gold-measured error. The
 corrected comparison favors Luna for relationships and mini for event accuracy

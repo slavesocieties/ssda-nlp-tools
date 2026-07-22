@@ -26,7 +26,7 @@ ROOT = Path(__file__).resolve().parent
 VOLUMES = [
     ("0035_0044", "Sample_output/Generated_0035_0044_4o_prompt_V2.json",
      ["openai_bakeoff_results.json", "gpt56luna_b*.json", "claudehaiku_b*.json",
-      "*0035*bakeoff_results.json"]),
+      "entity_0035_*_b*.json", "*0035*bakeoff_results.json"]),
     ("0013_0023", "Sample_output/Generated_0013_0023_4o_prompt_V2.json",
      ["entity_0013_*_b*.json", "*0013*bakeoff_results.json"]),
     ("0024_0034", "Sample_output/Generated_0024_0034_4o_prompt_V2.json",
