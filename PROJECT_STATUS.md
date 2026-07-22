@@ -114,9 +114,15 @@ Runs on the extracted output, all deterministic ($0):
 ### ❗ Open — needs a decision or human step
 - **Supervisor sign-off**: Daniel has not yet reviewed the output/schema. Nothing
   is "accepted" until he confirms it meets his needs.
-- **Cross-language certification**: all entity gold is San Agustín Spanish.
-  Cross-*volume* validated; Portuguese/Colombian *not* certified. One hand-
-  labeled entity volume in either language would close it (optional).
+- **Cross-language — narrowed (2026-07-22, per Daniel).** Portuguese (65858,
+  260950) and Colombian (420550, 544367) examples **do** exist and are part of
+  the 47/47 — so **segmentation is validated cross-language.** They are
+  *segmentation* gold (`id/text/images`), though; every file carrying entity
+  `data` (people/events) is Spanish. So the only remaining gap is **entity-
+  extraction F1 measured on Spanish only** — lower-risk, since the hard
+  structural stage is validated cross-language and extraction uses a general
+  multilingual model. A Portuguese/Colombian entity-gold example would close it
+  fully but is optional.
 - **Weak extraction dimensions → human review**: relationships (~0.83) and fine
   attributes (age, enslaved/free, ethnicity) are unreliable and route to the
   review queue (built, not yet run). `eval_data/prompt_improvements_proposal.md`
@@ -145,6 +151,18 @@ independent human truth):
 stable across volumes → selected. Cost for these 6 volumes: **~$15 Batch API**;
 comfortably under the $0.01/image target. Full detail + caveats:
 `eval_data/entity_f1_bakeoff.md`, `eval_data/llm_model_research.md`.
+
+**Reasoning level (must be pinned before the production run).** The bake-off
+that produced the F1 above calls `gpt-5.6-luna` with **no reasoning parameter**
+(`run_model_bakeoff.py` sends only model/messages/max_completion_tokens/
+response_format), so those numbers were measured at the **OpenAI API default**
+reasoning for Luna. The separate administrative pilot (`run_admin_luna_pilot.py`)
+instead defaults to `reasoning_effort="none"`. These are inconsistent. Before the
+production extraction, **decide and pin one reasoning level and measure at it**,
+because it moves both cost (reasoning tokens bill as output — the ~$15 estimate
+assumes ~900 output tok/entry) and quality (especially the weak relationships
+dimension). Safest: re-score a small sample at the chosen level so the corpus run
+matches the evidence.
 
 ---
 
