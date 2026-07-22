@@ -7,3 +7,21 @@ def test_admin_schema_validation_requires_all_lists_and_matching_id():
     assert pilot._valid(value, "doc-002")
     assert not pilot._valid({"document_id": "doc-002"}, "doc-002")
     assert not pilot._valid(value, "doc-003")
+
+
+def test_page_chunking_preserves_provenance_and_text():
+    doc = {"id": "doc-003", "title": "Dossier", "metadata": {},
+           "pages": [{"file": "a.jpg", "transcription": "A"},
+                     {"file": "b.jpg", "transcription": "B"},
+                     {"file": "c.jpg", "transcription": "C"}],
+           "source_images": ["a.jpg", "b.jpg", "c.jpg"], "faithful_text": "old"}
+    chunks = pilot._chunk(doc, 2)
+    assert [c["id"] for c in chunks] == ["doc-003--p01-02", "doc-003--p03-03"]
+    assert chunks[0]["parent_document_id"] == "doc-003"
+    assert "[source image: b.jpg]" in chunks[0]["faithful_text"]
+
+
+def test_request_body_uses_no_reasoning_when_requested():
+    body = pilot._request_body([], 2000, "none")
+    assert body["reasoning_effort"] == "none"
+    assert body["max_completion_tokens"] == 2000

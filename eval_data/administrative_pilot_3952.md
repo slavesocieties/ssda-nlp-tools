@@ -31,3 +31,20 @@ Confirmed spend is $0.063982 with no outstanding reservation. The next attempt
 must chunk long dossiers by page range and merge the chunk-level, provenance
 tagged output locally; raising a whole-dossier output cap would be a less
 reliable and more expensive solution.
+
+## Chunked retry
+
+The initial four-page chunk retry also stopped after one call: it consumed the
+2,000-token limit and returned no JSON, at a cost of $0.013914 (1,914 input,
+2,000 output tokens).  The pilot then used explicit `reasoning_effort: none`,
+two-page chunks, and a 1,800-token response limit.  This produced one valid
+chunk (`doc-003--p01-02`) for $0.011270 (1,322 input, 1,658 output tokens).
+The next chunk (`doc-003--p03-04`) still reached the output limit, cost
+$0.012136 (1,336 input, 1,800 output tokens), and was not parseable; the
+runner stopped and sent no further chunks.
+
+Confirmed Luna spend is now $0.101302 with no outstanding reservation.  The
+valid result demonstrates that disabling reasoning is appropriate for this
+bounded metadata task, but a complete administrative extraction requires a
+smaller extraction unit or a narrower page-level schema before another paid
+attempt.

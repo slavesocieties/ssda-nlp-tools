@@ -22,6 +22,9 @@ SYSTEM = """You extract structured metadata from Spanish colonial administrative
 Return JSON only. Preserve uncertainty: omit facts that the dossier does not support.
 Do not infer family, enslavement, or sacramental events from this administrative material.
 Use source-language names and short supporting evidence quotes.
+This is metadata extraction, not transcription: never reproduce a page or a
+paragraph. Keep every evidence quote to 16 words or fewer. Per dossier return
+at most 12 organizations, 20 people, 10 places, 12 dates, and 16 actions.
 
 Return exactly:
 {
@@ -59,6 +62,26 @@ def _messages(doc):
     ]
 
 
+def _chunk(doc, size):
+    """Split long dossiers by source pages while preserving provenance."""
+    if not size or len(doc["pages"]) <= size:
+        return [doc]
+    chunks = []
+    for start in range(0, len(doc["pages"]), size):
+        pages = doc["pages"][start:start + size]
+        end = start + len(pages)
+        clone = dict(doc)
+        clone["id"] = f"{doc['id']}--p{start + 1:02d}-{end:02d}"
+        clone["title"] = f"{doc['title']} (pages {start + 1}-{end})"
+        clone["pages"] = pages
+        clone["source_images"] = [p["file"] for p in pages]
+        clone["faithful_text"] = "\n\n".join(
+            f"[source image: {p['file']}]\n{p['transcription']}".strip() for p in pages)
+        clone["parent_document_id"] = doc["id"]
+        chunks.append(clone)
+    return chunks
+
+
 def _ceiling(messages, max_output):
     # UTF-8 bytes deliberately over-reserve unfamiliar tokenizer behavior.
     prompt = sum(len(m["content"].encode("utf-8")) + 128 for m in messages)
@@ -77,9 +100,15 @@ def _write_ledger(path, ledger):
     path.write_text(json.dumps(ledger, indent=2) + "\n", encoding="utf-8")
 
 
-def _call(key, messages, max_output):
+def _request_body(messages, max_output, reasoning_effort):
     body = {"model": MODEL, "messages": messages, "max_completion_tokens": max_output,
-            "response_format": {"type": "json_object"}}
+            "response_format": {"type": "json_object"},
+            "reasoning_effort": reasoning_effort}
+    return body
+
+
+def _call(key, messages, max_output, reasoning_effort):
+    body = _request_body(messages, max_output, reasoning_effort)
     request = urllib.request.Request("https://api.openai.com/v1/chat/completions",
         data=json.dumps(body, ensure_ascii=False).encode("utf-8"), method="POST",
         headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
@@ -110,9 +139,21 @@ def main(argv=None):
     ap.add_argument("--ledger", default="drive_pilots/3952_luna_spend_ledger.json")
     ap.add_argument("--max-output-tokens", type=int, default=5000)
     ap.add_argument("--max-usd", type=float, default=0.25)
+    ap.add_argument("--only-documents", nargs="*", default=None,
+                    help="source document IDs to run; omit for all")
+    ap.add_argument("--page-chunk-size", type=int, default=0,
+                    help="split selected dossiers into chunks of this many pages")
+    ap.add_argument("--reasoning-effort", choices=("none", "low", "medium", "high", "xhigh", "max"),
+                    default="none", help="reasoning budget; none is appropriate for bounded extraction")
     ap.add_argument("--confirm", action="store_true")
     args = ap.parse_args(argv)
     docs = _load(Path(args.input))
+    if args.only_documents is not None:
+        wanted = set(args.only_documents)
+        docs = [doc for doc in docs if doc["id"] in wanted]
+        if len(docs) != len(wanted):
+            ap.error("one or more --only-documents IDs were not found")
+    docs = [chunk for doc in docs for chunk in _chunk(doc, args.page_chunk_size)]
     prepared = [(doc, _messages(doc)) for doc in docs]
     ceiling = sum(_ceiling(messages, args.max_output_tokens) for _, messages in prepared)
     print(f"dossiers: {len(docs)}; max output/dossier: {args.max_output_tokens}")
@@ -139,7 +180,7 @@ def main(argv=None):
         _write_ledger(ledger_path, ledger)
         started = time.time()
         try:
-            text, stop, inp, out = _call(key, messages, args.max_output_tokens)
+            text, stop, inp, out = _call(key, messages, args.max_output_tokens, args.reasoning_effort)
         except ProviderRejected as exc:
             ledger["reserved_usd"] -= reserved
             _write_ledger(ledger_path, ledger)
@@ -166,7 +207,8 @@ def main(argv=None):
         if not valid or stop != "stop":
             print("STOPPING: incomplete or invalid response; no further dossiers sent.")
             break
-    payload = {"model": MODEL, "documents_requested": len(docs), "rows": rows,
+    payload = {"model": MODEL, "reasoning_effort": args.reasoning_effort,
+               "documents_requested": len(docs), "rows": rows,
                "ledger": ledger, "cap_usd": args.max_usd}
     Path(args.out).write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0
