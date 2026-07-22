@@ -25,3 +25,13 @@ def test_request_body_uses_no_reasoning_when_requested():
     body = pilot._request_body([], 2000, "none")
     assert body["reasoning_effort"] == "none"
     assert body["max_completion_tokens"] == 2000
+
+
+def test_completed_page_chunks_can_be_excluded_by_id():
+    doc = {"id": "doc-003", "title": "Dossier", "metadata": {},
+           "pages": [{"file": "a.jpg", "transcription": "A"},
+                     {"file": "b.jpg", "transcription": "B"}],
+           "source_images": ["a.jpg", "b.jpg"], "faithful_text": "old"}
+    chunks = pilot._chunk(doc, 1)
+    remaining = [chunk for chunk in chunks if chunk["id"] not in {"doc-003--p01-01"}]
+    assert [chunk["id"] for chunk in remaining] == ["doc-003--p02-02"]

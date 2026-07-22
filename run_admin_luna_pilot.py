@@ -23,8 +23,9 @@ Return JSON only. Preserve uncertainty: omit facts that the dossier does not sup
 Do not infer family, enslavement, or sacramental events from this administrative material.
 Use source-language names and short supporting evidence quotes.
 This is metadata extraction, not transcription: never reproduce a page or a
-paragraph. Keep every evidence quote to 16 words or fewer. Per dossier return
-at most 12 organizations, 20 people, 10 places, 12 dates, and 16 actions.
+paragraph. Keep every evidence quote to 12 words or fewer. Per extraction unit
+return at most 3 document types, 5 organizations, 8 people, 5 places, 6 dates,
+8 actions, and 3 uncertainties. Omit lower-value repetitions.
 
 Return exactly:
 {
@@ -143,6 +144,8 @@ def main(argv=None):
                     help="source document IDs to run; omit for all")
     ap.add_argument("--page-chunk-size", type=int, default=0,
                     help="split selected dossiers into chunks of this many pages")
+    ap.add_argument("--skip-chunk-ids", nargs="*", default=(),
+                    help="already-completed chunk IDs to exclude after page splitting")
     ap.add_argument("--reasoning-effort", choices=("none", "low", "medium", "high", "xhigh", "max"),
                     default="none", help="reasoning budget; none is appropriate for bounded extraction")
     ap.add_argument("--confirm", action="store_true")
@@ -154,6 +157,11 @@ def main(argv=None):
         if len(docs) != len(wanted):
             ap.error("one or more --only-documents IDs were not found")
     docs = [chunk for doc in docs for chunk in _chunk(doc, args.page_chunk_size)]
+    if args.skip_chunk_ids:
+        skipped = set(args.skip_chunk_ids)
+        docs = [doc for doc in docs if doc["id"] not in skipped]
+        if not docs:
+            ap.error("all selected chunks were skipped")
     prepared = [(doc, _messages(doc)) for doc in docs]
     ceiling = sum(_ceiling(messages, args.max_output_tokens) for _, messages in prepared)
     print(f"dossiers: {len(docs)}; max output/dossier: {args.max_output_tokens}")
