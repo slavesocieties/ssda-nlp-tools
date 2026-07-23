@@ -369,3 +369,12 @@ def test_optimize_for_quality_flags_when_nothing_fits():
     r = cost.optimize_for_quality(comp, cost.DEFAULT_PRICING, budget=0.0000001)
     assert r["over_budget"] is True
     assert r["n_under_budget"] == 0
+
+
+def test_prompt_pins_source_language_to_prevent_pt_es_translation():
+    """Regression for the 701054 finding: 7 Portuguese records were normalized
+    into Spanish because the few-shot pool is Spanish. The prompt now explicitly
+    pins the normalized language to the source's."""
+    assert "LANGUAGE" in bx.BATCH_SYSTEM_PROMPT
+    assert "same language" in bx.BATCH_SYSTEM_PROMPT.lower()
+    assert "portuguese" in bx.BATCH_SYSTEM_PROMPT.lower()

@@ -48,7 +48,13 @@ Normalization rules (match the project's hand-corrected examples):
   fray", "leg.mo" -> "legitimo", "fuer.n sus Padr.os" -> "fueron sus Padrinos").
 - Modernize archaic spelling to standard modern orthography of the entry's own
   language, with accents ("dezasete" -> "dezessete", "annos" -> "anos",
-  "Xuarez" -> "Juarez"). Do not translate to another language.
+  "Xuarez" -> "Juarez").
+- LANGUAGE — CRITICAL: the normalized text MUST stay in the SAME language as the
+  source. A PORTUGUESE record stays Portuguese ("Aos vinte dias do mês de Maio",
+  "sepultou-se", "anos", "freguesia") — do NOT render it in Spanish ("A los
+  veinte días del mes de mayo", "se sepultó", "años"). A Spanish record stays
+  Spanish. Never translate one Iberian language into the other; the few-shot
+  examples happen to be Spanish, but they do not change the source's language.
 - Repair only OBVIOUS transcription dropouts recoverable from formulaic context
   ("de mil ochocien noventa" -> "de mil ochocientos noventa"). Never invent
   names, dates, or facts.
