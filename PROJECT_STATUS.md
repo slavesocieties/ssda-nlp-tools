@@ -106,7 +106,7 @@ Runs on the extracted output, all deterministic ($0):
 - **Engineering**: 122 offline tests (<1s, no network), reproducible builds,
   spend-safety rails, provenance throughout.
 
-### 🟢 Live extraction — in progress under a $20 cap (2026-07-23)
+### 🟢 Live extraction — final Batch job in progress under a $20 cap (2026-07-23)
 Approved capped Luna run via `run_luna_production.py` (hard cap, reserve-before-
 send, validates stop/JSON/exact-IDs, `--confirm` required, key from env only).
 Ledger `production/luna_live/spend_ledger.json`:
@@ -114,21 +114,28 @@ Ledger `production/luna_live/spend_ledger.json`:
 | Volume | State | Records |
 |---|---|---:|
 | **701054** (Portuguese) | ✅ **complete end-to-end** — extracted + QA + identity + graph | 212 |
-| 176899 | 🟡 50-req batch **submitted**, pending at OpenAI (~24h) | 1087 |
-| 201991 · 29597 · 375062 | ⏳ staged, **not yet submitted** | 3936 |
+| 176899 | 🟡 500 records materialized + QA/identity/graph; 587 records included in final provider job | 500 / 1,087 locally ready |
+| 201991 · 29597 · 375062 | 🟡 included in final provider job | 0 / 3,936 locally materialized |
 
-Spend: **$0.30 confirmed + $2.00 reserved = $2.30 of the $20 cap.** 701054 is
-materialized with faithful + normalized text + people/events + provenance
-(`production/luna_live/701054.materialized.json`); its QA flagged 11 possible
-duplicates + 5 chronology issues **for review, not auto-edited**. Supervisor
-package: `production/luna_live/SUPERVISOR_REVIEW_701054.md`.
+The first 176899 job returned 499 complete records and omitted one requested
+entry. Exact-ID validation caught the omission; the one record was retried and
+validated independently, yielding the 500-record partial demonstration. The
+original incomplete job remains as an audit artifact and was billed.
 
-**To finish the remaining 4 volumes** (keys in env, ~$2–3 total actual, well
-under cap): collect the pending 176899 batch, then submit 201991/29597/375062 in
-capped groups. This is paced by the OpenAI Batch API (~24h/round) and by whatever
-monitor is running it — no such monitor is visible in *this* session's
-schedulers, so if it isn't running in a separate scheduled context the run is
-paused at "176899 submitted" and needs re-arming or a manual `--confirm` round.
+**Final provider submission:** `batch_6a61ad7d08f88190968f330fb7d529b7` contains
+the remaining **455** non-overlapping 10-record requests (4,523 records) in one
+OpenAI Batch job. It is capped by an $18.20 reservation and may take up to 24
+hours. A read-only monitor may download and validate it, but cannot submit any
+additional paid work.
+
+Spend at submission: **$1.6030095 confirmed + $18.20 reserved = $19.8030095 of
+the $20 cap.** This leaves $0.1969905 for any individually approved repairs.
+After exact-ID/JSON/stop/usage validation, the remaining outputs will be
+materialized by volume and passed through the free QA, identity, and graph
+pipeline. 701054 is already complete and materialized with faithful + normalized
+text + people/events + provenance (`production/luna_live/701054.materialized.json`);
+its QA flagged 11 possible duplicates + 5 chronology issues **for review, not
+auto-edited**. Supervisor package: `production/luna_live/SUPERVISOR_DEMO_TOMORROW.md`.
 
 ### ❗ Open — needs a decision or human step
 - **Supervisor sign-off**: Daniel has not yet reviewed the output/schema. Nothing
