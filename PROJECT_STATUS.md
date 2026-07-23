@@ -106,10 +106,29 @@ Runs on the extracted output, all deterministic ($0):
 - **Engineering**: 122 offline tests (<1s, no network), reproducible builds,
   spend-safety rails, provenance throughout.
 
-### 🟡 Staged — one approval away, not run
-- **Paid extraction of the 5,235 records**: 527 Luna calls, **~$15.07 via Batch
-  API** (~$30.21 interactive+cache). Prepared and priced; **not sent**. Run =
-  dry-run → your approval → `--confirm`.
+### 🟢 Live extraction — in progress under a $20 cap (2026-07-23)
+Approved capped Luna run via `run_luna_production.py` (hard cap, reserve-before-
+send, validates stop/JSON/exact-IDs, `--confirm` required, key from env only).
+Ledger `production/luna_live/spend_ledger.json`:
+
+| Volume | State | Records |
+|---|---|---:|
+| **701054** (Portuguese) | ✅ **complete end-to-end** — extracted + QA + identity + graph | 212 |
+| 176899 | 🟡 50-req batch **submitted**, pending at OpenAI (~24h) | 1087 |
+| 201991 · 29597 · 375062 | ⏳ staged, **not yet submitted** | 3936 |
+
+Spend: **$0.30 confirmed + $2.00 reserved = $2.30 of the $20 cap.** 701054 is
+materialized with faithful + normalized text + people/events + provenance
+(`production/luna_live/701054.materialized.json`); its QA flagged 11 possible
+duplicates + 5 chronology issues **for review, not auto-edited**. Supervisor
+package: `production/luna_live/SUPERVISOR_REVIEW_701054.md`.
+
+**To finish the remaining 4 volumes** (keys in env, ~$2–3 total actual, well
+under cap): collect the pending 176899 batch, then submit 201991/29597/375062 in
+capped groups. This is paced by the OpenAI Batch API (~24h/round) and by whatever
+monitor is running it — no such monitor is visible in *this* session's
+schedulers, so if it isn't running in a separate scheduled context the run is
+paused at "176899 submitted" and needs re-arming or a manual `--confirm` round.
 
 ### ❗ Open — needs a decision or human step
 - **Supervisor sign-off**: Daniel has not yet reviewed the output/schema. Nothing
