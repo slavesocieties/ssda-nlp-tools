@@ -45,3 +45,15 @@ def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
     assert by["701054"]["invalid"] == []
     assert by["176899"]["valid"] == {}                         # both 176899 rows rejected
     assert len(by["176899"]["invalid"]) == 2                   # 500 + non-stop, flagged not dropped
+
+
+def test_read_rows_flags_duplicate_entry_ids(tmp_path):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    rows = [_resp_row("701054-b0000", good), _resp_row("701054-b0001", good)]
+    (tmp_path / "dupe.output.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+    by = mod.read_rows_by_volume(tmp_path)
+    assert set(by["701054"]["valid"]) == {"701054-0001-01"}
+    assert len(by["701054"]["invalid"]) == 1

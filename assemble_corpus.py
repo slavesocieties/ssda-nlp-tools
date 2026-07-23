@@ -64,7 +64,14 @@ def read_rows_by_volume(live: Path):
             if missing:
                 by[vol]["invalid"].append(row.get("custom_id"))
                 continue
-            by[vol]["valid"].update(values)
+            overlap = set(by[vol]["valid"]) & set(values)
+            if overlap:
+                # A repeated provider entry might hide a conflicting result; keep
+                # the first provenance-bearing result and make the anomaly visible.
+                by[vol]["invalid"].append(
+                    f"{row.get('custom_id')}: duplicate entries {sorted(overlap)[:3]}")
+            by[vol]["valid"].update({eid: value for eid, value in values.items()
+                                      if eid not in overlap})
     return by
 
 
@@ -92,8 +99,14 @@ def main(argv=None):
         corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
         extracted = by[vol]["valid"]
         if not extracted:
+            corpus_records = len(corpus.get("entries", []))
             summary["volumes"][vol] = {"state": "no provider output yet",
-                                       "corpus_records": len(corpus.get("entries", []))}
+                                       "corpus_records": corpus_records,
+                                       "materialized_records": 0,
+                                       "missing_records": corpus_records,
+                                       "invalid_batches": 0}
+            tot_corpus += corpus_records
+            tot_missing += corpus_records
             continue
         result = M.materialize(corpus, extracted, allow_incomplete=True)
         mat_path = outdir / f"{vol}.materialized.json"
