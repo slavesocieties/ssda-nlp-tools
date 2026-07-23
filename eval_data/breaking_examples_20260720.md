@@ -38,9 +38,15 @@ regression test now runs the real 544367 pages through segmentation and
 principal-aware QA and verifies that all six distinct records survive with no
 duplicate flag.
 
-## Open convention question for Daniel
+## Convention — RESOLVED by Daniel (2026-07-22): drop trailing partials
 
-The current behavior follows the 2026-07-16 "never drop partials" decision.
-If supplied reference sheets intentionally exclude trailing partials, scoring
-should mark that convention explicitly rather than calling correct segments
-false positives.
+Daniel confirmed the delivered dataset should **drop** page-truncated `partial`
+records (his reference sheets omit them). This is now a **delivery-layer**
+choice, not a segmenter change: `segment.py` still keeps and flags every partial
+(the auditable source of truth stays complete), and `assemble_corpus.py` drops
+`partial` records from the delivered output by default (`--keep-partials`
+reverses it). Across the corpus this is **556 records (10.6%)** — every record
+whose ending the segmenter could not confirm from the available text, of which
+the 65858/544367 trailing examples are the clearest cases. So the delivered
+corpus is **4,679** complete records; the 556 partials remain recoverable in the
+source for any later re-transcription that supplies the continuation pages.

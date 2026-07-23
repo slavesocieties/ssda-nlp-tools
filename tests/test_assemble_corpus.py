@@ -47,6 +47,15 @@ def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
     assert len(by["176899"]["invalid"]) == 2                   # 500 + non-stop, flagged not dropped
 
 
+def test_delivery_convention_drops_partials_by_default_reversibly():
+    mod = _module()
+    entries = [{"id": "A", "partial": True}, {"id": "B"}, {"id": "C", "partial": True}]
+    kept, dropped = mod.apply_delivery_convention(entries, keep_partials=False)
+    assert [e["id"] for e in kept] == ["B"] and dropped == 2   # Daniel: drop trailing/incomplete
+    kept2, dropped2 = mod.apply_delivery_convention(entries, keep_partials=True)
+    assert kept2 == entries and dropped2 == 0                  # fully reversible at delivery
+
+
 def test_read_rows_flags_duplicate_entry_ids(tmp_path):
     mod = _module()
     good = json.dumps({"results": [

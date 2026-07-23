@@ -36,6 +36,16 @@ def _volume_of(custom_id: str):
     return m.group(1) if m else None
 
 
+def apply_delivery_convention(entries, keep_partials: bool):
+    """Daniel's 2026-07-22 convention: the DELIVERED dataset drops page-truncated
+    `partial` records (his references omit them). Returns (kept, dropped_count).
+    The source corpus is untouched, so keep_partials=True fully reverses it."""
+    if keep_partials:
+        return entries, 0
+    kept = [e for e in entries if not e.get("partial")]
+    return kept, len(entries) - len(kept)
+
+
 def read_rows_by_volume(live: Path):
     """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
     by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in VOLUMES}
@@ -80,6 +90,12 @@ def main(argv=None):
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--live", type=Path, default=Path("production/luna_live"))
     ap.add_argument("--corpus", type=Path, default=Path("production/corpus"))
+    ap.add_argument("--keep-partials", action="store_true",
+                    help="keep page-truncated (partial) records in the delivered "
+                         "output. Default DROPS them per Daniel's 2026-07-22 "
+                         "convention (his references omit trailing/incomplete "
+                         "records). The deterministic source corpus is unchanged, "
+                         "so this is a reversible delivery-layer choice.")
     args = ap.parse_args(argv)
 
     import materialize_luna_results as M
@@ -109,6 +125,12 @@ def main(argv=None):
             tot_missing += corpus_records
             continue
         result = M.materialize(corpus, extracted, allow_incomplete=True)
+        # Daniel's convention (2026-07-22): drop page-truncated `partial` records
+        # from the DELIVERED dataset; keep them only in the auditable source.
+        result["entries"], dropped_partials = apply_delivery_convention(
+            result["entries"], args.keep_partials)
+        result["coverage"]["partials_dropped"] = dropped_partials
+        result["coverage"]["materialized_records"] = len(result["entries"])
         mat_path = outdir / f"{vol}.materialized.json"
         mat_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
                             encoding="utf-8")
@@ -122,12 +144,14 @@ def main(argv=None):
             "state": "COMPLETE" if complete else "PARTIAL",
             "corpus_records": cov["corpus_records"],
             "materialized_records": cov["materialized_records"],
+            "partials_dropped": dropped_partials,
             "missing_records": cov["missing_records"],
             "invalid_batches": len(by[vol]["invalid"]),
             "pipeline": str(pipe_dir)}
         tot_corpus += cov["corpus_records"]; tot_mat += cov["materialized_records"]
         tot_missing += cov["missing_records"]; tot_invalid += len(by[vol]["invalid"])
-        print(f"{vol}: {cov['materialized_records']}/{cov['corpus_records']} records "
+        print(f"{vol}: {cov['materialized_records']} delivered "
+              f"(dropped {dropped_partials} partials) of {cov['corpus_records']} corpus "
               f"({'COMPLETE' if complete else 'PARTIAL'}; missing {cov['missing_records']}, "
               f"invalid batches {len(by[vol]['invalid'])})")
 
