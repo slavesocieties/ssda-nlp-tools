@@ -41,16 +41,18 @@ def response_results(paths):
     return parsed
 
 
-def materialize(corpus: dict, extracted: dict) -> dict:
+def materialize(corpus: dict, extracted: dict, allow_incomplete: bool = False) -> dict:
     entries = corpus.get("entries", [])
     canonical = {str(entry.get("id")): entry for entry in entries}
-    if set(canonical) != set(extracted):
-        missing = sorted(set(canonical) - set(extracted))
-        extra = sorted(set(extracted) - set(canonical))
+    missing = sorted(set(canonical) - set(extracted))
+    extra = sorted(set(extracted) - set(canonical))
+    if extra or (missing and not allow_incomplete):
         raise ValueError(f"corpus/extraction IDs differ; missing={missing[:5]} extra={extra[:5]}")
     out = []
     for entry in entries:
         eid = str(entry["id"])
+        if eid not in extracted:
+            continue
         model = extracted[eid]
         row = {
             "id": eid,
@@ -64,7 +66,9 @@ def materialize(corpus: dict, extracted: dict) -> dict:
         out.append(row)
     return {"volume": str(corpus.get("volume", "")), "entries": out,
             "provenance": {"faithful_text": "deterministic segmented corpus",
-                           "normalized_and_data": "validated GPT-5.6 Luna Batch output"}}
+                           "normalized_and_data": "validated GPT-5.6 Luna Batch output"},
+            "coverage": {"corpus_records": len(entries), "materialized_records": len(out),
+                         "missing_records": len(missing), "incomplete": bool(missing)}}
 
 
 def main(argv=None):
@@ -72,6 +76,8 @@ def main(argv=None):
     ap.add_argument("corpus", type=Path)
     ap.add_argument("output_glob", help="quoted glob of validated *.output.jsonl files")
     ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--allow-incomplete", action="store_true",
+                    help="materialize only validated returned records and mark coverage; never use for a final volume")
     args = ap.parse_args(argv)
     files = sorted(args.corpus.parent.parent.glob(args.output_glob))
     if not files:
@@ -80,7 +86,7 @@ def main(argv=None):
     if not files:
         raise SystemExit("REFUSING: no provider output files matched")
     corpus = json.loads(args.corpus.read_text(encoding="utf-8"))
-    result = materialize(corpus, response_results(files))
+    result = materialize(corpus, response_results(files), args.allow_incomplete)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"materialized {len(result['entries'])} records -> {args.out}")
