@@ -47,6 +47,18 @@ def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
     assert len(by["176899"]["invalid"]) == 2                   # 500 + non-stop, flagged not dropped
 
 
+def test_repair_ids_map_home_but_vocabtest_is_excluded():
+    """`<vol>-repair-*` belongs to <vol> (it re-fetches that volume's records).
+    `*-vocabtest-*` must NOT: it re-extracts entry IDs already delivered, so
+    assembling it would collide with the real records and either corrupt the
+    volume or silently discard the experiment."""
+    v = _module()._volume_of
+    assert v("201991-repair-b0000") == "201991"
+    assert v("29597-repair-b0000") == "29597"
+    assert v("701054-vocabtest-b0000") is None
+    assert v("701054-b0000") == "701054"          # the real delivered volume still maps
+
+
 def test_delivery_convention_drops_partials_by_default_reversibly():
     mod = _module()
     entries = [{"id": "A", "partial": True}, {"id": "B"}, {"id": "C", "partial": True}]

@@ -32,7 +32,20 @@ _VOL_RE = re.compile(r"(" + "|".join(VOLUMES) + r")")
 
 
 def _volume_of(custom_id: str):
-    m = _VOL_RE.search(custom_id or "")
+    """Map a provider custom_id back to its delivered volume.
+
+    `<vol>-repair-*` intentionally maps to `<vol>`: repair requests re-fetch
+    records that belong in that volume. `*-vocabtest-*` deliberately maps to
+    None — those are a prompt EXPERIMENT that re-extracts entry IDs already
+    present in the delivered volume, so assembling them would collide with the
+    real records (same IDs) and either corrupt the volume or discard the
+    experiment. They are materialized separately and compared with
+    vocab_ab_report.py.
+    """
+    cid = custom_id or ""
+    if "vocabtest" in cid:
+        return None
+    m = _VOL_RE.search(cid)
     return m.group(1) if m else None
 
 
