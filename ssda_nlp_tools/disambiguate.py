@@ -21,6 +21,7 @@ Design choices called out honestly:
 from __future__ import annotations
 
 import json
+import re
 from collections import defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
@@ -89,6 +90,42 @@ def _namesets_overlap(sa: set, sb: set) -> bool:
             if _third_party_same(x, y):
                 return True
     return False
+
+
+def _entry_year(events) -> Optional[int]:
+    """Earliest 4-digit year across an entry's events, or None."""
+    years = []
+    for ev in events or []:
+        d = str((ev or {}).get("date") or "")
+        m = re.match(r"\s*(\d{4})", d)
+        if m:
+            years.append(int(m.group(1)))
+    return min(years) if years else None
+
+
+def _shares_context(a: dict, b: dict, year_window: int) -> bool:
+    """Daniel, 2026-07-27 (Q6): filter before scoring.
+
+    FAILS OPEN. This returns False (skip the pair) only on positive evidence
+    that the two cannot plausibly be one person: different registers, no person
+    named in both entries, and dated further apart than a lifetime. Absent
+    metadata is never treated as evidence of separation, because an entry with
+    no date would otherwise be excluded from every comparison and its genuine
+    merges would vanish silently.
+
+    Requiring the same register would be wrong for the same reason in reverse:
+    cross-register links are the most valuable output, so a shared enslaver or a
+    compatible date is enough to keep a pair in play.
+    """
+    if a.get("_register") and a.get("_register") == b.get("_register"):
+        return True                       # same register
+    ac, bc = a.get("_ctx") or set(), b.get("_ctx") or set()
+    if ac and bc and {n for _, n in ac} & {n for _, n in bc}:
+        return True                       # a person named in both entries
+    ya, yb = a.get("_year"), b.get("_year")
+    if ya is None or yb is None:
+        return True                       # undated: cannot rule the pair out
+    return abs(ya - yb) <= year_window
 
 
 def pair_score(a: dict, b: dict, a_rel_ctx=None, b_rel_ctx=None) -> Tuple[float, List[str]]:
@@ -188,6 +225,10 @@ def _mentions_from_volume(volume: dict) -> List[dict]:
             m["_local_id"] = str(p.get("id"))
             m["_ctx"] = ctx
             m["_unique_sacrament"] = str(p.get("id")) in unique_sacrament_pids
+            # blocking signals (see _shares_context): the register this entry
+            # belongs to, and the year of its earliest dated event.
+            m["_register"] = str(eid).split("-")[0] if eid else ""
+            m["_year"] = _entry_year(events)
             mentions.append(m)
     return mentions
 
@@ -241,6 +282,8 @@ def disambiguate_volume(
     review_threshold: float = 0.70,
     volume_tag: Optional[str] = None,
     constraints: Optional[dict] = None,
+    block_context: bool = True,
+    year_window: int = 60,
 ) -> Dict[str, Any]:
     """Cluster person mentions into identities.
 
@@ -283,6 +326,7 @@ def disambiguate_volume(
         blocks[phonetic_key(m.get("name"))].append(i)
 
     review_queue = []
+    blocked = 0
     auto_edges: List[Tuple[int, int, float]] = []
     for _, idxs in blocks.items():
         for a in range(len(idxs)):
@@ -290,6 +334,10 @@ def disambiguate_volume(
                 i, j = idxs[a], idxs[b]
                 if mentions[i]["_entry"] == mentions[j]["_entry"]:
                     continue  # never merge two people from the same entry
+                if block_context and not _shares_context(mentions[i], mentions[j],
+                                                          year_window):
+                    blocked += 1
+                    continue  # no register, related person, or date in common
                 s, reasons = pair_score(mentions[i], mentions[j],
                                         mentions[i]["_ctx"], mentions[j]["_ctx"])
                 # once-in-a-lifetime sacrament guard: two baptism/birth/burial
@@ -385,6 +433,7 @@ def disambiguate_volume(
             "merged_identities": len(multi),
             "auto_merges": len(auto_edges),
             "review_pairs": len(review_queue),
+            "pairs_blocked_by_context": blocked,
             "flagged_clusters": flagged,
             "reduction": round(1 - len(identities) / n, 4) if n else 0.0,
         },

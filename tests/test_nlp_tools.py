@@ -311,3 +311,25 @@ def test_fix_relationships_multi_event_principal():
     # conflicting types (enslaver vs godparent) with P02 a (second-event) principal:
     # resolved deterministically without raising
     assert isinstance(fixed, dict) and "people" in fixed
+
+
+def test_context_blocking_fails_open_never_closed():
+    """Daniel 2026-07-27 (Q6): filter before scoring, to cut a ~796k pair queue.
+
+    The gate must only skip a pair on POSITIVE evidence that it cannot be one
+    person. Absent metadata is not such evidence: an undated entry would
+    otherwise be excluded from every comparison and its genuine merges would
+    disappear silently, which is the failure mode this whole pipeline exists to
+    avoid."""
+    from ssda_nlp_tools.disambiguate import _shares_context as sc
+    same_reg = {"_register": "701054", "_year": 1865}
+    assert sc(same_reg, {"_register": "701054", "_year": 1999}, 60)   # same register wins
+    # different register, but a person named in both entries
+    a = {"_register": "A", "_ctx": {("enslaver", "luiz")}, "_year": 1800}
+    b = {"_register": "B", "_ctx": {("enslaver", "luiz")}, "_year": 1990}
+    assert sc(a, b, 60)
+    # undated on either side -> cannot rule out -> compare
+    assert sc({"_register": "A", "_year": None}, {"_register": "B", "_year": 1865}, 60)
+    assert sc({"_register": "A"}, {"_register": "B"}, 60)
+    # the only skip: different register, no shared person, dated a lifetime apart
+    assert not sc({"_register": "A", "_year": 1700}, {"_register": "B", "_year": 1900}, 60)
