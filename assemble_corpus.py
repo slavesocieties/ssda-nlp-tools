@@ -149,9 +149,12 @@ def main(argv=None):
     ap.add_argument("--keep-partials", action="store_true",
                     help="keep page-truncated (partial) records in the delivered "
                          "output. Default DROPS them per Daniel's 2026-07-22 "
-                         "convention (his references omit trailing/incomplete "
-                         "records). The deterministic source corpus is unchanged, "
-                         "so this is a reversible delivery-layer choice.")
+                    "convention (his references omit trailing/incomplete "
+                    "records). The deterministic source corpus is unchanged, "
+                    "so this is a reversible delivery-layer choice.")
+    ap.add_argument("--skip-pipeline", action="store_true",
+                    help="materialize and report coverage only; skip the expensive "
+                    "QA, identity, and graph refresh stages")
     args = ap.parse_args(argv)
 
     import materialize_luna_results as M
@@ -208,26 +211,29 @@ def main(argv=None):
         cov = result["coverage"]
         # per-volume QA/identity/graph
         pipe_dir = args.live / f"{vol}_final_pipeline"
-        run_pipeline.main([str(mat_path), "--tag", vol, "--outdir", str(pipe_dir)])
-        complete = cov["missing_records"] == 0 and not by[vol]["invalid"]
+        if not args.skip_pipeline:
+            run_pipeline.main([str(mat_path), "--tag", vol, "--outdir", str(pipe_dir)])
+        complete = cov["missing_records"] == 0
+        state = ("COMPLETE" if not by[vol]["invalid"]
+                 else "COMPLETE_WITH_REPAIRED_ANOMALIES") if complete else "PARTIAL"
         summary["volumes"][vol] = {
-            "state": "COMPLETE" if complete else "PARTIAL",
+            "state": state,
             "corpus_records": cov["corpus_records"],
             "materialized_records": cov["materialized_records"],
             "partials_dropped": dropped_partials,
             "missing_records": cov["missing_records"],
             "invalid_batches": len(by[vol]["invalid"]),
             "provider_only_ids": unexpected_ids,
-            "pipeline": str(pipe_dir)}
+            "pipeline": None if args.skip_pipeline else str(pipe_dir)}
         tot_corpus += cov["corpus_records"]; tot_mat += cov["materialized_records"]
         tot_missing += cov["missing_records"]; tot_invalid += len(by[vol]["invalid"])
         print(f"{vol}: {cov['materialized_records']} delivered "
               f"(dropped {dropped_partials} partials) of {cov['corpus_records']} corpus "
-              f"({'COMPLETE' if complete else 'PARTIAL'}; missing {cov['missing_records']}, "
+              f"({state}; missing {cov['missing_records']}, "
               f"invalid batches {len(by[vol]['invalid'])})")
 
     # cross-volume linkage (people linked ACROSS volumes) once >1 volume present
-    if len(materialized_files) > 1:
+    if len(materialized_files) > 1 and not args.skip_pipeline:
         corpus_dir = args.live / "corpus_final_pipeline"
         run_pipeline.main([str(p) for _, p in materialized_files]
                           + ["--tag", "CORPUS", "--outdir", str(corpus_dir)])
@@ -268,8 +274,8 @@ def main(argv=None):
           f"missing {tot_missing}; invalid batches {tot_invalid}")
     print(f"-> {args.live / 'CORPUS_SUMMARY.json'}")
     if tot_missing or tot_invalid:
-        print("NOTE: coverage < 100% — see CORPUS_SUMMARY.json; missing/invalid are "
-              "reported for repair, never silently dropped.")
+        print("NOTE: see CORPUS_SUMMARY.json; missing records and historical invalid "
+              "batches are reported for repair, never silently dropped.")
     return 0
 
 
