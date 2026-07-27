@@ -114,6 +114,19 @@ def main(argv=None):
             continue
         corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
         extracted = by[vol]["valid"]
+        # A provider may return an identifier that is syntactically valid for
+        # its request but not present in the current deterministic source (for
+        # example after an upstream segmentation revision).  It must never be
+        # materialized into the corpus, but it must remain visible in the QA
+        # summary.  Missing source IDs are intentionally left untouched below
+        # so materialize() reports them as incomplete coverage.
+        corpus_ids = {str(entry.get("id")) for entry in corpus.get("entries", [])}
+        unexpected_ids = sorted(set(extracted) - corpus_ids)
+        if unexpected_ids:
+            by[vol]["invalid"].extend(
+                f"provider-only entry ID: {entry_id}" for entry_id in unexpected_ids)
+            extracted = {entry_id: value for entry_id, value in extracted.items()
+                         if entry_id in corpus_ids}
         if not extracted:
             corpus_records = len(corpus.get("entries", []))
             summary["volumes"][vol] = {"state": "no provider output yet",
@@ -147,6 +160,7 @@ def main(argv=None):
             "partials_dropped": dropped_partials,
             "missing_records": cov["missing_records"],
             "invalid_batches": len(by[vol]["invalid"]),
+            "provider_only_ids": unexpected_ids,
             "pipeline": str(pipe_dir)}
         tot_corpus += cov["corpus_records"]; tot_mat += cov["materialized_records"]
         tot_missing += cov["missing_records"]; tot_invalid += len(by[vol]["invalid"])
