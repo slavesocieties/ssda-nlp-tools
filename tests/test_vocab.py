@@ -19,7 +19,14 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def test_relationship_types_map_to_the_closed_english_set():
     v = V.load_vocab()
     english = set(v.values("relationship_type", "English"))
-    assert len(english) == 9, "the canonical set is 9 values"
+    # 9 original + 12 approved by Daniel 2026-07-27 (patron/client,
+    # custodian/ward, executor/testator, heir/benefactor, caregiver/dependent,
+    # former spouse, witness) = 21. These appear in the registers; the pairs are
+    # directional, analogous to parent/child and enslaver/slave.
+    assert len(english) == 21, "9 original + 12 added 2026-07-27"
+    assert {"patron", "client", "custodian", "ward", "executor", "testator",
+            "heir", "benefactor", "caregiver", "dependent", "former spouse",
+            "witness"} <= english
     for surface, want in [("padrino", "godparent"), ("madrina", "godparent"),
                           ("padrinho", "godparent"), ("afilhada", "godchild"),
                           ("esclavo", "slave"), ("escrava", "slave"),
@@ -121,3 +128,19 @@ def test_prompt_stays_byte_identical_across_batches():
     a = bx.build_messages([{"entry": "1", "raw": "x"}], [], [])
     b = bx.build_messages([{"entry": "2", "raw": "y"}], [], [])
     assert a[0]["content"] == b[0]["content"] == bx.BATCH_SYSTEM_PROMPT
+
+
+def test_new_relationship_pairs_are_directional_not_symmetric():
+    """Daniel 2026-07-27 (Q3): the added terms must be 'rendered reciprocally in
+    a manner analogous to' the existing ones, i.e. directional pairs like
+    parent/child. The model had been emitting patron<->patron, which loses which
+    party held the patronage."""
+    from ssda_nlp_tools.fixes import RECIPROCAL_RELS as R
+    for a, b in [("patron", "client"), ("custodian", "ward"),
+                 ("executor", "testator"), ("heir", "benefactor"),
+                 ("caregiver", "dependent")]:
+        assert R[a] == b and R[b] == a, f"{a}/{b} must be a directional pair"
+        assert R[a] != a, f"{a} must not be self-reciprocal"
+    # genuinely symmetric, like spouse
+    for s in ("former spouse", "witness", "spouse"):
+        assert R[s] == s

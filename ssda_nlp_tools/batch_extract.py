@@ -122,6 +122,9 @@ PERSON fields — include only those the record supports:
 - age: exactly one of {_lst('age')} — a category, never a number and never the
   Spanish or Portuguese word. "párvulo"/"párvula" and any child under two are
   "infant". Infer from an explicit or referenced birth date when present.
+- age_stated: when the record gives a literal age, ALSO record it here exactly
+  as written ("64 años", "de un mes", "tres años"). `age` stays the bucket;
+  this preserves the evidence. Omit when the record states no age.
 - legitimate: boolean. true = born in wedlock, false = not. Often implicit:
   "hijo natural" and "padres no conocidos" both mean false.
 - free: boolean. true = free at the time of the record, false = enslaved.
@@ -133,6 +136,13 @@ PERSON fields — include only those the record supports:
   (padrino/madrinha -> godparent, esclavo -> slave, amo/senhor -> enslaver,
   hijo/filha -> child). Record the relationship from BOTH sides: if P03 is
   "hija de P05", then P05 is P03's "parent" and P03 is P05's "child".
+  DIRECTION MATTERS. Most of these are asymmetric pairs, and the two sides take
+  DIFFERENT terms: parent/child, grandparent/grandchild, enslaver/slave,
+  godparent/godchild, patron/client, custodian/ward, executor/testator,
+  heir/benefactor, caregiver/dependent. Never label both sides with the same
+  term for these — "patron" on both people loses which one held the patronage.
+  Only "spouse", "former spouse" and "witness" are symmetric and take the same
+  term on both sides.
 
 EVENT fields:
 - type: "baptism", "marriage", "burial", or "birth". A baptismal entry

@@ -164,7 +164,22 @@ class Vocab:
 
     def is_known(self, field: str, value: Any) -> bool:
         key = _VOCAB_KEY.get(field, field)
-        return _fold(value) in self.allowed.get(key, set())
+        allowed = self.allowed.get(key, set())
+        folded = _fold(value)
+        if folded in allowed:
+            return True
+        # Daniel, 2026-07-27 (Q2): fold grammatical gender when CHECKING
+        # conformance, rather than coercing records to masculine forms. The
+        # record keeps whatever the scribe wrote ("morena", "parda"); only this
+        # check is gender-blind. Spanish/Portuguese adjectival gender is the -o/-a
+        # alternation, so try the counterpart form.
+        if folded.endswith("a"):
+            if folded[:-1] + "o" in allowed:
+                return True
+        elif folded.endswith("o"):
+            if folded[:-1] + "a" in allowed:
+                return True
+        return False
 
     def canonicalize(self, field: str, value: Any) -> Optional[str]:
         """Map a source-language surface form to its English canonical value.

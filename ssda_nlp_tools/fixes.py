@@ -25,6 +25,18 @@ RECIPROCAL_RELS = {
     "indenturer": "indentured servant", "indentured servant": "indenturer",
     "spouse": "spouse",
     "godparent": "godchild", "godchild": "godparent",
+    # Added 2026-07-27 (Daniel Q3): these appear in the registers and are now in
+    # the controlled vocabulary. They are DIRECTIONAL, like parent/child — the
+    # model had been emitting them symmetrically (patron<->patron), which loses
+    # which party is which.
+    "patron": "client", "client": "patron",
+    "custodian": "ward", "ward": "custodian",
+    "executor": "testator", "testator": "executor",
+    "heir": "benefactor", "benefactor": "heir",
+    "caregiver": "dependent", "dependent": "caregiver",
+    # genuinely symmetric, like spouse
+    "former spouse": "former spouse",
+    "witness": "witness",
 }
 _MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
