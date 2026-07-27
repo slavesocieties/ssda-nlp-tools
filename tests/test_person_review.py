@@ -91,3 +91,39 @@ def test_grouping_by_identity_collapses_a_person_seen_in_many_entries():
     assert len(screens) == 2                               # one per real person
     ana = next(s for s in screens if s["person"]["identity"] == "ANA")
     assert ana["n_candidates"] == 1                        # Beatriz listed once, not 3x
+
+
+def test_page_decisions_round_trip_into_apply(tmp_path):
+    """The per-person page must emit the SAME decisions.json the pairwise page
+    does, or the existing `run_review.py apply` path silently stops working."""
+    import json, re
+    from ssda_nlp_tools.person_review_html import render_person_review_html
+    from ssda_nlp_tools.review_html import decisions_to_constraints
+    screens = group_by_person(QUEUE)
+    out = str(tmp_path / "p.html")
+    render_person_review_html(screens, out, tag="T", limit=10)
+    html = open(out, encoding="utf-8").read()
+    data = json.loads(re.search(r"const DATA = (\[.*?\]), TAG =", html, re.S).group(1))
+    assert data and len(data) == len(screens)
+    # the shape the page's download button builds
+    payload = {"tag": "T", "decisions": [
+        {"a": {"entry": data[0]["person"]["entry"], "id": data[0]["person"]["id"]},
+         "b": {"entry": data[0]["candidates"][0]["entry"],
+               "id": data[0]["candidates"][0]["id"]}, "decision": "same"}]}
+    con = decisions_to_constraints(payload)
+    assert len(con["must"]) == 1 and con["cannot"] == []
+
+
+def test_render_limit_caps_the_page():
+    """13,967 screens uncapped produces a file too large to open; the cap keeps
+    the highest-scoring work first."""
+    import json, re, tempfile, os
+    from ssda_nlp_tools.person_review_html import render_person_review_html
+    screens = group_by_person(QUEUE)
+    with tempfile.TemporaryDirectory() as d:
+        p = os.path.join(d, "p.html")
+        render_person_review_html(screens, p, tag="T", limit=1)
+        data = json.loads(re.search(r"const DATA = (\[.*?\]), TAG =",
+                                    open(p, encoding="utf-8").read(), re.S).group(1))
+        assert len(data) == 1
+        assert data[0]["best_score"] == max(s["best_score"] for s in screens)
