@@ -113,8 +113,10 @@ PERSON fields — include only those the record supports:
 - ethnicity: the ETHNOLINGUISTIC descriptor only — African, European and
   Indigenous designations all belong here
   (e.g. {_spread('ethnicity')}).
-- phenotype: the PHYSICAL/colour descriptor, kept as written in the record
-  (e.g. {_lst('phenotype', 'Spanish', 8)}).
+- phenotype: the PHYSICAL/colour descriptor, kept as written in the record,
+  in the record's OWN language and grammatical gender
+  (Spanish e.g. {_lst('phenotype', 'Spanish', 6)};
+   Portuguese e.g. {_lst('phenotype', 'Portuguese', 6)}, and preto/preta).
   ethnicity and phenotype are DIFFERENT fields and must never be merged: an
   ethnicity names a people or place of derivation, a phenotype describes
   appearance. "criollo/criolla" is a PHENOTYPE. Neither belongs in origin,
