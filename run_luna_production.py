@@ -20,6 +20,7 @@ from pathlib import Path
 
 
 MODEL = "gpt-5.6-luna"
+DEFAULT_OUTDIR = Path("production/luna_live")
 # Batch API prices, conservatively computed from provider-reported token usage.
 BATCH_INPUT_PER_M = 0.50
 BATCH_OUTPUT_PER_M = 3.00
@@ -68,6 +69,22 @@ def request_lines(header: dict, rows: list[dict]):
 def normal_id(value: str) -> str:
     """Normalize only the historical temporary prefix used by the first pilot."""
     return value.removeprefix("luna-production-")
+
+
+def with_run_id(custom_id: str, run_id: str) -> str:
+    """Namespace a re-extraction request without changing its source entry IDs."""
+    return f"{run_id}-{custom_id}" if run_id else custom_id
+
+
+def resolve_ledger_path(outdir: Path, ledger_path: Path | None) -> Path:
+    """Prevent a new artifact directory from silently creating a new budget."""
+    if ledger_path is not None:
+        return ledger_path
+    if outdir != DEFAULT_OUTDIR:
+        raise ValueError(
+            "a non-default --outdir requires --ledger-path so the cumulative "
+            "spend cap cannot reset in a fresh directory")
+    return outdir / "spend_ledger.json"
 
 
 def cost_from_usage(usage: dict) -> float:
@@ -149,7 +166,11 @@ def api(key: str, method: str, url: str, payload: bytes | None = None):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("batch_file", type=Path)
-    ap.add_argument("--outdir", type=Path, default=Path("production/luna_live"))
+    ap.add_argument("--outdir", type=Path, default=DEFAULT_OUTDIR)
+    ap.add_argument("--ledger-path", type=Path,
+                    help="shared cumulative ledger; required with a non-default --outdir")
+    ap.add_argument("--run-id", default="",
+                    help="namespace request custom IDs for an auditable re-extraction")
     ap.add_argument("--cap-usd", type=float, default=20.0)
     ap.add_argument("--take", type=int, default=50, help="maximum compact requests to submit")
     ap.add_argument("--reservation-per-request", type=float, default=0.04)
@@ -158,7 +179,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.take < 1 or args.reservation_per_request <= 0:
         ap.error("--take and --reservation-per-request must be positive")
-    ledger_path = args.outdir / "spend_ledger.json"
+    ledger_path = resolve_ledger_path(args.outdir, args.ledger_path)
     ledger = load_ledger(ledger_path, args.cap_usd)
     header, all_rows = read_compact(args.batch_file)
     known = set()
@@ -167,7 +188,11 @@ def main(argv=None):
             continue
         known.add(normal_id(item.get("custom_id", "")))
         known.update(normal_id(value) for value in item.get("expected_custom_ids", []))
-    rows = [row for row in all_rows if row["custom_id"] not in known][:args.take]
+    candidates = [{**row, "custom_id": with_run_id(row["custom_id"], args.run_id)}
+                  for row in all_rows]
+    source_custom_ids = {candidate["custom_id"]: source["custom_id"]
+                         for source, candidate in zip(all_rows, candidates)}
+    rows = [row for row in candidates if row["custom_id"] not in known][:args.take]
     if args.poll:
         if not args.confirm:
             print("DRY RUN: --poll would retrieve and validate the named provider job.")
@@ -188,7 +213,14 @@ def main(argv=None):
             raise RuntimeError("job is not present in local ledger; refusing ambiguous settlement")
         ids = {normal_id(x) for x in selected.get("expected_custom_ids", [])}
         lookup = {row["custom_id"]: row for row in all_rows}
-        validation = validate_output([lookup[x] for x in ids], output)
+        validation_rows = []
+        stored_sources = selected.get("source_custom_ids", {})
+        for request_id in ids:
+            source_id = stored_sources.get(request_id, request_id)
+            if source_id not in lookup:
+                raise RuntimeError(f"source custom ID missing from compact file: {source_id}")
+            validation_rows.append({**lookup[source_id], "custom_id": request_id})
+        validation = validate_output(validation_rows, output)
         output_path = args.outdir / f"{args.poll}.output.jsonl"
         output_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in output),
                                encoding="utf-8")
@@ -235,6 +267,10 @@ def main(argv=None):
     receipt = {"job_id": created["id"], "input_file_id": uploaded["id"], "volume": volume,
                "request_count": len(rows), "expected_custom_ids": [r["custom_id"] for r in rows],
                "reserved_usd": reservation, "status": "submitted"}
+    if args.run_id:
+        receipt["run_id"] = args.run_id
+        receipt["source_custom_ids"] = {row["custom_id"]: source_custom_ids[row["custom_id"]]
+                                        for row in rows}
     ledger["reserved_usd"] = round(float(ledger.get("reserved_usd", 0)) + reservation, 7)
     ledger.setdefault("jobs", []).append(receipt)
     write_json(args.outdir / f"{created['id']}.receipt.json", receipt)

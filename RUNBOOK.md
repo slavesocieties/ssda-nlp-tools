@@ -40,53 +40,51 @@ Batches are already staged with the vocabulary-aware prompt in
 > This is the same collision class that was fixed for the vocab test — there it
 > is handled in code, here it must be handled by **choosing the output path**.
 
-> ### ⚠️⚠️ Second trap, and it costs money: **the cap is per-directory**
-> `run_luna_production.py` derives its ledger as `--outdir/spend_ledger.json`.
-> So the isolation above has a side effect: a fresh `--outdir` starts a **fresh
-> ledger with a fresh $20 cap**, and it will cheerfully report
-> `available $20.000000` even though $12.01 is already committed in
-> `luna_live`. Nothing sums the two for you.
+> ### ⚠️⚠️ Second trap, and it costs money: **the ledger must be shared**
+> A separate output directory is necessary for data isolation, but it must not
+> create a separate budget. The guarded runner now **refuses** any non-default
+> `--outdir` unless `--ledger-path` is supplied. Point it at the live ledger so
+> the existing $20 cap remains cumulative.
 >
-> Total real exposure would be **$12.01 + up to $20 = $32**, while every
-> individual run looks compliant.
->
-> **Therefore: pass an explicit `--cap-usd` equal to the budget you actually
-> intend for the new directory**, and add the ledgers yourself when reporting
-> spend.
+> A re-extraction also needs a distinct `--run-id`: the source compact files
+> reuse `<volume>-bNNNN` custom IDs, and the shared ledger correctly treats
+> those original IDs as already sent. `--run-id v2` namespaces only provider
+> request IDs; source entry IDs remain unchanged and auditable.
 
 ```bash
-# Per volume, into a fresh directory, with an EXPLICIT cap for that directory.
-# --take is the request count for that volume (176899 = 109; check the file).
+# Per volume, into a fresh directory while retaining the ONE cumulative ledger.
+# Run without --confirm first. --take is request count (176899 = 109).
 python run_luna_production.py production/batches_v2/176899.batches.jsonl \
-    --outdir production/luna_v2 --cap-usd 16.00 --take 109 --confirm
-# ... repeat per volume; the luna_v2 ledger accumulates across them ...
+    --outdir production/luna_v2 \
+    --ledger-path production/luna_live/spend_ledger.json \
+    --run-id v2 --cap-usd 20.00 --take 109
 
 # assemble the NEW corpus from the NEW directory only
 python assemble_corpus.py --live production/luna_v2 --corpus production/corpus
 ```
 
-A full v2 run is ~$15.09, so `--cap-usd 16.00` on the new directory gives a
-little headroom without opening an unbounded second budget. Combined ceiling
-then reads **$20 (luna_live) + $16 (luna_v2)** — a deliberate number, not an
-accident.
+A full v2 run is ~$15.09, which does **not** fit inside the current $7.99
+global headroom. The command above must refuse once its reservation would cross
+the live ledger's $20 cap. Raising that total cap is a separate, explicit user
+approval; it is never achieved by creating a second ledger.
 
 Keep `production/luna_live/` intact until the v2 corpus is checked — it is the
 current delivered dataset and the only copy of the baseline extraction.
 
-## 3. Ledger — one per output directory, NOT one global
+## 3. Ledger — one cumulative budget, separate artifact directories
 
-Each `--outdir` owns its own `spend_ledger.json` and its own cap. There is no
-global total; you must add them.
+`production/luna_live/spend_ledger.json` is the cumulative production ledger.
+All isolated re-extractions must reference it with `--ledger-path`; their
+receipts and downloaded outputs still live under their own `--outdir`.
 
 | ledger | cap | committed |
 |---|---|---|
 | `production/luna_live/spend_ledger.json` | $20 | $11.051032 + $0.96 reserved = **$12.011032** (headroom $7.99) |
-| `production/luna_v2/spend_ledger.json` | *set by `--cap-usd`* | does not exist until a v2 run is submitted |
+| `production/luna_v2/` | no independent ledger | isolated v2 receipts, outputs, and assembled corpus only |
 
 A full v2 run (~$15.09) does **not** fit in `luna_live`'s remaining $7.99. That
 is a genuine signal, not an obstacle to route around: re-extracting the whole
-corpus is a real second spend and should be an explicit decision with its own
-stated cap.
+corpus needs a new, explicitly approved global cap.
 
 ## 4. Open, needs Daniel
 
