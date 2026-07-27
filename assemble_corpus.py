@@ -98,6 +98,49 @@ def read_rows_by_volume(live: Path):
     return by
 
 
+def read_vocabtest_rows(live: Path, tag: str = "701054-vocabtest"):
+    """Read one isolated prompt-experiment result without mixing it into delivery.
+
+    Experiment rows deliberately share source entry IDs with the delivered
+    volume.  They therefore cannot use ``read_rows_by_volume``: that would
+    either duplicate delivered records or lose the experiment during
+    de-duplication.  The returned values are materialized into a distinct,
+    provenance-bearing file for vocab_ab_report.py.
+    """
+    result = {"valid": {}, "invalid": [], "batches": 0}
+    for path in sorted(live.glob("*.output.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            if tag not in (row.get("custom_id") or ""):
+                continue
+            result["batches"] += 1
+            resp = row.get("response") or {}
+            body = resp.get("body") or {}
+            choices = body.get("choices") or []
+            if resp.get("status_code") != 200 or len(choices) != 1 \
+                    or choices[0].get("finish_reason") != "stop":
+                result["invalid"].append(row.get("custom_id"))
+                continue
+            try:
+                values, missing = parse_response(
+                    choices[0].get("message", {}).get("content"), [], validate=True)
+            except Exception:
+                result["invalid"].append(row.get("custom_id"))
+                continue
+            if missing:
+                result["invalid"].append(row.get("custom_id"))
+                continue
+            overlap = set(result["valid"]) & set(values)
+            if overlap:
+                result["invalid"].append(
+                    f"{row.get('custom_id')}: duplicate entries {sorted(overlap)[:3]}")
+            result["valid"].update({entry_id: value for entry_id, value in values.items()
+                                    if entry_id not in overlap})
+    return result
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -115,6 +158,7 @@ def main(argv=None):
     import run_pipeline
 
     by = read_rows_by_volume(args.live)
+    vocabtest = read_vocabtest_rows(args.live)
     outdir = args.live / "assembled"
     outdir.mkdir(parents=True, exist_ok=True)
     summary = {"volumes": {}, "totals": {}}
@@ -188,6 +232,32 @@ def main(argv=None):
         run_pipeline.main([str(p) for _, p in materialized_files]
                           + ["--tag", "CORPUS", "--outdir", str(corpus_dir)])
         summary["corpus_pipeline"] = str(corpus_dir)
+
+    # Materialize the 701054 vocabulary-prompt experiment separately.  It is
+    # intentionally excluded from delivered volume assembly above because its
+    # entry IDs overlap the baseline 701054 extraction.
+    if vocabtest["valid"] or vocabtest["invalid"]:
+        source_path = args.corpus / "701054.segmented.json"
+        source = json.loads(source_path.read_text(encoding="utf-8"))
+        source_ids = {str(entry.get("id")) for entry in source.get("entries", [])}
+        unexpected = sorted(set(vocabtest["valid"]) - source_ids)
+        extracted = {entry_id: value for entry_id, value in vocabtest["valid"].items()
+                     if entry_id in source_ids}
+        experiment = {"state": "INVALID" if vocabtest["invalid"] else "READY",
+                      "batches": vocabtest["batches"],
+                      "valid_records": len(extracted),
+                      "invalid_batches": vocabtest["invalid"],
+                      "provider_only_ids": unexpected}
+        if extracted:
+            experiment_result = M.materialize(source, extracted, allow_incomplete=True)
+            experiment_result["provenance"]["experiment"] = (
+                "701054 vocabulary-aware prompt A/B test; excluded from delivered corpus")
+            experiment_path = outdir / "701054-vocabtest.materialized.json"
+            experiment_path.write_text(
+                json.dumps(experiment_result, ensure_ascii=False, indent=2) + "\n",
+                encoding="utf-8")
+            experiment["materialized_path"] = str(experiment_path)
+        summary["vocabtest"] = experiment
 
     summary["totals"] = {"corpus_records": tot_corpus, "materialized_records": tot_mat,
                          "missing_records": tot_missing, "invalid_batches": tot_invalid,

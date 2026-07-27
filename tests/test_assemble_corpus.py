@@ -59,6 +59,21 @@ def test_repair_ids_map_home_but_vocabtest_is_excluded():
     assert v("701054-b0000") == "701054"          # the real delivered volume still maps
 
 
+def test_vocabtest_rows_are_isolated_from_delivery(tmp_path):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    rows = [_resp_row("701054-vocabtest-b0000", good),
+            _resp_row("701054-b0000", good)]
+    (tmp_path / "j.output.jsonl").write_text(
+        "\n".join(json.dumps(row) for row in rows), encoding="utf-8")
+    delivery = mod.read_rows_by_volume(tmp_path)
+    experiment = mod.read_vocabtest_rows(tmp_path)
+    assert set(delivery["701054"]["valid"]) == {"701054-0001-01"}
+    assert set(experiment["valid"]) == {"701054-0001-01"}
+    assert experiment["invalid"] == []
+
+
 def test_delivery_convention_drops_partials_by_default_reversibly():
     mod = _module()
     entries = [{"id": "A", "partial": True}, {"id": "B"}, {"id": "C", "partial": True}]

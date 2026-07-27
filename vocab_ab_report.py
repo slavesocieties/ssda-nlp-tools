@@ -101,15 +101,30 @@ def main(argv=None):
             verdict[f] = n - o
 
     print("\nVERDICT (age + ethnicity only — phenotype is a vocabulary gap, not a prompt issue):")
-    judged = [verdict[f] for f in JUDGE_ON if f in verdict]
-    if not judged:
-        print("  inconclusive — no comparable values")
-    elif all(d > 5 for d in judged):
-        print("  PROMPT WORKS. Both judged dimensions improved materially.")
+    # A dimension with no values in the NEW extraction is NOT evidence of
+    # improvement: the prompt tells the model to omit unsupported fields, so an
+    # empty field is simply unmeasured. Say so rather than counting it as a win.
+    measured = {f: verdict[f] for f in JUDGE_ON if f in verdict}
+    unmeasured = [f for f in JUDGE_ON if f not in verdict]
+    for f in unmeasured:
+        n_had = new_t[f]
+        print(f"  {f}: UNMEASURED — {'the new extraction emitted no values' if not n_had else 'no baseline to compare'}"
+              f" (cannot count as improvement)")
+    improved = [f for f, d in measured.items() if d > 5]
+    regressed = [f for f, d in measured.items() if d < -5]
+    if not measured:
+        print("  INCONCLUSIVE — neither judged dimension had comparable values.")
+        print("  -> do NOT spend on a full re-extraction on this evidence.")
+    elif regressed:
+        print(f"  REGRESSION in {', '.join(regressed)}. Do NOT re-extract; diagnose first.")
+    elif len(improved) == len(measured) and len(measured) == len(JUDGE_ON):
+        print(f"  PROMPT WORKS. Both judged dimensions improved ({', '.join(improved)}).")
         print("  -> re-extracting the remaining volumes is justified (~$15 Batch API).")
-    elif any(d > 5 for d in judged):
-        print("  PARTIAL. One dimension improved, the other did not — inspect the off-vocab")
-        print("  values below before committing to a full re-run.")
+    elif improved:
+        print(f"  PARTIAL — {', '.join(improved)} improved, but "
+              f"{len(JUDGE_ON) - len(improved)} of {len(JUDGE_ON)} judged dimension(s) "
+              f"{'regressed or' if regressed else 'were flat or'} unmeasured.")
+        print("  -> weigh the off-vocab values below before committing ~$15.")
     else:
         print("  NO IMPROVEMENT. Do NOT spend ~$15 on a full re-extraction; diagnose first.")
 
