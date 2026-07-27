@@ -81,9 +81,13 @@ def build(manifests_dir, outdir):
                    "all_records": canon, "disposition_counts": dict(disp)},
                   open(os.path.join(outdir, "records", f"{vol}.json"), "w", encoding="utf-8"),
                   ensure_ascii=False, indent=1)
-        # corpus file for pricing/staging (production records only)
+        # Corpus file for pricing/staging (production records only).
+        # `images` MUST be carried here: materialize_luna_results takes the
+        # faithful text, partial flag AND page provenance from this file, so
+        # dropping it silently strips provenance from every delivered record.
         json.dump({"volume": vol, "entries": [
-                   {"id": r["id"], "text": r["text"], "partial": bool(r.get("partial"))}
+                   {"id": r["id"], "text": r["text"], "images": r.get("images", []),
+                    "partial": bool(r.get("partial"))}
                    for r in prod]},
                   open(os.path.join(outdir, "corpus", f"{vol}.segmented.json"), "w", encoding="utf-8"),
                   ensure_ascii=False)

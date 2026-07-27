@@ -35,6 +35,18 @@ def test_disposition_worst_page_wins():
               "c.jpg": "retranscribe"}) == "blocked-retranscribe"
 
 
+def test_staging_corpus_carries_page_provenance():
+    """The staging corpus is what materialize_luna_results reads for faithful
+    text, partial flag AND images. Dropping `images` here silently strips page
+    provenance from every delivered record (it did, until 2026-07-27) — the
+    field exists but is empty, so nothing errors and the loss is invisible."""
+    import inspect
+    src = inspect.getsource(_production_module().build)
+    # the staging-corpus writer must emit images alongside id/text/partial
+    staging = src.split('"corpus"')[1] if '"corpus"' in src else src
+    assert '"images"' in src, "staging corpus must carry images for provenance"
+
+
 def test_disposition_unknown_page_routes_to_review():
     d = _production_module().disposition
     assert d(["x.jpg"], {}) == "review"                       # page not in the manifest
