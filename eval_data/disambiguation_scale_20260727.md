@@ -42,23 +42,54 @@ register, no shared person, more than 60 years apart. Those are *probably*
 false merges being correctly prevented rather than good merges being lost, but
 that has not been verified record by record and should not be asserted.
 
-## What would actually make review tractable
+## Per-person review — measured, not projected
 
-Not filtering. Reframing:
+Implemented in `ssda_nlp_tools/person_review.py` and measured on the same
+corpus. Grouping the identical pair set by **resolved identity**:
 
-- **Per-person review, not per-pair.** 612,495 pairs is 16,800 person screens,
-  of which only ~2,000 identities have any candidate at all. That is the
-  arithmetic change; everything else is a rounding error against it.
-- Pair review is also intrinsically repetitive: one identity with 40 candidates
-  appears as 40 separate decisions, most of which a human answers once.
+| | count |
+|---|---:|
+| pairwise decisions | 612,495 |
+| **person screens needing review** | **13,967** |
+| identities with no candidate at all | 2,833 (of 16,800) |
+| candidates per screen (mean) | 12.9 |
 
-This also fits where Daniel said he wants to end up — a model that scores the
-probability two mentions are the same, trained on manual decisions, with a
-front-end that surfaces the uncertainty. Per-person screens are the natural
-collection surface for that training data; per-pair queues are not.
+Screens by candidate count: 1 → 1,745 · 2–5 → 4,293 · 6–20 → 5,487 · 21+ → 2,436.
 
-## Correction owed
+That is a **44x reduction in decision points**, and it is real: a person seen in
+eight entries is one screen rather than eight, and a candidate reachable by
+several paths is listed once. It is *not* the "low thousands" claimed earlier —
+13,967 screens is substantial work, and the 2,436 screens carrying 21+
+candidates are the genuinely hard tail.
 
-Daniel was told "low thousands". He should be told the measured number, that
-blocking is a 23% improvement rather than a solution, and that per-person review
-is the option that changes the order of magnitude.
+Grouping by mention instead of identity gives 24,206 screens averaging 50.6
+candidates, i.e. worse than the identity count it should produce. That was the
+first implementation and it was wrong.
+
+## Three wrong numbers, and why
+
+This section is here because the same estimate was given wrongly three times.
+
+1. "Filtering takes it to low thousands" — actually 612,495 (23% cut).
+   Cause: predicted rather than measured.
+2. "Per-person is ~2,000 screens" — actually 13,967. Cause: grouped by MENTION,
+   not by resolved identity.
+3. "1 screen, 16,799 need no review" — pure artifact. Cause:
+   `person_index.json` keys identities as `person_id`; the code looked for
+   `global_id`/`id`, so every lookup returned `None`, the corpus collapsed onto
+   one screen, and every candidate was dropped as a self-match.
+
+Only the third was caught by its own output being self-contradictory (1 screen,
+0 candidates, yet counted in the "2–5" bucket). `mention_to_identity` now raises
+rather than building a map of `None`s, and tests pin all three failures.
+
+## What to tell Daniel
+
+- Filtering before scoring is implemented and worth keeping, but it is a **23%
+  reduction, not a solution** (795,713 → 612,495).
+- Per-person review is the real change: **612,495 pair decisions → 13,967 person
+  screens**, average 12.9 candidates each, 2,833 identities needing nothing.
+- It is still meaningful work, concentrated in the 2,436 screens with 21+
+  candidates. Reviewing highest-probability screens first is how that tail gets
+  managed — which is the model-plus-interface direction he described, and these
+  screens are the natural surface for collecting its training data.
