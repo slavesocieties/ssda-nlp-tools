@@ -78,9 +78,15 @@ _CLOSER = re.compile(
     r"obligaciones\s+y\s+parentesco\s+espiritual|parentesco\s+y\s+(?:demas\s+)?obligaciones",
     re.IGNORECASE)
 
+# Officiant sign-off lines. Deliberately matches the ROLE prefix rather than any
+# particular cleric: this used to also hardcode "O'Reilly|Hassett", the two
+# priests of St. Augustine vol 239746, which is pure overfitting to the volume we
+# tuned on. Removing them changes no boundary and no partial flag across all 5
+# gold fixtures and all 5 Text data volumes — the role prefixes already cover
+# those signatures — so the names bought nothing and only misled.
 _SIGNATURE = re.compile(
     r"^\s*(?:O\s+Vig(?:ari)?[or]?\.?[oa]?\b|El\s+(?:Cura|P\.?e?\b)|Fr(?:ay|\.)\s|"
-    r"Don\s+\w|(?:[A-ZÁÉÍÓÚ]\w+\s+)?(?:O['’]?\s?Reilly|Hassett))", re.IGNORECASE)
+    r"Don\s+\w)", re.IGNORECASE)
 
 _JUNK_LINE = re.compile(
     r"^\s*(?:\d{3,4}\.?|p[aá]g[.:]?\s*\d+\.{0,2}|folio\s*\d+|fol\.?\s*\d+\.?|"
@@ -309,11 +315,19 @@ def segment_page(text: str, image: str = "", min_split_len: int = 150) -> Dict[s
         flush(partial=not (cur_closed or cur_signed))
 
     lead_text = join_lines(leading)
+    short_lead = None
     if lead_text and len(lead_text) < MIN_FRAGMENT:
-        dropped.append(lead_text)          # catchword at page top, not a continuation
+        # Usually a catchword/reclamo at the page top rather than a continuation,
+        # so it does not become a leading_fragment. But it is sometimes the last
+        # few words of a record spilling over ("y lo firmé. Fr. Juan"), and
+        # dropping it silently LOSES archival text. Hand it to segment_volume,
+        # which can see whether the previous page actually left a record open.
+        short_lead = lead_text
+        dropped.append(lead_text)
         lead_text = ""
     return {"image": image, "entries": entries,
             "leading_fragment": lead_text or None,
+            "short_leading": short_lead,
             "dropped_fragments": dropped,
             "confidence": _page_confidence(entries, lead_text, text)}
 
@@ -354,6 +368,13 @@ def segment_volume(pages: List[Tuple[str, str]], min_split_len: int = 150) -> Di
     merged: List[Dict[str, Any]] = []
     for pg in per_image:
         frag = pg.get("leading_fragment")
+        # A sub-MIN_FRAGMENT page-top scrap counts as a continuation ONLY when
+        # the previous page genuinely left a record open. With something to
+        # attach to it is a spillover; with nothing, it stays a catchword and is
+        # never promoted into an orphan record of its own.
+        if not frag and pg.get("short_leading") and merged \
+                and merged[-1]["partial"] and not merged[-1].get("orphan"):
+            frag = pg["short_leading"]
         if frag and merged and merged[-1]["partial"] and not merged[-1].get("orphan"):
             prev = merged[-1]
             prev["text"] = join_lines([prev["text"], frag])
@@ -376,6 +397,8 @@ def segment_volume(pages: List[Tuple[str, str]], min_split_len: int = 150) -> Di
         for e in pg["entries"]:
             merged.append({**e, "source_images": [pg["image"]]})
 
+    _resolve_partials(merged, per_image)
+
     errors = [pg["image"] for pg in per_image if pg.get("page_type") == "error"]
     low = [pg["image"] for pg in per_image
            if pg["confidence"] < 0.7 and pg.get("page_type") != "error"]
@@ -387,6 +410,58 @@ def segment_volume(pages: List[Tuple[str, str]], min_split_len: int = 150) -> Di
                       "still_partial": sum(1 for e in merged if e["partial"]),
                       "low_confidence_pages": len(low),
                       "error_pages": len(errors)}}
+
+
+def _resolve_partials(merged: List[Dict[str, Any]],
+                      per_image: List[Dict[str, Any]]) -> None:
+    """Decide `partial` from PAGE POSITION, not from the closing-formula lexicon.
+
+    `partial` is supposed to mean "this record runs off the page". But
+    segment_page is page-local: it can only guess that from _CLOSER/_SIGNATURE,
+    and those lexicons are harvested per register format. On a volume whose
+    closing formula we do not know, EVERY page-final record looks unclosed and
+    is delivered as truncated — even though the next page proves it ended. That
+    is a lexicon-coverage artifact, not a real truncation, and it scales with
+    the number of page breaks rather than with real run-ons.
+
+    The next page settles it: if the following register page opens its own
+    record and contributed no continuation fragment, then nothing carried over
+    and the record is complete. Only these stay flagged:
+      * records ending on the volume's last page (no next page to confirm)
+      * records followed by an index/error page (unreadable -> cannot confirm)
+      * records still genuinely continuing (next page gave a leading fragment)
+    """
+    pos = {pg["image"]: i for i, pg in enumerate(per_image)}
+
+    def _page_of(entry, end: bool):
+        imgs = entry.get("source_images") or []
+        return pos.get(imgs[-1] if end else imgs[0]) if imgs else None
+
+    for k, e in enumerate(merged):
+        if not e.get("partial"):
+            continue
+        i = _page_of(e, end=True)
+        if i is None:
+            continue
+        # (a) another record starts on the same page after this one. Registers
+        # are sequential, so this record demonstrably closed mid-page — the same
+        # argument segment_page already uses for a mid-page opener split.
+        if k + 1 < len(merged):
+            j = _page_of(merged[k + 1], end=False)
+            if j is not None and j <= i:
+                e["partial"] = False
+                continue
+        # (b) it really did run to the foot of page i — let page i+1 settle it.
+        if i + 1 >= len(per_image):
+            continue                       # ends the volume — genuinely unconfirmed
+        nxt = per_image[i + 1]
+        if nxt.get("page_type") in ("index", "error"):
+            continue                       # can't be read — keep the flag honest
+        if nxt.get("leading_fragment"):
+            continue                       # really does continue
+        if not nxt.get("entries"):
+            continue                       # blank/unsegmented — proves nothing
+        e["partial"] = False               # next page starts clean -> record ended
 
 
 def _stem(image: str) -> str:

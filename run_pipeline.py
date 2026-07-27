@@ -10,6 +10,8 @@ Runs everything this package does, in order, and writes all artifacts:
     resolved.json       volume with a global_id on every person mention
     person_index.json   one row per identity (mentions, attributes, conflicts)
     network.graphml     the social graph (Gephi / networkx / Cytoscape)
+    nodes.csv           one row per person identity (opens in Excel)
+    edges.csv           one row per typed relationship, with both labels
     network.json        graph summary (hubs, components, relationship counts)
     review.html         self-contained page for deciding borderline merges
     summary.txt         human-readable rollup of all of the above
@@ -23,7 +25,7 @@ import json
 import os
 
 from ssda_nlp_tools.link import link_volumes, format_link
-from ssda_nlp_tools.network import to_graphml, format_network
+from ssda_nlp_tools.network import to_graphml, to_csv, format_network
 from ssda_nlp_tools.qa import qa_volume, format_qa
 from ssda_nlp_tools.review_html import render_review_html
 
@@ -64,6 +66,7 @@ def main(argv=None):
     with open(out("person_index.json"), "w", encoding="utf-8") as fh:
         json.dump(res["registry"], fh, ensure_ascii=False, indent=2)
     to_graphml(res["network"], out("network.graphml"))
+    to_csv(res["network"], out("nodes.csv"), out("edges.csv"))
     with open(out("network.json"), "w", encoding="utf-8") as fh:
         json.dump(res["network"], fh, ensure_ascii=False, indent=2)
     render_review_html(res["review_queue"], out("review.html"), tag=args.tag)
@@ -74,7 +77,8 @@ def main(argv=None):
     print("\n\n".join(sections))
     print(f"\nartifacts -> {args.outdir}{os.sep}"
           f"{{qa_report.json, resolved.json, person_index.json, "
-          f"network.graphml, network.json, review.html, summary.txt}}")
+          f"network.graphml, nodes.csv, edges.csv, network.json, "
+          f"review.html, summary.txt}}")
     print(f"next: open {out('review.html')} to decide {len(res['review_queue'])} "
           f"borderline pairs, then run_review.py apply.")
     return 0

@@ -1,0 +1,193 @@
+{
+    "controlled_vocabularies": [
+        {
+            "key": "titles",
+            "language": "English",
+            "vocab": [
+                "Mr.", "Mrs.", "Miss", "Sir", "Madam", "Father", "Vicar", "Doctor", "Mayor", "Licentiate", "Alderman", "Friar", "Lord", "Lady", "Constable", "Bachelor", "Master", "Captain", "Priest", "Pastor", "Bishop", "Archbishop", "Presbyter", "Deacon", "Brother", "Sister", "Mother", "Prior", "Abbot", "Governor", "Viceroy", "Chief"
+            ]
+        },
+        {
+            "key": "titles",
+            "language": "Spanish",
+            "vocab": [
+                "Don", "Doña", "Padre", "Vicario", "Doctor", "Alcalde", "Licenciado", "Regidor", "Fray", "Señor", "Señora", "Alguacil", "Bachiller", "Maestro", "Capitán", "Cura", "Párroco", "Obispo", "Arzobispo", "Presbítero", "Diácono", "Hermano", "Sor", "Madre", "Prior", "Abad", "Gobernador", "Virrey", "Cacique"
+            ]
+        },
+        {
+            "key": "titles",
+            "language": "Portuguese",
+            "vocab": [
+                "Dom", "Dona", "Padre", "Vigário", "Doutor", "Alcaide", "Licenciado", "Vereador", "Frei", "Senhor", "Senhora", "Meirinho", "Bacharel", "Mestre", "Capitão", "Cura", "Pároco", "Bispo", "Arcebispo", "Presbítero", "Diácono", "Irmão", "Sóror", "Madre", "Prior", "Abade", "Governador", "Vice-rei", "Cacique"
+            ]
+        },
+        {
+            "key": "ranks",
+            "language": "English",
+            "vocab": [
+                "Private", "Corporal", "Sergeant", "Sergeant Major", "Lieutenant", "Captain", "Major", "Colonel", "Lieutenant Colonel", "General", "Commander", "Admiral", "Ensign", "Cadet", "Constable"
+            ]
+        },
+        {
+            "key": "ranks",
+            "language": "Spanish",
+            "vocab": [
+                "Soldado", "Cabo", "Sargento", "Sargento Mayor", "Teniente", "Capitán", "Mayor", "Coronel", "Teniente Coronel", "General", "Comandante", "Almirante", "Alférez", "Cadete", "Alguacil"
+            ]
+        },
+        {
+            "key": "ranks",
+            "language": "Portuguese",
+            "vocab": [
+                "Soldado", "Cabo", "Sargento", "Sargento-mor", "Tenente", "Capitão", "Major", "Coronel", "Tenente-coronel", "General", "Comandante", "Almirante", "Alferes", "Cadete", "Meirinho"
+            ]
+        },
+        {
+            "key": "ethnicity",
+            "language": "English",
+            "vocab": [
+                "Angola", "Arara", "Bambara", "Bioho", "Bran", "Cacanga", "Canga", "Carabali", "Cetre", "Chamba", "Congo", "Fula", "Ganga", "Wolof", "Kongo", "Lucumi", "Makua", "Mandinka", "Mina", "Mondongo", "Mozambique", "Quissama", "Zape", "Spanish", "Portuguese", "English", "French", "Dutch", "Indigenous", "Maya", "Nahua", "Otomi", "Mixtec", "Zapotec", "Guarani", "Tupi"
+            ]
+        },
+        {
+            "key": "ethnicity",
+            "language": "Spanish",
+            "vocab": [
+                "Angola", "Arará", "Bambara", "Biohó", "Bran", "Cacanga", "Canga", "Carabalí", "Cetre", "Chamba", "Congo", "Fula", "Gangá", "Jolof", "Kongo", "Lucumí", "Macua", "Mandinga", "Mina", "Mondongo", "Mozambique", "Quissama", "Zape", "Español", "Portugués", "Inglés", "Francés", "Holandés", "Indígena", "Maya", "Nahua", "Otomí", "Mixteco", "Zapoteco", "Guaraní", "Tupi"
+            ]
+        },
+        {
+            "key": "ethnicity",
+            "language": "Portuguese",
+            "vocab": [
+                "Angola", "Arará", "Bambara", "Biohó", "Bran", "Cacanga", "Canga", "Carabalí", "Cetre", "Chamba", "Congo", "Fula", "Gangá", "Jolof", "Kongo", "Lucumí", "Macua", "Mandinga", "Mina", "Mondongo", "Moçambique", "Quissama", "Zape", "Espanhol", "Português", "Inglês", "Francês", "Holandês", "Indígena", "Maia", "Nahua", "Otomi", "Mixteco", "Zapoteco", "Guarani", "Tupi"
+            ]
+        },
+        {
+            "key": "age",
+            "language": "English",
+            "vocab": [
+                "infant", "child", "adult"
+            ]
+        },
+        {
+            "key": "age",
+            "language": "Spanish",
+            "vocab": [
+                "infante", "párvulo", "párvula", "niño", "niña", "adulto", "adulta"
+            ]
+        },
+        {
+            "key": "age",
+            "language": "Portuguese",
+            "vocab": [
+                "infante", "párvulo", "párvula", "criança", "menino", "menina", "adulto", "adulta"
+            ]
+        },
+        {
+            "key": "legitimate",
+            "language": "English",
+            "vocab": [
+                "true", "false", "legitimate", "illegitimate", "natural"
+            ]
+        },
+        {
+            "key": "legitimate",
+            "language": "Spanish",
+            "vocab": [
+                "verdadero", "falso", "legítimo", "legítima", "ilegítimo", "ilegítima", "natural"
+            ]
+        },
+        {
+            "key": "legitimate",
+            "language": "Portuguese",
+            "vocab": [
+                "verdadeiro", "falso", "legítimo", "legítima", "ilegítimo", "ilegítima", "natural"
+            ]
+        },
+        {
+            "key": "occupation",
+            "language": "English",
+            "vocab": [
+                "Cleric", "Student", "Scribe", "Engineer", "Judge", "Educator", "Merchant", "Artisan", "Farmer", "Laborer", "Soldier", "Sailor", "Physician", "Lawyer", "Blacksmith", "Carpenter", "Tailor", "Shoemaker", "Baker", "Butcher", "Weaver", "Mason", "Silversmith", "Goldsmith", "Barber", "Midwife", "Washerwoman", "Seamstress", "Cook", "Servant", "Overseer", "Mayor", "Governor", "Official"
+            ]
+        },
+        {
+            "key": "occupation",
+            "language": "Spanish",
+            "vocab": [
+                "Clérigo", "Estudiante", "Escribano", "Ingeniero", "Juez", "Educador", "Comerciante", "Artesano", "Agricultor", "Labrador", "Jornalero", "Soldado", "Marinero", "Médico", "Abogado", "Herrero", "Carpintero", "Sastre", "Zapatero", "Panadero", "Carnicero", "Tejedor", "Albañil", "Platero", "Orfebre", "Barbero", "Partera", "Lavandera", "Costurera", "Cocinero", "Sirviente", "Mayoral", "Alcalde", "Gobernador", "Oficial"
+            ]
+        },
+        {
+            "key": "occupation",
+            "language": "Portuguese",
+            "vocab": [
+                "Clérigo", "Estudante", "Escrivão", "Engenheiro", "Juiz", "Educador", "Comerciante", "Artesão", "Agricultor", "Lavrador", "Jornaleiro", "Soldado", "Marinheiro", "Médico", "Advogado", "Ferreiro", "Carpinteiro", "Alfaiate", "Sapateiro", "Padeiro", "Açougueiro", "Tecelão", "Pedreiro", "Ourives", "Barbeiro", "Parteira", "Lavadeira", "Costureira", "Cozinheiro", "Servo", "Feitor", "Alcaide", "Governador", "Oficial"
+            ]
+        },
+        {
+            "key": "phenotype",
+            "language": "English",
+            "vocab": [
+                "black", "brown", "indian", "pardo", "mestizo", "mulatto", "white", "creole", "zambo", "castizo", "morisco", "lobo", "coyote", "cholo", "chino", "trigueno", "albino"
+            ]
+        },
+        {
+            "key": "phenotype",
+            "language": "Spanish",
+            "vocab": [
+                "negro", "moreno", "indio", "pardo", "mestizo", "mulato", "blanco", "criollo", "zambo", "castizo", "morisco", "lobo", "coyote", "cholo", "chino", "trigueño", "albino"
+            ]
+        },
+        {
+            "key": "phenotype",
+            "language": "Portuguese",
+            "vocab": [
+                "negro", "moreno", "índio", "pardo", "mestiço", "mulato", "branco", "crioulo", "cafuzo", "mameluco", "caboclo", "trigueiro", "albino"
+            ]
+        },
+        {
+            "key": "free",
+            "language": "English",
+            "vocab": [
+                "true", "false", "free", "enslaved", "freedman", "freedwoman"
+            ]
+        },
+        {
+            "key": "free",
+            "language": "Spanish",
+            "vocab": [
+                "verdadero", "falso", "libre", "esclavo", "esclava", "liberto", "liberta", "horro", "horra"
+            ]
+        },
+        {
+            "key": "free",
+            "language": "Portuguese",
+            "vocab": [
+                "verdadeiro", "falso", "livre", "escravo", "escrava", "liberto", "liberta", "forro", "forra"
+            ]
+        },
+        {
+            "key": "relationship_type",
+            "language": "English",
+            "vocab": [
+                "spouse", "parent", "child", "grandparent", "grandchild", "enslaver", "slave", "godparent", "godchild"
+            ]
+        },
+        {
+            "key": "relationship_type",
+            "language": "Spanish",
+            "vocab": [
+                "cónyuge", "esposo", "esposa", "marido", "mujer", "padre", "madre", "hijo", "hija", "abuelo", "abuela", "nieto", "nieta", "esclavizador", "amo", "ama", "esclavo", "esclava", "padrino", "madrina", "ahijado", "ahijada"
+            ]
+        },
+        {
+            "key": "relationship_type",
+            "language": "Portuguese",
+            "vocab": [
+                "cônjuge", "esposo", "esposa", "marido", "mulher", "pai", "mãe", "filho", "filha", "avô", "avó", "neto", "neta", "escravizador", "senhor", "senhora", "escravo", "escrava", "padrinho", "madrinha", "afilhado", "afilhada"
+            ]
+        }
+    ]
+}

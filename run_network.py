@@ -12,7 +12,7 @@ import argparse
 import json
 
 from ssda_nlp_tools.resolve import resolve_volume
-from ssda_nlp_tools.network import build_network, to_graphml, format_network
+from ssda_nlp_tools.network import build_network, to_graphml, to_csv, format_network
 
 
 def main(argv=None):
@@ -24,6 +24,8 @@ def main(argv=None):
     ap.add_argument("--review", type=float, default=0.70)
     ap.add_argument("--top", type=int, default=12)
     ap.add_argument("--graphml", metavar="PATH", help="write GraphML")
+    ap.add_argument("--csv", metavar="PREFIX",
+                    help="write PREFIX_nodes.csv and PREFIX_edges.csv")
     ap.add_argument("--json", metavar="PATH", help="write network summary JSON")
     ap.add_argument("--resolved", metavar="PATH", help="write the resolved volume + person index")
     args = ap.parse_args(argv)
@@ -35,6 +37,9 @@ def main(argv=None):
 
     if args.graphml:
         to_graphml(net, args.graphml); print(f"\nGraphML  -> {args.graphml}")
+    if args.csv:
+        n, e = to_csv(net, f"{args.csv}_nodes.csv", f"{args.csv}_edges.csv")
+        print(f"CSV      -> {n}, {e}")
     if args.json:
         with open(args.json, "w", encoding="utf-8") as f:
             json.dump(net, f, ensure_ascii=False, indent=2)

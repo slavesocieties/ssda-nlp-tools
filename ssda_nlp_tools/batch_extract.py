@@ -64,10 +64,88 @@ Normalization rules (match the project's hand-corrected examples):
 Extraction rules:
 - One results element per input entry, echoing its exact "entry" id. Do not merge
   or drop entries. If an entry is unreadable, return it with empty people/events.
-- people/events follow the same schema and conventions as the few-shot examples.
-- Output English-normalized values only for "age" and "origin"; never translate names.
-- Prefer omission/null over hallucination. Return JSON only, no prose or code fences.
+- Include a field ONLY when the record actually supports it. Omit it otherwise.
+  Never guess a value to fill a slot — omission is always better than invention.
+- Never translate personal names.
+- Return JSON only, no prose or code fences.
 """.strip()
+
+
+def _schema_block(v=None) -> str:
+    """The field spec, rendered from vocab.json so the prompt cannot drift from
+    the controlled vocabularies.
+
+    Semantics follow slavesocieties/openai `training_data_documentation.txt`.
+    Only genuinely closed sets are enumerated in full: listing every ethnicity or
+    occupation would push the model to force-fit a value onto a record that does
+    not state one, and Daniel describes those lists as representative rather than
+    comprehensive. For the open-ended fields we give the DISTINCTION plus a few
+    examples, which is what the model actually gets wrong.
+    """
+    from . import vocab as _v
+    v = v or _v.load_vocab()
+
+    def _lst(field, lang="English", n=None):
+        vals = v.values(field, lang)
+        return ", ".join(vals[:n] if n else vals)
+
+    def _spread(field, lang="English", head=8, tail=4):
+        """Sample across a long list. The ethnicity vocabulary is grouped —
+        African ethnonyms first, European and Indigenous ones last — so a plain
+        head slice would imply the field only covers the former."""
+        vals = v.values(field, lang)
+        if len(vals) <= head + tail:
+            return ", ".join(vals)
+        return ", ".join(vals[:head] + ["..."] + vals[-tail:])
+
+    return f"""
+PERSON fields — include only those the record supports:
+- id: "P01", "P02", ... in order of first appearance in the entry.
+- name: the person's name as it appears in the NORMALIZED text.
+- titles: honorifics, kept in the record's OWN language, as written
+  (e.g. {_lst('titles', 'Spanish', 6)}).
+- rank: military rank only, given as its ENGLISH equivalent
+  (one of: {_lst('rank')}).
+- occupation: what the person did for a living, GENERALIZED and in ENGLISH —
+  every clergyman is "Cleric" regardless of church office
+  (e.g. {_lst('occupation', 'English', 10)}).
+- origin: a place — birthplace or vaguer origin. A continent, region, or town.
+- ethnicity: the ETHNOLINGUISTIC descriptor only — African, European and
+  Indigenous designations all belong here
+  (e.g. {_spread('ethnicity')}).
+- phenotype: the PHYSICAL/colour descriptor, kept as written in the record
+  (e.g. {_lst('phenotype', 'Spanish', 8)}).
+  ethnicity and phenotype are DIFFERENT fields and must never be merged: an
+  ethnicity names a people or place of derivation, a phenotype describes
+  appearance. "criollo/criolla" is a PHENOTYPE. Neither belongs in origin,
+  which is strictly a place name.
+- age: exactly one of {_lst('age')} — a category, never a number and never the
+  Spanish or Portuguese word. "párvulo"/"párvula" and any child under two are
+  "infant". Infer from an explicit or referenced birth date when present.
+- legitimate: boolean. true = born in wedlock, false = not. Often implicit:
+  "hijo natural" and "padres no conocidos" both mean false.
+- free: boolean. true = free at the time of the record, false = enslaved.
+  "libre"/"liberto"/"horro" are true; "esclavo"/"esclava" false. If the record
+  does not say, OMIT the field — do not default it either way.
+- relationships: [{{"related_person": "<id>", "relationship_type": "<type>"}}].
+  relationship_type MUST be one of exactly: {_lst('relationship_type')}.
+  Use the ENGLISH term even though the record is Spanish or Portuguese
+  (padrino/madrinha -> godparent, esclavo -> slave, amo/senhor -> enslaver,
+  hijo/filha -> child). Record the relationship from BOTH sides: if P03 is
+  "hija de P05", then P05 is P03's "parent" and P03 is P05's "child".
+
+EVENT fields:
+- type: "baptism", "marriage", "burial", or "birth". A baptismal entry
+  frequently also carries a separate birth event.
+- principals: [person id]. One for baptism/burial/birth; TWO for a marriage.
+- date: "YYYY-MM-DD". If the record gives only part of a date, give what it
+  supports ("1798-06" or "1798") rather than inventing the rest.
+- witnesses: [person id] for anyone named as a witness (testigo/testemunha).
+  Most common in marriages. Omit when the record names none.
+""".rstrip()
+
+
+BATCH_SYSTEM_PROMPT = BATCH_SYSTEM_PROMPT + "\n" + _schema_block()
 
 
 def build_messages(entries: List[dict], examples: List[dict],

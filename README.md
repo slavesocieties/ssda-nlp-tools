@@ -9,7 +9,7 @@ a human review loop at every step.
 **Design rule: paid calls are always deliberate.** The pipeline tools work
 deterministically ($0) or *prepare and price* LLM work. The opt-in live
 runners (`run_live_test.py` and `run_model_bakeoff.py`) are dry-run by
-default and need an explicit `--confirm`. The full test suite (122 tests) runs
+default and need an explicit `--confirm`. The full test suite (137 tests) runs
 offline in under a second.
 
 ## The pipeline
@@ -54,7 +54,7 @@ run_network.py / run_pipeline.py -> person registry + GraphML social graph
 ## Quick start
 
 ```bash
-python -m pytest tests -q                          # 122 tests, no network, <1s
+python -m pytest tests -q                          # 137 tests, no network, <1s
 
 # segment one volume (Archivault JSON or the paired-example .md format)
 python run_segment.py path/to/VOLUME.json --structural --out segmented.json
@@ -93,7 +93,7 @@ live-provider outputs are gitignored.
 ```
 ssda_nlp_tools/     the package (segmentation, eval, QA, identity, network, cost)
 run_*.py            one CLI per pipeline stage (see ssda_nlp_tools/README.md)
-tests/              105 offline tests; tests/fixtures/ = the paired gold examples
+tests/              137 offline tests; tests/fixtures/ = the paired gold examples
 eval_data/          measured reports: segmentation, cost, model bake-off
 Text data/, Sample_output/, Reduction_test/, training_data.json, instructions.json,
 extract.py, normalize.py, utility.py, transcription_json_to_training_*.py
@@ -101,6 +101,12 @@ extract.py, normalize.py, utility.py, transcription_json_to_training_*.py
                     from github.com/Suzreal/SSDA_New_Workflow_Update (Zekai) and
                     github.com/slavesocieties/openai — kept verbatim so the
                     tests and cost measurements run against the real thing
+vocab.json, training_data_documentation.txt
+                    SSDA's controlled vocabularies + field definitions, verbatim
+                    from github.com/slavesocieties/openai (Daniel, 2026-07-24).
+                    ssda_nlp_tools/vocab.py loads these, and the extraction
+                    prompt is GENERATED from vocab.json so it cannot drift from
+                    them — update the vocabulary here, not in the prompt
 out_corpus/, out_batches/   (gitignored) regenerable corpus outputs
 ```
 
@@ -109,9 +115,14 @@ out_corpus/, out_batches/   (gitignored) regenerable corpus outputs
 * Segmentation gold is 2 pages / 8 entries + one fully-verified volume; corpus
   numbers measure structure and confidence, not per-entry text accuracy.
   `run_goldprep.py` makes growing gold cheap.
-* ~15% of corpus entries carry a truthful `partial` flag (page-boundary or
-  unrecognized regional closing formulas) — they are included and tagged, never
-  dropped.
+* `partial` used to be inferred from the `_CLOSER`/`_SIGNATURE` lexicons, so on
+  a register whose sign-off wording those lexicons did not know, every
+  page-final record was flagged truncated — the rate tracked page breaks rather
+  than real run-ons (~11% of the delivered corpus; Daniel flagged it 2026-07-24).
+  `segment_volume` now resolves the flag POSITIONALLY after stitching
+  (`_resolve_partials`), so it is independent of lexicon coverage. It means
+  what it says: the record runs off the page. Still flagged, honestly, are
+  end-of-volume records and any followed by an index/error page.
 * The 6% low-confidence pages and 1,281 failed-transcription pages need,
   respectively, an LLM pass and Archivault re-submission — both are staged as
   worklists, neither is executed by this repo.

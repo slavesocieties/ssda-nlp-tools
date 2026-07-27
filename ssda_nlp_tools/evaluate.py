@@ -173,7 +173,13 @@ def score_entry(gold: dict, pred: dict, name_threshold: float = 0.72) -> Dict[st
     # ---- events (type + date + principals mapped to canonical names) ----
     def ev_repr(e, canon):
         principals = frozenset(canon.get(str(x), "?") for x in e.get("principals", []))
-        return (norm_value(e.get("type")), principals, norm_value(e.get("date")))
+        # witnesses (testigos) are carried but deliberately NOT part of the
+        # identity tuple — two accounts of the same marriage are the same event
+        # even if one of them missed a witness. They are scored separately below,
+        # the same way dates are.
+        witnesses = frozenset(canon.get(str(x), "?") for x in (e.get("witnesses") or []))
+        return (norm_value(e.get("type")), principals, norm_value(e.get("date")),
+                witnesses)
 
     g_events = [ev_repr(e, gcanon) for e in gold["events"]]
     p_events = [ev_repr(e, pcanon) for e in pred["events"]]
@@ -188,19 +194,24 @@ def score_entry(gold: dict, pred: dict, name_threshold: float = 0.72) -> Dict[st
             s += 0.2
         return s
 
-    ge = [{"type": t, "prin": pr, "date": d} for (t, pr, d) in g_events]
-    pe = [{"type": t, "prin": pr, "date": d} for (t, pr, d) in p_events]
+    ge = [{"type": t, "prin": pr, "date": d, "wit": w} for (t, pr, d, w) in g_events]
+    pe = [{"type": t, "prin": pr, "date": d, "wit": w} for (t, pr, d, w) in p_events]
     ev_matches, ev_ug, ev_up = greedy_align(
         ge, pe, threshold=0.5,
         score_fn=lambda a, b: ev_score((a["type"], a["prin"], a["date"]),
                                        (b["type"], b["prin"], b["date"])))
     events_conf = prf(tp=len(ev_matches), fp=len(ev_up), fn=len(ev_ug))
     date_gold = date_ok = 0
+    wit_tp = wit_fp = wit_fn = 0
     for gi, pi, _ in ev_matches:
         if ge[gi]["date"] is not None:
             date_gold += 1
             if ge[gi]["date"] == pe[pi]["date"]:
                 date_ok += 1
+        gw, pw = ge[gi]["wit"], pe[pi]["wit"]
+        wit_tp += len(gw & pw)
+        wit_fp += len(pw - gw)
+        wit_fn += len(gw - pw)
 
     # ---- relationships: directed typed edges over canonical names ----
     def rel_edges(people, canon):
@@ -227,6 +238,7 @@ def score_entry(gold: dict, pred: dict, name_threshold: float = 0.72) -> Dict[st
         "events": events_conf,
         "relationships": rel_conf,
         "date_on_matched_events": {"gold": date_gold, "correct": date_ok},
+        "witnesses_on_matched_events": {"tp": wit_tp, "fp": wit_fp, "fn": wit_fn},
         "attr_stats": attr_stats,
         "attr_errors": attr_errors,
         "missed_people": [gp[gi].get("name") for gi in ug],
@@ -286,6 +298,13 @@ def evaluate(gold_source: Any, pred_source: Any, name_threshold: float = 0.72) -
     dg = sum(e["date_on_matched_events"]["gold"] for e in per_entry)
     dc = sum(e["date_on_matched_events"]["correct"] for e in per_entry)
 
+    # witnesses: pooled over matched events. `None` (not 0.0) when no gold entry
+    # carries a witness — an unexercised field must not read as a failed one.
+    wt = sum(e["witnesses_on_matched_events"]["tp"] for e in per_entry)
+    wf = sum(e["witnesses_on_matched_events"]["fp"] for e in per_entry)
+    wn = sum(e["witnesses_on_matched_events"]["fn"] for e in per_entry)
+    witnesses = prf(tp=wt, fp=wf, fn=wn) if (wt or wf or wn) else None
+
     return {
         "entries": {
             "gold": len(gold), "pred": len(pred), "aligned": len(ent_matches),
@@ -295,6 +314,7 @@ def evaluate(gold_source: Any, pred_source: Any, name_threshold: float = 0.72) -
         "events": micro("events"),
         "relationships": micro("relationships"),
         "date_accuracy_on_matched_events": round(dc / dg, 4) if dg else None,
+        "witnesses_on_matched_events": witnesses,
         "attributes": attr_report,
         "per_entry": per_entry,
     }
@@ -317,9 +337,16 @@ def format_report(report: Dict[str, Any], show_errors: bool = False) -> str:
         d = report[dim]
         lines.append(f"{dim:<16}{d['precision']:>11.3f}{d['recall']:>9.3f}{d['f1']:>8.3f}"
                      f"{d['tp']:>6}{d['fp']:>5}{d['fn']:>5}")
+    w = report.get("witnesses_on_matched_events")
+    if w:
+        lines.append(f"{'witnesses':<16}{w['precision']:>11.3f}{w['recall']:>9.3f}"
+                     f"{w['f1']:>8.3f}{w['tp']:>6}{w['fp']:>5}{w['fn']:>5}")
     da = report["date_accuracy_on_matched_events"]
     lines.append("")
     lines.append(f"date accuracy on matched events: {da if da is not None else 'n/a'}")
+    if not w:
+        lines.append("witnesses: no gold event carries one — field unexercised, "
+                     "not failed")
     lines.append("")
     lines.append("per-attribute (accuracy on matched people | hallucination rate):")
     for a, s in report["attributes"].items():

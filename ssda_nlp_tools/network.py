@@ -9,6 +9,7 @@ networkx, Cytoscape) plus a summary JSON. No third-party deps.
 """
 from __future__ import annotations
 
+import csv
 import json
 import xml.etree.ElementTree as ET
 from collections import Counter, defaultdict
@@ -162,6 +163,47 @@ def to_graphml(network: Dict[str, Any], path: str) -> str:
 
     ET.ElementTree(root).write(path, encoding="utf-8", xml_declaration=True)
     return path
+
+
+NODE_ATTRS = ["label", "mentions", "needs_review", "occupation", "phenotype",
+              "free", "origin", "ethnicity", "age", "legitimate", "rank"]
+
+
+def to_csv(network: Dict[str, Any], nodes_path: str, edges_path: str) -> tuple:
+    """Write flat nodes.csv / edges.csv alongside the GraphML.
+
+    GraphML is the right interchange format and loads in Gephi/networkx/
+    Cytoscape, but it is one XML blob — Daniel went looking for the graph in the
+    delivered folder (2026-07-24) and reasonably did not recognise it. Two CSVs
+    are what "nodes and edges files" means to someone scanning a Drive folder,
+    and they open in Excel. Same data, no new computation.
+    """
+    with open(nodes_path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["id"] + NODE_ATTRS)
+        for n in network["nodes"]:
+            w.writerow([n["id"]] + [_cell(n.get(a)) for a in NODE_ATTRS])
+
+    with open(edges_path, "w", encoding="utf-8", newline="") as f:
+        w = csv.writer(f)
+        w.writerow(["source", "target", "relationship_type", "weight",
+                    "source_label", "target_label", "entries"])
+        labels = {n["id"]: n.get("label", "") for n in network["nodes"]}
+        for ed in network["edges"]:
+            w.writerow([ed["source"], ed["target"], ed["type"], ed["weight"],
+                        labels.get(ed["source"], ""), labels.get(ed["target"], ""),
+                        ";".join(ed["entries"])])
+    return nodes_path, edges_path
+
+
+def _cell(v: Any) -> str:
+    """Booleans as true/false (not Python's True/False) so the CSV reads the
+    same way the JSON does."""
+    if v is None:
+        return ""
+    if isinstance(v, bool):
+        return "true" if v else "false"
+    return str(v)
 
 
 def format_network(network: Dict[str, Any], top: int = 10) -> str:

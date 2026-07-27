@@ -193,6 +193,25 @@ def qa_volume(source: Any,
                 if v is not None and str(v).strip():
                     vocab[k][str(v).strip().lower()] += 1
 
+    # ---- 7. controlled-vocabulary conformance ----
+    # The distributions above only show WHAT we emitted; they cannot say whether
+    # it is a legal value. Score against SSDA's actual vocab.json, and raise an
+    # issue for the fields that are genuinely closed sets — an out-of-vocab
+    # relationship_type or age is a defect, whereas an unusual ethnicity may
+    # simply be an ethnonym the list omits.
+    conformance = None
+    try:
+        from .vocab import check_conformance
+        conformance = check_conformance(entries)
+        for field in ("relationship_type", "age"):
+            s = conformance.get(field) or {}
+            for value, n in (s.get("stray") or {}).items():
+                issues.append({"type": "vocab_violation", "entry": None,
+                               "detail": f"{field}={value!r} is outside the "
+                                         f"controlled vocabulary ({n}x)"})
+    except (ImportError, OSError):
+        pass                      # vocab.json not vendored — skip, don't fail QA
+
     by_type = Counter(i["type"] for i in issues)
     return {
         "volume": vol.get("title") or vol.get("id"),
@@ -203,6 +222,7 @@ def qa_volume(source: Any,
         "chronology_breaks": chron_breaks,
         "nonreciprocal_relationships": recip_misses,
         "vocabulary": {k: dict(c.most_common()) for k, c in vocab.items()},
+        "conformance": conformance,
     }
 
 
@@ -234,5 +254,9 @@ def format_qa(report: Dict[str, Any], max_rows: int = 12) -> str:
         if dist:
             head = ", ".join(f"{v}×{c}" for v, c in list(dist.items())[:8])
             lines.append(f"  {k:<10} {head}")
+    if report.get("conformance"):
+        from .vocab import format_conformance
+        lines.append("")
+        lines.append(format_conformance(report["conformance"]))
     lines.append("=" * 64)
     return "\n".join(lines)

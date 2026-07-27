@@ -1,0 +1,89 @@
+﻿Introduction: SSDA’s NLP algorithm, which extracts information about people, characteristics of those people, relationships between those people, and events that those people were involved in, is now driven by large language models. The behavior of these LLMs when applied to SSDA records is informed by a combination of natural language instructions and manually created examples (few-shot learning). These examples are passed to the LLM as JSON, and this document outlines the structure of these JSON records.
+
+Basics: Each example details a single sacramental record, usually a baptism, marriage, or burial. Each example contains four principal components: 1) a handful of metadata fields referring to the volume that the record came from, 2) the “raw” text of the record as produced by a human transcriber or text recognition algorithm and used as input for our NLP pipeline, 3) the “normalized” text of the record, which represents an intermediate product of the NLP, and 4) a structured representation of all content extracted from the record. Each of these components will be described in further detail below.
+
+Volume metadata
+
+Field: type
+Content: The type of sacramental record, usually either “baptism”, “marriage”, or “burial”.
+
+Field: language
+Content: The language in which the record was written, usually either Spanish or Portuguese.
+
+Field: country
+Content: The modern nation in which the institution that produced the record was located, usually either Brazil, Colombia, Cuba, Mexico, or the United States.
+
+Field: state
+Content: The modern first-order administrative division in which the institution that produced the record was located, i.e. a state for Mexico or the United States, a province for Cuba, or a department for Colombia.
+
+Field: institution
+Content: The name of the institution that produced the record. This should be cross-referenced with other SSDA metadata to ensure that the standardized name for the institution is used.
+
+Field: id
+Content: The unique ID assigned to the volume that the record came from. This should appear in the file containing raw transcribed text.
+
+Raw text
+
+Field: raw
+Content: The text of the record exactly as it was manually or computational transcribed. In production, this text will be the input for the NLP pipeline.
+
+Normalized text
+
+Field: normalized
+Content: A lightly edited version of the transcription intended to convey the same meaning in a way that is more intelligible to a modern reader or a LLM trained primary on 21st-century writing. Potential changes include, but are not limited to, expanding abbreviations, correcting archaic spellings, modernizing capitalization and punctuation, and correcting obvious transcription errors. In production, this text will be output by the NLP pipeline.
+
+Extracted content
+
+Most content will be extracted in the form of a series of records for each individual who appears in the normalized text. At minimum, each of these records will consist of a unique identifier and a name. A number of other pieces of information, all of which will be described in further detail below, might be contained within each individual’s record.
+
+Field: id
+Content: A unique identifier assigned to the person. These are alphanumeric identifiers of the P##, where ## is a two-digit padded integer and P01 is assigned to the first person to appear in the record, P02 to the second, etc.
+
+Field: name
+Content: The person’s name exactly as it appears in the normalized text.
+
+Field: titles
+Content: A list of any honorific titles accorded to the person exactly as they appear in the record. Refer to controlled vocabulary documentation for examples.
+
+Field: rank
+Content: The military rank earned by the person. These should be translated to their English equivalent.
+
+Field: origin
+Content: The person’s place of origin. This could be either an explicit place of birth or a vaguer declaration of origination. Continents, regions, or cities/towns are all acceptable.
+
+Field: ethnicity
+Content: The ethnolinguistic descriptor assigned to the person in the record. Refer to controlled vocabulary documentation for examples.
+
+Field: age
+Content: A broad age category that applies to the person, usually either “infant” (<2 years), “child”’, or “adult”. These can either be explicit or implied based on referenced birth dates and should be recorded as their English equivalent. Note: The Spanish parvulo/a refers to an infant.
+
+Field: legitimate
+Content: The legitimacy of the person’s birth. This will frequently be addressed explicitly, particularly in baptisms, but can also be implied (i.e. padres no conocidos). This is a boolean field where true indicates legitimacy and false indicates illegitimacy.
+
+Field: occupation
+Content: What the person did for a living. Most frequently this information will be available for the person who wrote the record. Occupations should be generalized (i.e. all clergymen are “cleric”s, regardless of position in the Church) and translated to English. See controlled vocabulary documentation for examples.
+
+Field: phenotype
+Content: A physical/phenotypical descriptor assigned to the person in the record. These should usually be recorded exactly as they appear. See controlled vocabulary.
+
+Field: free
+Content: Whether or not the person was free at the time of the record’s publication. This is a boolean field where true indicates freedom and false indicates enslavement.
+
+Field: relationships
+Content: A list of all relationships that the person has to other people mentioned in the record. These should be represented as a list of dictionaries in which each dictionary has two keys. The value of the first, “related_person”, should be the unique identifier assigned to the other person in the relationship. The value of the second, “relationship_type”, should be what that other person is to them (i.e. if the record described P03 as hija de P05, P05 would be recorded as P03’s “parent” and P03 would be recorded as P05’s “child”). See controlled vocabulary for precise terminology for this field.
+
+The content extracted from each sacramental record will also include a representation of each event that occurs within that record. At minimum, each of these records will consist of an event type and a principal.The primary event for each record will be the observance of a sacrament (i.e. usually either a baptism, marriage, or burial), but records will sometimes also contain information about secondary events, most notably births in baptismal registers.
+
+Field: type
+Content: The type of event, usually either “baptism”, “marriage”, “burial”, or “birth”.
+
+Field: principal(s)
+Content: The unique identifier(s) assigned to the person(s) who the sacrament is being performed on/for. For baptisms, burials, and births this will be a single identifier, but for marriages it will be a two identifiers.
+
+Field: date
+Content: The date when the event took place. Represent dates in a YYYY-MM-DD format. If a complete date is not available, include as much information as possible.
+
+Field: witnesses
+Content: The unique identifiers assigned to any people listed as witnesses (testigos) to the event. Most commonly applicable to marriages.
+
+In production, all of this extracted content will be output by the NLP pipeline. Note that only fields that pertain to a given person or event need to be included in the training data.
