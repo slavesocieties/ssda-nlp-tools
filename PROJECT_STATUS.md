@@ -98,12 +98,28 @@ Runs on the extracted output, all deterministic ($0):
   101 fallback · 16 re-transcribe · 57 index · 25 admin.
   `eval_data/drive_routing_sweep_20260722.md`.
 - **Free production build**: **5,235 production-ready sacramental records** with
-  faithful text + provenance (556 truthful partials); 108 withheld for fallback;
-  3952 on the admin path. `eval_data/production_build_20260722.md`.
+  faithful text + provenance; 108 withheld for fallback; 3952 on the admin path.
+  `eval_data/production_build_20260722.md`.
+- **Partial-rate bug found and fixed (2026-07-24, Daniel's catch).** `partial`
+  was inferred page-locally from closing-formula/signature regexes overfit to the
+  St. Augustine volumes (the signature pattern hardcoded `O'Reilly|Hassett`), so
+  it measured *lexicon coverage*, not truncation. Now decided positionally after
+  stitching. **Measured on the real volumes: 10.6% (556) → 0.1% (7) of 5,235**,
+  with record boundaries unchanged. The 7 survivors are 3 end-of-volume, 3
+  title/cover pages, 1 untranscribable image. **Delivered corpus 4,679 → 5,228.**
+- **Controlled vocabularies wired in** — `vocab.json` +
+  `training_data_documentation.txt` vendored; the prompt's field spec is
+  generated from `vocab.json` so it cannot drift. Baseline conformance of the
+  pre-fix 701054 output: relationship_type 98.9%, occupation 99.4%, rank 100%
+  (already fine) vs **age 26.4%** and **ethnicity 0%** (`crioulo` is a phenotype)
+  — those two are the real available wins, not relationships. `witnesses` added.
+  Measure with `vocab.is_known()`, NOT `canonicalize()` (which returns None by
+  design for source-language fields and yields false 0%s).
 - **Full pipeline validated end-to-end on real model output** (78 sample
   entries → 215 identities → 606-edge graph; priests O'Reilly ×39 / Hassett ×34
-  correctly unified). `eval_data/pipeline_end_to_end.md`.
-- **Engineering**: 122 offline tests (<1s, no network), reproducible builds,
+  correctly unified). `eval_data/pipeline_end_to_end.md`. `nodes.csv`/`edges.csv`
+  are now exported beside the GraphML (701054: 330 nodes / 370 edges).
+- **Engineering**: 155 offline tests (<1s, no network), reproducible builds,
   spend-safety rails, provenance throughout.
 
 ### 🟢 Live extraction — final Batch job in progress under a $20 cap (2026-07-23)
@@ -137,24 +153,31 @@ text + people/events + provenance (`production/luna_live/701054.materialized.jso
 its QA flagged 11 possible duplicates + 5 chronology issues **for review, not
 auto-edited**. Supervisor package: `production/luna_live/SUPERVISOR_DEMO_TOMORROW.md`.
 
+### ✅ Resolved by Daniel's 2026-07-24 review
+- **Schema approved** ("schema looks fine; I approve of only recording
+  content-ful fields on a per-individual basis"), with the field docs and
+  controlled vocabularies now vendored and wired into the prompt.
+- **Trailing-partial convention — moot.** The 556 was the lexicon bug, not a
+  convention question. Dropping page-truncated records now removes 7.
+- **Cross-language question — withdrawn.** It was mis-framed on our side; none
+  of these volumes mix Spanish and Portuguese, and the manual examples are
+  consistent. Segmentation is validated cross-language (47/47); entity F1
+  remains measured on Spanish, which Daniel did not flag as a concern.
+- **Remaining volumes green-lit** by Daniel; extracting under the $20 cap.
+
 ### ❗ Open — needs a decision or human step
-- **Supervisor sign-off**: Daniel has not yet reviewed the output/schema. Nothing
-  is "accepted" until he confirms it meets his needs.
-- **Cross-language — narrowed (2026-07-22, per Daniel).** Portuguese (65858,
-  260950) and Colombian (420550, 544367) examples **do** exist and are part of
-  the 47/47 — so **segmentation is validated cross-language.** They are
-  *segmentation* gold (`id/text/images`), though; every file carrying entity
-  `data` (people/events) is Spanish. So the only remaining gap is **entity-
-  extraction F1 measured on Spanish only** — lower-risk, since the hard
-  structural stage is validated cross-language and extraction uses a general
-  multilingual model. A Portuguese/Colombian entity-gold example would close it
-  fully but is optional.
+- **Re-extraction with the vocabulary-aware prompt is UNMEASURED.** The prompt
+  fix is in `main` and the batches are re-staged
+  (`production/batches_v2/`, +$0.02 vs the old prompt), but whether age climbs
+  off 26.4% and ethnicity off 0% is a prediction until a run happens.
+- **Poll/settle the final 455-request batch** (keyed step). Ledger still shows it
+  `submitted` with the $18.20 reservation held, though Daniel observed $12.28
+  billed at OpenAI — so it likely ran and needs validating + settling.
+- **Cost reconciliation**: Daniel's $0.017/image used the 712 demo records as the
+  denominator; across all 2,366 pages the full run is ~$0.005/image. Confirm once
+  the batch settles.
 - **Weak extraction dimensions → human review**: relationships (~0.83) and fine
-  attributes (age, enslaved/free, ethnicity) are unreliable and route to the
-  review queue (built, not yet run). `eval_data/prompt_improvements_proposal.md`
-  has targeted, untested prompt fixes.
-- **Trailing-partial convention**: whether references that omit a page-truncated
-  final record should be scored as such — a convention question for Daniel.
+  attributes route to the review queue (built, not yet run).
 - **108 fallback records + 16 re-transcribe pages**: separate capped run /
   upstream re-transcription.
 - **3952 administrative material**: QA/pilot only, not production-approved.
