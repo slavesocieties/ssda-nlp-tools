@@ -55,3 +55,13 @@ def test_nondefault_output_requires_an_explicit_shared_ledger():
     assert runner.resolve_ledger_path(
         Path("production/luna_v2"), Path("production/luna_live/spend_ledger.json")
     ) == Path("production/luna_live/spend_ledger.json")
+
+
+def test_namespaced_reextract_requires_isolated_artifact_directory():
+    try:
+        runner.require_isolated_output_for_run_id(Path("production/luna_live"), "v3")
+    except ValueError as exc:
+        assert "--outdir" in str(exc)
+    else:
+        raise AssertionError("namespaced re-extraction can overwrite live artifacts")
+    runner.require_isolated_output_for_run_id(Path("production/luna_v3"), "v3")

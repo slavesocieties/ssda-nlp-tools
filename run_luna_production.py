@@ -87,6 +87,15 @@ def resolve_ledger_path(outdir: Path, ledger_path: Path | None) -> Path:
     return outdir / "spend_ledger.json"
 
 
+def require_isolated_output_for_run_id(outdir: Path, run_id: str) -> None:
+    """A re-extraction shares source entry IDs and cannot share live artifacts."""
+    if run_id and outdir == DEFAULT_OUTDIR:
+        raise ValueError(
+            "a --run-id re-extraction requires a non-default --outdir; provider "
+            "request IDs are namespaced but source entry IDs would collide in "
+            "production/luna_live")
+
+
 def cost_from_usage(usage: dict) -> float:
     return (float(usage.get("prompt_tokens", 0)) * BATCH_INPUT_PER_M
             + float(usage.get("completion_tokens", 0)) * BATCH_OUTPUT_PER_M) / 1_000_000
@@ -179,6 +188,7 @@ def main(argv=None):
     args = ap.parse_args(argv)
     if args.take < 1 or args.reservation_per_request <= 0:
         ap.error("--take and --reservation-per-request must be positive")
+    require_isolated_output_for_run_id(args.outdir, args.run_id)
     ledger_path = resolve_ledger_path(args.outdir, args.ledger_path)
     ledger = load_ledger(ledger_path, args.cap_usd)
     header, all_rows = read_compact(args.batch_file)
