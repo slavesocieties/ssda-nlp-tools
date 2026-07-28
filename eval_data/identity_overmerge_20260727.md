@@ -74,10 +74,37 @@ failure mode it was written for.
 3. **Cap cluster size and route overflow to review.** Crude, but it makes the
    failure loud instead of silent.
 
-(1) and (2) are complementary. Neither is implemented yet: this is an
-algorithmic change to the identity layer and should be a deliberate decision,
-not a quiet patch — particularly since Daniel has said he ultimately wants a
-trained probabilistic model here, which would supersede the heuristic entirely.
+## (1) implemented and measured
+
+A cluster-level surname guard now refuses an auto-merge when both clusters carry
+surnames and none of them are compatible. It compares the surnames ALREADY
+ACCUMULATED IN BOTH CLUSTERS, not just the pair in hand, which is what catches
+the transitive case. Refused merges become review items rather than vanishing.
+
+| cluster | before | after |
+|---|---|---|
+| Francisco Fernández… | 934 mentions / **209 surnames** | 254 / **5** |
+| Antonio Fernández Sacendia | 964 / 98 | 340 / 20 |
+| Miguel (Llopiz family) | 1,007 / 24 | 923 / **11** |
+| **José Ramírez y Moreno** (control) | **446 / 1** | **446 / 1** — unchanged |
+
+The control matters most: the legitimate recurring priest, 446 mentions under a
+single surname, is preserved exactly. The guard removes chained noise without
+touching real recurrence.
+
+Corpus effects: identities 16,800 → 18,143 (+1,343 split apart), 88,743 merges
+refused, review queue 612,495 → 701,238 (+14%, because a refused merge becomes a
+review item rather than disappearing).
+
+**Not fully fixed.** The Miguel cluster is still 923 mentions across 11
+surname variants (Llopiz/Llopis/Llepiz/Llepico…). Those are mutually compatible
+under the name-similarity rule, so the guard permits them by design. Whether
+that is one much-recorded priest or several similarly-named men is a
+palaeographic judgement, not something the heuristic can settle — it is exactly
+the kind of case for the trained model Daniel described.
+
+Fix (2), cohesion over non-adjacent pairs within a cluster, remains
+unimplemented and would be the next lever.
 
 ## Recommended disclosure
 

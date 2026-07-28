@@ -128,6 +128,32 @@ def _shares_context(a: dict, b: dict, year_window: int) -> bool:
     return abs(ya - yb) <= year_window
 
 
+def _surname_of(name: Optional[str]) -> Optional[str]:
+    """Last name-token, or None for a single-token ('Juan', 'Maria') name."""
+    toks = name_tokens(name)
+    return toks[-1] if len(toks) > 1 else None
+
+
+def _clusters_surname_compatible(uf, i: int, j: int,
+                                 cluster_surnames: Dict[int, set]) -> bool:
+    """May the clusters containing i and j be joined?
+
+    Yes when either side carries no surname at all (single-token names are
+    routinely merged on context, and blocking them would undo the existing
+    behaviour), or when some surname on one side is compatible with some surname
+    on the other. No when both sides have surnames and none of them match.
+
+    Compared cluster-to-cluster rather than pair-to-pair, because the failure is
+    transitive: Llopiz~Llopis and Llopis~Lopez are each defensible, but the
+    resulting cluster holds Llopiz and Valdes.
+    """
+    sa = cluster_surnames.get(uf.find(i), set())
+    sb = cluster_surnames.get(uf.find(j), set())
+    if not sa or not sb:
+        return True
+    return _namesets_overlap(sa, sb)
+
+
 def pair_score(a: dict, b: dict, a_rel_ctx=None, b_rel_ctx=None) -> Tuple[float, List[str]]:
     """Return (score in [0,1], reasons). Higher = more likely the same person."""
     reasons = []
@@ -327,6 +353,12 @@ def disambiguate_volume(
 
     review_queue = []
     blocked = 0
+    chain_blocked = 0
+    # surnames seen in each union-find cluster, for the transitive-chain guard
+    cluster_surnames: Dict[int, set] = {}
+    for _i, _m in enumerate(mentions):
+        _s = _surname_of(_m.get("name"))
+        cluster_surnames[_i] = {_s} if _s else set()
     auto_edges: List[Tuple[int, int, float]] = []
     for _, idxs in blocks.items():
         for a in range(len(idxs)):
@@ -358,7 +390,28 @@ def disambiguate_volume(
                 if s >= auto_threshold:
                     if frozenset((i, j)) in cannot_set:
                         continue          # human already ruled: different people
+                    # Transitive-chain guard. Each link in Llopiz~Llopis~Lopez is
+                    # individually strong, but union-find joins the endpoints, and
+                    # one weak link collapses hundreds of people into a node with
+                    # 209 surnames. Compare the SURNAMES ALREADY IN BOTH CLUSTERS,
+                    # not just this pair: a merge is refused when both sides carry
+                    # surnames and none of them are compatible.
+                    if not _clusters_surname_compatible(uf, i, j, cluster_surnames):
+                        review_queue.append({
+                            "score": round(min(s, auto_threshold - 0.01), 3),
+                            "reasons": reasons + ["blocked: incompatible cluster surnames"],
+                            "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                                  "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+                            "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                                  "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+                        })
+                        chain_blocked += 1
+                        continue
+                    ra, rb = uf.find(i), uf.find(j)
                     uf.union(i, j)
+                    root = uf.find(i)
+                    merged = cluster_surnames.get(ra, set()) | cluster_surnames.get(rb, set())
+                    cluster_surnames[root] = merged
                     auto_edges.append((i, j, s))
                 elif s >= review_threshold:
                     review_queue.append({
@@ -434,6 +487,7 @@ def disambiguate_volume(
             "auto_merges": len(auto_edges),
             "review_pairs": len(review_queue),
             "pairs_blocked_by_context": blocked,
+            "merges_blocked_by_surname": chain_blocked,
             "flagged_clusters": flagged,
             "reduction": round(1 - len(identities) / n, 4) if n else 0.0,
         },

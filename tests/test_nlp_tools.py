@@ -333,3 +333,32 @@ def test_context_blocking_fails_open_never_closed():
     assert sc({"_register": "A"}, {"_register": "B"}, 60)
     # the only skip: different register, no shared person, dated a lifetime apart
     assert not sc({"_register": "A", "_year": 1700}, {"_register": "B", "_year": 1900}, 60)
+
+
+def test_transitive_chain_cannot_merge_incompatible_surnames():
+    """The real failure: Llopiz~Llopis and Llopis~Lopez are each defensible, but
+    union-find joined the endpoints and produced one identity holding 209
+    distinct surnames. The guard compares the CLUSTERS' accumulated surnames,
+    so the third link is refused even though its own pair score is high."""
+    from ssda_nlp_tools.disambiguate import (_UnionFind, _clusters_surname_compatible,
+                                             _surname_of)
+    names = ["Miguel Llopiz", "Miguel Llopis", "Miguel Valdes"]
+    uf = _UnionFind(len(names))
+    cs = {i: ({_surname_of(n)} if _surname_of(n) else set()) for i, n in enumerate(names)}
+    # Llopiz + Llopis: spelling variants of one surname -> allowed
+    assert _clusters_surname_compatible(uf, 0, 1, cs)
+    uf.union(0, 1)
+    cs[uf.find(0)] = cs[0] | cs[1]
+    # the cluster now carries {llopiz, llopis}; Valdes matches neither -> refused
+    assert not _clusters_surname_compatible(uf, 0, 2, cs)
+
+
+def test_surname_guard_still_allows_single_token_names():
+    """Enslaved people are often recorded with a given name only. Those merge on
+    context and must not be blocked, or the guard would undo real linking."""
+    from ssda_nlp_tools.disambiguate import (_UnionFind, _clusters_surname_compatible,
+                                             _surname_of)
+    assert _surname_of("Juan") is None
+    uf = _UnionFind(2)
+    cs = {0: set(), 1: {"valdes"}}          # one side has no surname at all
+    assert _clusters_surname_compatible(uf, 0, 1, cs)
