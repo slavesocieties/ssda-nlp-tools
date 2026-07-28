@@ -18,6 +18,8 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
+from ssda_nlp_tools.batch_extract import parse_response
+
 
 MODEL = "gpt-5.6-luna"
 DEFAULT_OUTDIR = Path("production/luna_live")
@@ -115,30 +117,55 @@ def validate_output(rows: list[dict], response_rows: list[dict]) -> dict:
     if set(returned) != set(requested):
         errors.append("requested/returned custom IDs differ")
     prompt = completion = 0
+    accepted_custom_ids = []
+    rejected = {}
     for custom_id, expected in requested.items():
         response = returned.get(custom_id, {})
         body = response.get("response", {}).get("body", {})
         if response.get("response", {}).get("status_code") != 200:
-            errors.append(f"{custom_id}: non-200 response")
+            error = f"{custom_id}: non-200 response"
+            errors.append(error); rejected[custom_id] = error
             continue
         choices = body.get("choices", [])
         if len(choices) != 1 or choices[0].get("finish_reason") != "stop":
-            errors.append(f"{custom_id}: missing normal stop")
+            error = f"{custom_id}: missing normal stop"
+            errors.append(error); rejected[custom_id] = error
             continue
         try:
             parsed = json.loads(choices[0]["message"]["content"])
-            got = {str(item["entry"]) for item in parsed.get("results", [])}
-        except (KeyError, TypeError, json.JSONDecodeError) as exc:
-            errors.append(f"{custom_id}: invalid JSON result ({exc})")
+            result_items = parsed.get("results", [])
+            returned_ids = [str(item["entry"]) for item in result_items]
+            got = set(returned_ids)
+            if len(returned_ids) != len(got):
+                raise ValueError("duplicate result entry IDs")
+        except (AttributeError, KeyError, TypeError, ValueError, json.JSONDecodeError) as exc:
+            error = f"{custom_id}: invalid JSON result ({exc})"
+            errors.append(error); rejected[custom_id] = error
             continue
-        if got != expected:
-            errors.append(f"{custom_id}: requested/result entry IDs differ")
+        try:
+            parsed_values, parse_missing = parse_response(
+                choices[0]["message"]["content"], sorted(expected), validate=True)
+            if parse_missing or set(parsed_values) != expected:
+                raise ValueError("schema parser did not preserve the requested entries")
+        except Exception as exc:  # schema fixer rejects malformed model structures
+            error = f"{custom_id}: invalid extraction schema ({exc})"
+            errors.append(error); rejected[custom_id] = error
+            continue
+        ids_match = got == expected
+        if not ids_match:
+            error = f"{custom_id}: requested/result entry IDs differ"
+            errors.append(error); rejected[custom_id] = error
         usage = body.get("usage", {})
         if not isinstance(usage.get("prompt_tokens"), int) or not isinstance(usage.get("completion_tokens"), int):
-            errors.append(f"{custom_id}: missing provider token usage")
+            error = f"{custom_id}: missing provider token usage"
+            errors.append(error); rejected[custom_id] = error
+        elif ids_match:
+            accepted_custom_ids.append(custom_id)
         prompt += int(usage.get("prompt_tokens", 0))
         completion += int(usage.get("completion_tokens", 0))
     return {"valid": not errors, "errors": errors, "request_count": len(requested),
+            "accepted_custom_ids": sorted(accepted_custom_ids),
+            "rejected_custom_ids": rejected,
             "prompt_tokens": prompt, "completion_tokens": completion,
             "confirmed_usd_conservative": round(cost_from_usage(
                 {"prompt_tokens": prompt, "completion_tokens": completion}), 7)}
@@ -157,6 +184,19 @@ def load_ledger(path: Path, cap: float) -> dict:
 def write_json(path: Path, value: object):
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
+def write_accepted_output(path: Path, response_rows: list[dict], accepted_custom_ids: list[str]) -> None:
+    """Persist only request-level results that passed every delivery guard.
+
+    Raw provider output is always retained separately for audit.  Corpus
+    assembly consumes this narrower artifact so a failed neighbour in a large
+    Batch job can never leak into the delivered corpus.
+    """
+    accepted = set(accepted_custom_ids)
+    rows = [row for row in response_rows if normal_id(row.get("custom_id", "")) in accepted]
+    path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in rows),
+                    encoding="utf-8")
 
 
 def api(key: str, method: str, url: str, payload: bytes | None = None):
@@ -185,9 +225,14 @@ def main(argv=None):
     ap.add_argument("--reservation-per-request", type=float, default=0.04)
     ap.add_argument("--confirm", action="store_true")
     ap.add_argument("--poll", metavar="BATCH_ID", help="download and validate an existing job")
+    ap.add_argument("--settle-invalid", action="store_true",
+                    help="with --poll --confirm, settle a completed but invalid job's "
+                         "reported usage while retaining its repair requirement")
     args = ap.parse_args(argv)
     if args.take < 1 or args.reservation_per_request <= 0:
         ap.error("--take and --reservation-per-request must be positive")
+    if args.settle_invalid and not args.poll:
+        ap.error("--settle-invalid requires --poll")
     require_isolated_output_for_run_id(args.outdir, args.run_id)
     ledger_path = resolve_ledger_path(args.outdir, args.ledger_path)
     ledger = load_ledger(ledger_path, args.cap_usd)
@@ -221,6 +266,7 @@ def main(argv=None):
         selected = next((item for item in ledger["jobs"] if item.get("job_id") == args.poll), None)
         if not selected:
             raise RuntimeError("job is not present in local ledger; refusing ambiguous settlement")
+        already_terminal = selected.get("status") in {"validated", "settled_invalid"}
         ids = {normal_id(x) for x in selected.get("expected_custom_ids", [])}
         lookup = {row["custom_id"]: row for row in all_rows}
         validation_rows = []
@@ -234,10 +280,26 @@ def main(argv=None):
         output_path = args.outdir / f"{args.poll}.output.jsonl"
         output_path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in output),
                                encoding="utf-8")
+        accepted_path = args.outdir / f"{args.poll}.accepted.jsonl"
+        write_accepted_output(accepted_path, output, validation["accepted_custom_ids"])
+        validation["accepted_request_count"] = len(validation["accepted_custom_ids"])
+        validation["accepted_output_path"] = str(accepted_path)
         write_json(args.outdir / f"{args.poll}.validation.json", validation)
         if not validation["valid"]:
-            print("INVALID: provider output was saved for review; ledger unchanged")
+            if args.settle_invalid and not already_terminal:
+                selected.update({"status": "settled_invalid", **validation})
+                ledger["reserved_usd"] = round(float(ledger["reserved_usd"]) - float(selected["reserved_usd"]), 7)
+                ledger["confirmed_usd"] = round(float(ledger["confirmed_usd"]) + validation["confirmed_usd_conservative"], 7)
+                write_json(ledger_path, ledger)
+                print(f"INVALID SETTLED {args.poll}: {validation['accepted_request_count']}/"
+                      f"{validation['request_count']} requests accepted, "
+                      f"${validation['confirmed_usd_conservative']:.6f}; repair required")
+            else:
+                print("INVALID: raw and request-level accepted outputs were saved; ledger unchanged")
             return 2
+        if already_terminal:
+            print(f"VALIDATED ARTIFACT {args.poll}: ledger was already terminal; no settlement performed")
+            return 0
         selected.update({"status": "validated", **validation})
         ledger["reserved_usd"] = round(float(ledger["reserved_usd"]) - float(selected["reserved_usd"]), 7)
         ledger["confirmed_usd"] = round(float(ledger["confirmed_usd"]) + validation["confirmed_usd_conservative"], 7)

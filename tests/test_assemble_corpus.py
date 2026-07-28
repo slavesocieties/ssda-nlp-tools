@@ -38,7 +38,7 @@ def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
         _resp_row("176899-b0000", good, status=500),
         _resp_row("176899-b0001", good, finish="length"),
     ]
-    (tmp_path / "j.output.jsonl").write_text(
+    (tmp_path / "j.accepted.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
     by = mod.read_rows_by_volume(tmp_path)
     assert set(by["701054"]["valid"]) == {"701054-0001-01"}    # valid row parsed
@@ -65,7 +65,7 @@ def test_vocabtest_rows_are_isolated_from_delivery(tmp_path):
         {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
     rows = [_resp_row("701054-vocabtest-b0000", good),
             _resp_row("701054-b0000", good)]
-    (tmp_path / "j.output.jsonl").write_text(
+    (tmp_path / "j.accepted.jsonl").write_text(
         "\n".join(json.dumps(row) for row in rows), encoding="utf-8")
     delivery = mod.read_rows_by_volume(tmp_path)
     experiment = mod.read_vocabtest_rows(tmp_path)
@@ -88,8 +88,17 @@ def test_read_rows_flags_duplicate_entry_ids(tmp_path):
     good = json.dumps({"results": [
         {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
     rows = [_resp_row("701054-b0000", good), _resp_row("701054-b0001", good)]
-    (tmp_path / "dupe.output.jsonl").write_text(
+    (tmp_path / "dupe.accepted.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
     by = mod.read_rows_by_volume(tmp_path)
     assert set(by["701054"]["valid"]) == {"701054-0001-01"}
     assert len(by["701054"]["invalid"]) == 1
+
+
+def test_raw_provider_output_is_never_assembled(tmp_path):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    (tmp_path / "unvalidated.output.jsonl").write_text(
+        json.dumps(_resp_row("701054-b0000", good)), encoding="utf-8")
+    assert mod.read_rows_by_volume(tmp_path)["701054"]["valid"] == {}

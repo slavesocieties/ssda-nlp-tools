@@ -2,7 +2,7 @@
 """assemble_corpus.py — post-batch, OFFLINE ($0) assembly of the Luna corpus.
 
 Run this AFTER the monitor has downloaded and validated the provider results
-(the `production/luna_live/*.output.jsonl` files). It performs no network calls
+(the `production/luna_live/*.accepted.jsonl` files). It performs no network calls
 and reads no API key. For every sacramental volume it:
 
   1. groups the downloaded provider response rows by volume (via custom_id),
@@ -62,7 +62,12 @@ def apply_delivery_convention(entries, keep_partials: bool):
 def read_rows_by_volume(live: Path):
     """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
     by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in VOLUMES}
-    for path in sorted(live.glob("*.output.jsonl")):
+    # Never assemble raw provider output.  The guarded runner writes a separate
+    # accepted artifact containing only request-level responses that passed the
+    # exact-ID, stop-reason, JSON, and usage checks.  This lets a large Batch
+    # salvage its good requests without letting its failed neighbours leak into
+    # delivery.
+    for path in sorted(live.glob("*.accepted.jsonl")):
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
@@ -108,7 +113,7 @@ def read_vocabtest_rows(live: Path, tag: str = "701054-vocabtest"):
     provenance-bearing file for vocab_ab_report.py.
     """
     result = {"valid": {}, "invalid": [], "batches": 0}
-    for path in sorted(live.glob("*.output.jsonl")):
+    for path in sorted(live.glob("*.accepted.jsonl")):
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
