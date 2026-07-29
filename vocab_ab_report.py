@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """vocab_ab_report.py — did the vocabulary-aware prompt actually work?
 
-Offline ($0, no network, no key). Compares controlled-vocabulary conformance
-between the OLD extraction of 701054 and the NEW `701054-vocabtest` extraction,
-per field, and prints a verdict.
+Offline ($0, no network, no key). Compares two supplied 701054 extractions
+per field and prints a verdict. It is usable both for the original vocabulary
+experiment and for a completed corpus re-extraction.
 
     python vocab_ab_report.py
 
@@ -13,8 +13,9 @@ phenotype 29.3%, relationship_type 98.9%.
 Read the phenotype row with care: on 701054 every non-conformant phenotype value
 is a correct Portuguese term missing from vocab.json (`preto`/`preta`) or a
 feminine form of a listed masculine entry (`parda`/`branca`). No prompt can fix
-that — it is a vocabulary gap, pending Daniel's call. Judge the prompt on **age**
-and **ethnicity**.
+that — it is a vocabulary gap, pending Daniel's call. Ethnicity is also a
+historically open-ended field: its vocabulary rate is a drift diagnostic, not a
+quality verdict. Judge this prompt on **age**; review ethnicity term-by-term.
 """
 import argparse
 import glob
@@ -27,8 +28,11 @@ from ssda_nlp_tools import vocab as V
 FIELDS = ["age", "ethnicity", "phenotype", "occupation", "rank"]
 BASELINE = {"age": 26.6, "ethnicity": 0.0, "phenotype": 29.3,
             "relationship_type": 98.9, "occupation": 99.4, "rank": 100.0}
-# Prompt-fixable dimensions. phenotype is excluded on purpose (vocab gap).
-JUDGE_ON = ["age", "ethnicity"]
+# Age is a closed extraction category. Ethnicity and phenotype contain
+# historically meaningful terms absent from the representative source vocab, so
+# they must be audited rather than treated as prompt regressions.
+JUDGE_ON = ["age"]
+OPEN_DIAGNOSTICS = ["ethnicity", "phenotype"]
 
 
 def conformance(records, v):
@@ -95,12 +99,13 @@ def main(argv=None):
         o_s = f"{old_o[f]:4d}/{old_t[f]:<4d} {o:5.1f}%" if o is not None else f"{'—':>15s}"
         n_s = f"{new_o[f]:4d}/{new_t[f]:<4d} {n:5.1f}%" if n is not None else f"{'—':>15s}"
         d_s = f"{n-o:+8.1f}" if (o is not None and n is not None) else "       —"
-        star = "  <-- judged" if f in JUDGE_ON else ("  (vocab gap)" if f == "phenotype" else "")
+        star = ("  <-- judged" if f in JUDGE_ON else
+                "  (open-vocabulary diagnostic; audit terms)" if f in OPEN_DIAGNOSTICS else "")
         print(f"{f:18s} {o_s:>18s} {n_s:>18s} {d_s:>9s}{star}")
         if o is not None and n is not None:
             verdict[f] = n - o
 
-    print("\nVERDICT (age + ethnicity only — phenotype is a vocabulary gap, not a prompt issue):")
+    print("\nVERDICT (age only; ethnicity/phenotype require term-level audit):")
     # A dimension with no values in the NEW extraction is NOT evidence of
     # improvement: the prompt tells the model to omit unsupported fields, so an
     # empty field is simply unmeasured. Say so rather than counting it as a win.
@@ -118,15 +123,15 @@ def main(argv=None):
     elif regressed:
         print(f"  REGRESSION in {', '.join(regressed)}. Do NOT re-extract; diagnose first.")
     elif len(improved) == len(measured) and len(measured) == len(JUDGE_ON):
-        print(f"  PROMPT WORKS. Both judged dimensions improved ({', '.join(improved)}).")
-        print("  -> re-extracting the remaining volumes is justified (~$15 Batch API).")
+        print(f"  PROMPT WORKS on the closed judged dimension ({', '.join(improved)}).")
+        print("  -> do not re-extract solely to chase open-vocabulary conformance; audit terms first.")
     elif improved:
         print(f"  PARTIAL — {', '.join(improved)} improved, but "
               f"{len(JUDGE_ON) - len(improved)} of {len(JUDGE_ON)} judged dimension(s) "
               f"{'regressed or' if regressed else 'were flat or'} unmeasured.")
         print("  -> weigh the off-vocab values below before committing ~$15.")
     else:
-        print("  NO IMPROVEMENT. Do NOT spend ~$15 on a full re-extraction; diagnose first.")
+        print("  NO IMPROVEMENT on the closed judged dimension. Do NOT spend on a re-extraction; diagnose first.")
 
     if new_off:
         print("\nremaining off-vocabulary values in the NEW extraction:")
