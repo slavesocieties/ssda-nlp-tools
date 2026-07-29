@@ -44,6 +44,37 @@ from typing import Any, Dict, List, Optional
 
 _HERE = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_VOCAB_PATH = os.path.join(_HERE, os.pardir, "vocab.json")
+# Local additions live beside the vendored file rather than inside it, so
+# vocab.json stays a byte-for-byte copy of upstream and can be re-synced.
+DEFAULT_EXTENSIONS_PATH = os.path.join(_HERE, os.pardir, "vocab_extensions.json")
+
+_LANG_KEY = {"english": "English", "spanish": "Spanish", "portuguese": "Portuguese"}
+
+# Spanish/Portuguese gender alternations, as (suffix, counterpart) pairs applied
+# in both directions. The -o/-a case was already handled; demonyms mostly are
+# not -o/-a ("inglés"/"inglesa", "español"/"española"), so conformance was
+# rejecting perfectly ordinary feminine forms of values already in the list.
+_GENDER_ALTERNATIONS = (("o", "a"), ("es", "esa"), ("ol", "ola"),
+                        ("an", "ana"), ("or", "ora"), ("in", "ina"))
+
+
+def _gender_variants(folded: str):
+    """Every counterpart-gender spelling of a folded surface form."""
+    for a, b in _GENDER_ALTERNATIONS:
+        if folded.endswith(a):
+            yield folded[: -len(a)] + b
+        if folded.endswith(b):
+            yield folded[: -len(b)] + a
+
+
+def _singulars(folded: str):
+    """Candidate singulars. Spanish/Portuguese pluralise in -s after a vowel and
+    -es after a consonant, so both strips are tried: 'criollos' -> 'criollo',
+    'Gangaes' -> 'ganga', 'Macuaes' -> 'macua'."""
+    if folded.endswith("es") and len(folded) > 3:
+        yield folded[:-2]
+    if folded.endswith("s") and len(folded) > 2:
+        yield folded[:-1]
 
 # vocab.json spells the rank key plurally
 _VOCAB_KEY = {"rank": "ranks"}
@@ -125,10 +156,15 @@ BOOLEAN_FIELDS = ("free", "legitimate")
 class Vocab:
     """Loaded controlled vocabularies + the canonicalization maps built from them."""
 
-    def __init__(self, raw: Dict[str, Any]):
+    def __init__(self, raw: Dict[str, Any], extensions: Optional[Dict[str, Any]] = None):
         self.by_field: Dict[str, Dict[str, List[str]]] = {}
         for cv in raw["controlled_vocabularies"]:
             self.by_field.setdefault(cv["key"], {})[cv["language"]] = list(cv["vocab"])
+
+        # local additions, merged BEFORE the positional maps are built below
+        self.variants: Dict[str, Dict[str, str]] = {}
+        self.flagged: Dict[str, List[Dict[str, Any]]] = {}
+        self._apply_extensions(extensions or {})
 
         # folded lookup sets, per field, across all languages
         self.allowed: Dict[str, set] = {}
@@ -157,6 +193,47 @@ class Vocab:
                     m[_fold(src)] = dst
             self._to_english[field] = m
 
+        # Variants are recognized AND resolve to the English head they belong
+        # to, so an alias is a real vocabulary entry rather than a value that
+        # merely stops being reported.
+        for field, mapping in self.variants.items():
+            self.allowed.setdefault(field, set()).update(mapping)
+            self._to_english.setdefault(field, {}).update(mapping)
+
+    def _apply_extensions(self, ext: Dict[str, Any]) -> None:
+        """Merge vocab_extensions.json into the vendored lists.
+
+        New terms are appended at the same index in every language list. For a
+        positional field that is the whole contract: append to English only and
+        canonicalize() silently returns None for every value in the field,
+        because the ragged-list guard above disables the map wholesale.
+        """
+        for field, spec in ext.items():
+            if field.startswith("_") or not isinstance(spec, dict):
+                continue
+            key = _VOCAB_KEY.get(field, field)
+            langs = self.by_field.setdefault(key, {})
+            for term in spec.get("new_terms") or []:
+                if any(term.get(l) in (None, "") for l in _LANG_KEY):
+                    raise ValueError(
+                        f"{key}: new term {term!r} is missing a language. Every "
+                        f"row must supply all of {sorted(_LANG_KEY)} or the "
+                        f"positional alignment breaks.")
+                for local, canonical in _LANG_KEY.items():
+                    langs.setdefault(canonical, []).append(term[local])
+                if term.get("flagged"):
+                    self.flagged.setdefault(key, []).append(term)
+            if key in _POSITIONAL:
+                lengths = {len(v) for v in langs.values()}
+                if len(lengths) > 1:
+                    raise ValueError(
+                        f"{key}: language lists are ragged after extension "
+                        f"({ {k: len(v) for k, v in langs.items()} }); "
+                        f"canonicalize() would be silently disabled.")
+            for head, surfaces in (spec.get("variants") or {}).items():
+                for s in surfaces:
+                    self.variants.setdefault(key, {})[_fold(s)] = head
+
     # -- queries ---------------------------------------------------------- #
 
     def values(self, field: str, language: str = "English") -> List[str]:
@@ -166,20 +243,29 @@ class Vocab:
         key = _VOCAB_KEY.get(field, field)
         allowed = self.allowed.get(key, set())
         folded = _fold(value)
-        if folded in allowed:
-            return True
         # Daniel, 2026-07-27 (Q2): fold grammatical gender when CHECKING
         # conformance, rather than coercing records to masculine forms. The
         # record keeps whatever the scribe wrote ("morena", "parda"); only this
-        # check is gender-blind. Spanish/Portuguese adjectival gender is the -o/-a
-        # alternation, so try the counterpart form.
-        if folded.endswith("a"):
-            if folded[:-1] + "o" in allowed:
-                return True
-        elif folded.endswith("o"):
-            if folded[:-1] + "a" in allowed:
-                return True
-        return False
+        # check is gender-blind. Number is folded the same way (2026-07-29), so
+        # "criollos" is the plural of a listed value rather than a new term.
+        return self._resolve(folded, allowed) is not None
+
+    @staticmethod
+    def _resolve(folded: str, allowed: set) -> Optional[str]:
+        """The listed spelling this surface form reduces to, or None.
+
+        Tried in order: as written, counterpart gender, singular, and singular
+        in counterpart gender. Morphology is applied to the LOOKUP only; nothing
+        rewrites the record.
+        """
+        for candidate in (folded, *_gender_variants(folded)):
+            if candidate in allowed:
+                return candidate
+        for singular in _singulars(folded):
+            for candidate in (singular, *_gender_variants(singular)):
+                if candidate in allowed:
+                    return candidate
+        return None
 
     def canonicalize(self, field: str, value: Any) -> Optional[str]:
         """Map a source-language surface form to its English canonical value.
@@ -193,7 +279,13 @@ class Vocab:
         if field in SOURCE_LANGUAGE:
             return None
         key = _VOCAB_KEY.get(field, field)
-        got = self._to_english.get(key, {}).get(_fold(value))
+        table = self._to_english.get(key, {})
+        got = table.get(_fold(value))
+        if got is None:
+            # same gender/number folding is_known uses, so "criollas" reaches
+            # Creole instead of falling off the map
+            resolved = self._resolve(_fold(value), set(table))
+            got = table.get(resolved) if resolved else None
         if got is None:
             return None
         if field in BOOLEAN_FIELDS:
@@ -204,14 +296,24 @@ class Vocab:
 _cached: Optional[Vocab] = None
 
 
-def load_vocab(path: Optional[str] = None, reload: bool = False) -> Vocab:
+def load_vocab(path: Optional[str] = None, reload: bool = False,
+               extensions_path: Optional[str] = None) -> Vocab:
     global _cached
-    if _cached is not None and path is None and not reload:
+    default = path is None and extensions_path is None
+    if _cached is not None and default and not reload:
         return _cached
     p = path or DEFAULT_VOCAB_PATH
     with open(p, "r", encoding="utf-8") as f:
-        v = Vocab(json.load(f))
-    if path is None:
+        raw = json.load(f)
+    ep = extensions_path or DEFAULT_EXTENSIONS_PATH
+    ext: Dict[str, Any] = {}
+    if os.path.exists(ep):
+        with open(ep, "r", encoding="utf-8") as f:
+            ext = json.load(f)
+    elif extensions_path:                  # explicitly asked for, so must exist
+        raise FileNotFoundError(ep)
+    v = Vocab(raw, ext)
+    if default:
         _cached = v
     return v
 

@@ -86,13 +86,57 @@ A full v2 run (~$15.09) does **not** fit in `luna_live`'s remaining $7.99. That
 is a genuine signal, not an obstacle to route around: re-extracting the whole
 corpus needs a new, explicitly approved global cap.
 
+## 3a. Merging is now its own stage (2026-07-29)
+
+Daniel: "handle merging completely separately from extraction." Extraction is
+paid and settled; merging is free and its rules are still moving. Keeping them
+fused made every merge experiment look like it needed a re-extraction.
+
+```powershell
+# $0, minutes, reads delivered extraction output and never writes to it
+python run_merge.py --tag v3
+python run_merge.py --tag loose --no-surname-tiers      # A/B the Llopiz tiers
+python run_merge.py --tag v4 --constraints labels.json  # feed review back in
+
+# $0: stratified pair sample + the 0/25/50/75/100 labelling page
+python build_training_sample.py --tag core --size 2000
+```
+
+**Trap.** `disambiguate_volume(pair_log=...)` scores tens of millions of pairs.
+Pass `collect_review=False` alongside it or the function also materialises a
+~1.1M-entry review queue with evidence cards attached, which is gigabytes built
+to be thrown away — it took the first training-sample run to 687 MB and climbing
+before the guard existed.
+
+**Trap.** The pair log must be given a bounded sink (`StratifiedReservoir`), not
+a plain list, for the same reason.
+
 ## 4. Open, needs Daniel
 
-- **Phenotype vocabulary gap**: add `preto`/`preta` and feminine forms, or fold
-  gender before checking? Raised in `DANIEL_REPLY_20260727.md`.
-- **Reply not yet sent** — draft is in `production/luna_live/`.
+- **701162** — no Archivault transcription exists; the 232-volume set does not
+  include it and Drive holds only page images. Needs transcription before it can
+  be segmented. 701179 is done and free (697 entries, 1 partial).
+- **The two Llopiz bridges** — `llepiz~yepez` (11 mentions) and `llopez~lopez`
+  (40) survive the tiered guard because `phonetic_fold` maps both `ll` and `y`
+  to `i`. Loosening yeísmo affects every name in the corpus, so it is his call.
+  See `production/luna_v3/DANIEL_2026-07-29_IMPLEMENTED.md` §2.
+- **Eight ethnicity terms added against our judgement** and flagged in
+  `vocab_extensions.json` (`moreno` is a phenotype value, `Agustino` a religious
+  order, `Cimarrón` a status, `casta` and `nación no conocida` placeholders,
+  three that read as surnames).
+- **The ~10% arithmetic** — a literal 10% of the pair queue is ~70,000
+  decisions, ~195 hours. The stratified sample is the tractable alternative.
 - 108 fallback records, 16 re-transcribe pages, 3952 admin material: separate
   tracks, unchanged.
+
+## 4a. Resolved by Daniel, 2026-07-29
+
+- Ethnicity: all 71 queued terms added; conformance 94.8% → **100.0%**.
+- Llopiz/Llopis merge on reasonable context, Llepiz on real corroboration,
+  Llepico only on very clear context — encoded as `SURNAME_TIERS`.
+- Review will be **pairwise**, labelled 0/25/50/75/100, and that data trains the
+  merge model. Only 0% and 100% become hard constraints.
+- Next volumes: 701162 and 701179.
 
 ## 5. Untracked on purpose
 

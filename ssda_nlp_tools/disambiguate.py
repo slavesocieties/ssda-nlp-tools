@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import json
 import re
-from collections import defaultdict
+from collections import Counter, defaultdict
 from typing import Any, Dict, List, Optional, Tuple
 
 from .textmatch import name_similarity, name_tokens, normalize_name, phonetic_key
@@ -132,6 +132,94 @@ def _surname_of(name: Optional[str]) -> Optional[str]:
     """Last name-token, or None for a single-token ('Juan', 'Maria') name."""
     toks = name_tokens(name)
     return toks[-1] if len(toks) > 1 else None
+
+
+# Daniel, 2026-07-29, ruling on the Llopiz cluster: "Llopiz/Llopis is something
+# that I'd want to merge assuming context is reasonable, and likely Llepiz as
+# well. Llepico less certain unless context is very clear."
+#
+# That is not a yes/no rule, it is a sliding evidential bar: the further the
+# spelling drifts, the more corroboration a merge needs. The existing phonetic
+# fold already separates his three cases cleanly (Llopiz and Llopis both fold to
+# 'iopis', Llepiz scores 0.80 against it, Llepico 0.55), so the tiers below are
+# his sentence with numbers attached rather than a new heuristic.
+SURNAME_TIERS = (
+    # (min affinity, required context strength, label)
+    (0.90, 0.30, "orthographic"),   # Llopiz/Llopis -- reasonable context
+    (0.65, 0.60, "near"),           # Llepiz        -- wants real corroboration
+    (0.00, 0.85, "distant"),        # Llepico       -- only if context is very clear
+)
+
+
+def surname_affinity(a_name: Optional[str], b_name: Optional[str]) -> float:
+    """How close two surnames are, in [0,1], on the phonetic form.
+
+    Compared after `phonetic_fold` so the scribal alternations that dominate
+    these registers (z/s, ll/y, b/v, silent h, doubled letters) cost nothing,
+    and only genuine vowel or consonant divergence does.
+    """
+    sa, sb = _surname_of(a_name), _surname_of(b_name)
+    if not sa or not sb:
+        return 1.0                        # no surname to disagree about
+    if sa == sb:
+        return 1.0
+    from difflib import SequenceMatcher
+    from .textmatch import phonetic_fold
+    fa, fb = phonetic_fold(sa), phonetic_fold(sb)
+    if fa == fb:
+        return 1.0                        # Llopiz / Llopis
+    return SequenceMatcher(None, fa, fb, autojunk=False).ratio()
+
+
+def context_strength(a: dict, b: dict) -> float:
+    """How much non-name evidence supports these being one person, in [0,1].
+
+    Deliberately coarse. It exists to distinguish "reasonable", "real" and
+    "very clear" corroboration, which is the granularity Daniel's ruling asks
+    for, not to be a second similarity score.
+    """
+    s = 0.0
+    if a.get("_register") and a.get("_register") == b.get("_register"):
+        s += 0.35
+    ac = {n for _, n in (a.get("_ctx") or set())}
+    bc = {n for _, n in (b.get("_ctx") or set())}
+    shared = sum(1 for x in ac for y in bc if _third_party_same(x, y))
+    if shared:
+        s += min(0.55, 0.30 * shared)     # a person named in both entries
+    ya, yb = a.get("_year"), b.get("_year")
+    if ya is not None and yb is not None:
+        gap = abs(ya - yb)
+        s += 0.20 if gap <= 20 else (0.10 if gap <= 40 else 0.0)
+    agree = conflict = 0
+    for k in ("occupation", "ethnicity", "phenotype", "free", "legitimate"):
+        x, y = _val(a, k), _val(b, k)
+        if x is None or y is None:
+            continue
+        if x == y:
+            agree += 1
+        else:
+            conflict += 1
+    s += min(0.20, 0.08 * agree) - 0.30 * conflict
+    return max(0.0, min(1.0, s))
+
+
+def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
+    """Apply the tiered bar. Returns (allowed, tier label).
+
+    The bar applies ONLY to surnames that actually differ. Daniel's ruling is
+    about how far a spelling may drift before a merge needs corroboration; an
+    exact surname match has not drifted, and demanding extra evidence for it
+    would block the ordinary same-name merges this stage exists to make.
+    """
+    sa, sb = _surname_of(a.get("name")), _surname_of(b.get("name"))
+    if not sa or not sb or sa == sb:
+        return True, "exact"
+    aff = surname_affinity(a.get("name"), b.get("name"))
+    ctx = context_strength(a, b)
+    for min_aff, need_ctx, label in SURNAME_TIERS:
+        if aff >= min_aff:
+            return ctx >= need_ctx, label
+    return False, "distant"
 
 
 def _clusters_surname_compatible(uf, i: int, j: int,
@@ -310,6 +398,10 @@ def disambiguate_volume(
     constraints: Optional[dict] = None,
     block_context: bool = True,
     year_window: int = 60,
+    pair_log: Optional[List[dict]] = None,
+    pair_log_floor: float = 0.0,
+    surname_tiers: bool = True,
+    collect_review: bool = True,
 ) -> Dict[str, Any]:
     """Cluster person mentions into identities.
 
@@ -321,6 +413,13 @@ def disambiguate_volume(
          "cannot": [[{"entry","id"}, {"entry","id"}], ...]}   # different people
     Must-links are unioned outright; cannot-links are excluded from auto-merge
     and any cluster that still joins them transitively is flagged for review.
+
+    `pair_log`, when given a list, receives one row per scored pair at or above
+    `pair_log_floor` with the disposition the algorithm chose (auto / review /
+    blocked-* / below-threshold). The review queue alone spans only
+    [review_threshold, auto_threshold), so it cannot show what confident merges
+    or confident non-merges look like — which is exactly what a training sample
+    for the merge model needs. Logging is off by default and changes nothing.
     """
     if isinstance(volume, str):
         with open(volume, "r", encoding="utf-8") as f:
@@ -354,12 +453,41 @@ def disambiguate_volume(
     review_queue = []
     blocked = 0
     chain_blocked = 0
+    tier_blocked: Counter = Counter()
+    review_dropped = 0
+
+    def _enqueue(item: dict) -> None:
+        """Review items are counted always, but only MATERIALISED when someone
+        will read them. The corpus produces ~1.1M of these with evidence cards
+        attached; building that list to throw it away is several GB for nothing,
+        which is what the training-sample pass was doing before it ran out of
+        memory."""
+        nonlocal review_dropped
+        if collect_review:
+            review_queue.append(item)
+        else:
+            review_dropped += 1
+
     # surnames seen in each union-find cluster, for the transitive-chain guard
     cluster_surnames: Dict[int, set] = {}
     for _i, _m in enumerate(mentions):
         _s = _surname_of(_m.get("name"))
         cluster_surnames[_i] = {_s} if _s else set()
     auto_edges: List[Tuple[int, int, float]] = []
+
+    def _log(disposition: str, i: int, j: int, s: float, reasons: List[str]) -> None:
+        if pair_log is None or s < pair_log_floor:
+            return
+        pair_log.append({
+            "score": round(s, 3),
+            "disposition": disposition,
+            "reasons": list(reasons),
+            "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                  "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+            "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                  "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+        })
+
     for _, idxs in blocks.items():
         for a in range(len(idxs)):
             for b in range(a + 1, len(idxs)):
@@ -378,7 +506,7 @@ def disambiguate_volume(
                 # in the review queue (could be a double-recorded entry).
                 if (mentions[i].get("_unique_sacrament") and mentions[j].get("_unique_sacrament")
                         and s >= review_threshold):
-                    review_queue.append({
+                    _enqueue({
                         "score": round(min(s, auto_threshold - 0.01), 3),
                         "reasons": reasons + ["blocked: both sacrament principals"],
                         "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
@@ -386,9 +514,11 @@ def disambiguate_volume(
                         "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
                               "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
                     })
+                    _log("blocked-sacrament-principal", i, j, s, reasons)
                     continue
                 if s >= auto_threshold:
                     if frozenset((i, j)) in cannot_set:
+                        _log("human-cannot", i, j, s, reasons)
                         continue          # human already ruled: different people
                     # Transitive-chain guard. Each link in Llopiz~Llopis~Lopez is
                     # individually strong, but union-find joins the endpoints, and
@@ -397,7 +527,7 @@ def disambiguate_volume(
                     # not just this pair: a merge is refused when both sides carry
                     # surnames and none of them are compatible.
                     if not _clusters_surname_compatible(uf, i, j, cluster_surnames):
-                        review_queue.append({
+                        _enqueue({
                             "score": round(min(s, auto_threshold - 0.01), 3),
                             "reasons": reasons + ["blocked: incompatible cluster surnames"],
                             "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
@@ -405,8 +535,27 @@ def disambiguate_volume(
                             "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
                                   "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
                         })
+                        _log("blocked-cluster-surname", i, j, s, reasons)
                         chain_blocked += 1
                         continue
+                    # tiered spelling bar: the further the surname has drifted,
+                    # the more corroboration the merge needs
+                    if surname_tiers:
+                        allowed, tier = surname_tier_allows(mentions[i], mentions[j])
+                        if not allowed:
+                            _enqueue({
+                                "score": round(min(s, auto_threshold - 0.01), 3),
+                                "reasons": reasons + [f"blocked: {tier} surname variant "
+                                                      f"without enough context"],
+                                "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                                      "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+                                "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                                      "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+                            })
+                            _log(f"blocked-surname-tier-{tier}", i, j, s, reasons)
+                            tier_blocked[tier] += 1
+                            continue
+                    _log("auto", i, j, s, reasons)
                     ra, rb = uf.find(i), uf.find(j)
                     uf.union(i, j)
                     root = uf.find(i)
@@ -414,7 +563,7 @@ def disambiguate_volume(
                     cluster_surnames[root] = merged
                     auto_edges.append((i, j, s))
                 elif s >= review_threshold:
-                    review_queue.append({
+                    _enqueue({
                         "score": round(s, 3),
                         "reasons": reasons,
                         "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
@@ -422,6 +571,9 @@ def disambiguate_volume(
                         "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
                               "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
                     })
+                    _log("review", i, j, s, reasons)
+                else:
+                    _log("below-threshold", i, j, s, reasons)
 
     # human decisions: must-links union outright and settle their review items
     for p in must_pairs:
@@ -485,9 +637,10 @@ def disambiguate_volume(
             "identities": len(identities),
             "merged_identities": len(multi),
             "auto_merges": len(auto_edges),
-            "review_pairs": len(review_queue),
+            "review_pairs": len(review_queue) + review_dropped,
             "pairs_blocked_by_context": blocked,
             "merges_blocked_by_surname": chain_blocked,
+            "merges_blocked_by_surname_tier": dict(tier_blocked),
             "flagged_clusters": flagged,
             "reduction": round(1 - len(identities) / n, 4) if n else 0.0,
         },
