@@ -31,20 +31,28 @@ import os
 import re
 from collections import Counter
 
-SPANISH = re.compile(r"\b(se enterr|sepultura|cementerio|di[oó] sepultura|"
-                     r"cad[aá]ver|falleci)", re.I)
-PORTUGUESE = re.compile(r"\b(faleceu|sepultado|foi enterrado|encomendou|"
-                        r"sepultura ecclesi)", re.I)
+# Markers must be EXCLUSIVE to one language. The first version scored Spanish on
+# "cadaver" and "sepultura", which are spelled identically in Portuguese burial
+# entries, so five Portuguese records were labelled Spanish. Meanwhile the
+# Portuguese side looked for modern "faleceu"/"sepultado" and missed the archaic
+# "falleceu" and the reflexive "sepultou-se" these registers actually use.
+SPANISH = re.compile(r"(\ba[ñn]os\b|\bcementerio\b|\bhij[oa]\b|\bygl[ei]sia\b|"
+                     r"\biglesia\b|\bse enterr|\bdel mes\b|\bvecin[oa]\b)", re.I)
+PORTUGUESE = re.compile(r"(\bmez\b|\bm[êe]s de\b|\bannos\b|\banos\b|"
+                        r"\bcemiterio\b|\bcemit[ée]rio\b|\bfilh[oa]\b|"
+                        r"\bfall?eceu\b|\bsepultou\b|encommend|encomend|"
+                        r"\bmatriz\b|\bvig[aá]?r|\bdito mez\b)", re.I)
 
 
 def language_of(text: str) -> str:
-    """Cheap and honest: count register-specific burial formulae. Daniel can fix
-    the field in two seconds if a volume is mixed."""
+    """Count markers exclusive to each language. Deliberately crude, but it must
+    not be crude in a way that has a systematic bias -- Daniel reads the `raw`
+    field, so a wrong language label is visible and undermines the rest."""
     pt = len(PORTUGUESE.findall(text))
     es = len(SPANISH.findall(text))
-    if pt > es:
-        return "Portuguese"
-    return "Spanish"
+    if pt == es == 0:
+        return "Spanish"          # corpus default; flagged by review anyway
+    return "Portuguese" if pt > es else "Spanish"
 
 
 def burial_entries(paths):
