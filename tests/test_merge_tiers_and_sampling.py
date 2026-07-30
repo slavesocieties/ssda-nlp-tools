@@ -227,3 +227,54 @@ def test_page_cannot_be_broken_out_of_by_a_name(tmp_path):
 def test_the_five_levels_are_exactly_what_daniel_asked_for(tmp_path):
     from ssda_nlp_tools.likelihood_review_html import LEVELS
     assert [v for v, *_ in LEVELS] == [0, 25, 50, 75, 100]
+
+
+# --------------------------------------------------------------------------- #
+# devotional epithets in the surname slot
+# --------------------------------------------------------------------------- #
+
+def test_devotional_epithets_are_recognised_in_the_surname_slot():
+    from ssda_nlp_tools.disambiguate import _surname_of, is_devotional_epithet
+    assert _surname_of("María Josefa de la Concepción") == "concepcion"
+    assert is_devotional_epithet("concepcion")
+    assert is_devotional_epithet("Cruz")            # accent/case insensitive
+    assert not is_devotional_epithet("llopiz")
+    assert not is_devotional_epithet("gomez")
+    assert not is_devotional_epithet(None)
+
+
+def test_an_exact_epithet_match_no_longer_skips_every_tier():
+    """The bug: `_surname_of` reads "de la Cruz" as the surname "Cruz", two
+    unrelated women both match it EXACTLY, and an exact match took the exemption
+    that bypasses all the tiers. The most-shared names got the least scrutiny.
+    63 merged identities and 699 mentions rested on this."""
+    bare = dict(_register=None, _year=None)
+    ok, tier = surname_tier_allows(_m("María Josefa de la Cruz", **bare),
+                                   _m("María Josefa de la Cruz", **bare))
+    assert tier == "epithet" and not ok          # no corroboration -> refused
+
+
+def test_a_real_family_still_merges_on_corroboration():
+    """This is a bar, not a ban. A genuine Cruz family shares a register,
+    relatives and dates; two strangers sharing a Marian epithet do not."""
+    ctx = dict(_register="R1", _year=1880, _ctx={("parent", "juan perez")})
+    ok, tier = surname_tier_allows(_m("María de la Cruz", **ctx),
+                                   _m("María de la Cruz", **ctx))
+    assert tier == "epithet" and ok
+
+
+def test_ordinary_surnames_keep_the_exact_match_exemption():
+    """Only epithets lose the shortcut. Requiring corroboration for every exact
+    surname would block the ordinary merges this stage exists to make."""
+    assert surname_tier_allows(_m("Pedro Gómez"), _m("Pedro Gómez")) == (True, "exact")
+
+
+def test_a_missing_epithet_file_falls_back_to_previous_behaviour(monkeypatch):
+    """The list is data, not code. If it goes missing the stage must degrade to
+    what it did before, not crash mid-corpus."""
+    import ssda_nlp_tools.disambiguate as D
+    monkeypatch.setattr(D, "_EPITHETS_PATH", "does-not-exist.json")
+    monkeypatch.setattr(D, "_epithets_cache", None)
+    assert D._load_epithets()[0] == set()
+    assert not D.is_devotional_epithet("cruz")
+    D._epithets_cache = None

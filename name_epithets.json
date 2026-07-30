@@ -1,0 +1,62 @@
+{
+  "_README": [
+    "Devotional name elements that land in the SURNAME position but do not",
+    "identify a family.",
+    "",
+    "Why this file exists: `_surname_of` takes the last token of a name, so",
+    "'Maria Josefa de la Concepcion' has the surname 'Concepcion' and 'Juan de la",
+    "Cruz' has 'Cruz'. Two unrelated women both recorded 'de la Cruz' therefore",
+    "have surnames that match EXACTLY, and an exact match takes the exemption in",
+    "surname_tier_allows -- the tiered bars only govern surnames that DIFFER. So",
+    "the most-shared names in the corpus were the ones with the least scrutiny.",
+    "Measured before the fix: 63 merged identities rested on an epithet, holding",
+    "699 mentions, every large one spanning multiple volumes.",
+    "",
+    "What listing a term here does: it does NOT block the merge and does NOT",
+    "change the stored name. It only removes the exact-match shortcut, so the pair",
+    "must clear the same corroboration bar a near-variant spelling does (shared",
+    "register, people named in both entries, close dates, agreeing attributes).",
+    "A genuine Cruz family usually clears it easily; two strangers who happen to",
+    "share a Marian epithet usually do not.",
+    "",
+    "`ambiguous` terms are ones that are also ordinary inherited surnames. They",
+    "are treated the same way, but listed separately because they are the ones",
+    "most worth a second opinion."
+  ],
+
+  "context_required": 0.60,
+
+  "devotional": [
+    "concepcion", "conceicao",
+    "rosario", "carmen", "carmo",
+    "dolores", "dores", "pilar",
+    "mercedes", "socorro", "luz",
+    "trinidad", "trindade",
+    "asuncion", "assuncao",
+    "encarnacion", "encarnacao",
+    "soledad", "soledade",
+    "angeles", "anjos",
+    "jesus", "nieves", "neves",
+    "remedios", "candelaria", "candeias",
+    "guadalupe", "patrocinio", "amparo",
+    "consolacion", "consolacao",
+    "presentacion", "apresentacao",
+    "purificacion", "purificacao",
+    "natividad", "natividade",
+    "sacramento", "milagros", "milagres",
+    "belen", "belem", "regla",
+    "monserrate", "altagracia", "loreto",
+    "transito", "refugio", "sagrario",
+    "piedade", "gracas", "penha", "livramento",
+    "espiritu", "espirito"
+  ],
+
+  "ambiguous": {
+    "cruz": "Both a Marian epithet ('de la Cruz') and one of the commonest inherited Hispanic surnames. 28 of the 63 affected identities hang off this one term.",
+    "flores": "'de las Flores' is devotional; Flores is also an ordinary surname.",
+    "caridad": "'de la Caridad' (Caridad del Cobre) is devotional in Cuban registers; also used as a given name.",
+    "santos": "'dos Santos' is extremely common in Portuguese registers as an inherited surname, not only devotional.",
+    "reyes": "'de los Reyes' (Epiphany) is devotional; Reyes is also inherited.",
+    "salvador": "Devotional, and also a given name and a surname."
+  }
+}

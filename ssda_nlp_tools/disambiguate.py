@@ -21,6 +21,7 @@ Design choices called out honestly:
 from __future__ import annotations
 
 import json
+import os
 import re
 from collections import Counter, defaultdict
 from typing import Any, Dict, List, Optional, Tuple
@@ -151,6 +152,37 @@ SURNAME_TIERS = (
 )
 
 
+_EPITHETS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                              os.pardir, "name_epithets.json")
+_epithets_cache: Optional[Tuple[set, float]] = None
+
+
+def _load_epithets() -> Tuple[set, float]:
+    """Devotional name elements that occupy the surname slot without naming a
+    family. See name_epithets.json for the reasoning and the term list."""
+    global _epithets_cache
+    if _epithets_cache is None:
+        terms: set = set()
+        need = 0.60
+        try:
+            with open(_EPITHETS_PATH, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+            terms = {str(t).lower() for t in (raw.get("devotional") or [])}
+            terms |= {str(t).lower() for t in (raw.get("ambiguous") or {})}
+            need = float(raw.get("context_required", 0.60))
+        except (OSError, json.JSONDecodeError, TypeError, ValueError):
+            pass                      # absent or malformed -> previous behaviour
+        _epithets_cache = (terms, need)
+    return _epithets_cache
+
+
+def is_devotional_epithet(surname: Optional[str]) -> bool:
+    if not surname:
+        return False
+    from .textmatch import normalize_name
+    return normalize_name(surname).strip().lower() in _load_epithets()[0]
+
+
 def surname_affinity(a_name: Optional[str], b_name: Optional[str]) -> float:
     """How close two surnames are, in [0,1], on the phonetic form.
 
@@ -212,7 +244,21 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
     would block the ordinary same-name merges this stage exists to make.
     """
     sa, sb = _surname_of(a.get("name")), _surname_of(b.get("name"))
-    if not sa or not sb or sa == sb:
+    if not sa or not sb:
+        return True, "exact"
+    if sa == sb:
+        # An exact match is normally proof enough. It is not when the matching
+        # token is a devotional epithet: "de la Cruz" and "de la Concepcion" are
+        # shared by hundreds of unrelated people, so agreeing on one carries
+        # about as much information as agreeing on a first name. Before this,
+        # such pairs took the exemption below and skipped every tier -- the
+        # most-shared names in the corpus got the least scrutiny.
+        #
+        # This does not refuse the merge. It asks the same corroboration a
+        # near-variant spelling has to provide: a genuine Cruz family shares a
+        # register, relatives and dates; two strangers usually do not.
+        if is_devotional_epithet(sa):
+            return context_strength(a, b) >= _load_epithets()[1], "epithet"
         return True, "exact"
     aff = surname_affinity(a.get("name"), b.get("name"))
     ctx = context_strength(a, b)
