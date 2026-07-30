@@ -353,3 +353,50 @@ def test_a_missing_epithet_file_falls_back_to_previous_behaviour(monkeypatch):
     assert D._load_epithets()[0] == set()
     assert not D.is_devotional_epithet("cruz")
     D._epithets_cache = None
+
+
+# --------------------------------------------------------------------------- #
+# reading Daniel's labels back
+# --------------------------------------------------------------------------- #
+
+def _lbl(likelihood, disposition, a="E1", b="E2"):
+    return {"a": {"entry": a, "id": "P01"}, "b": {"entry": b, "id": "P01"},
+            "likelihood": likelihood, "disposition": disposition, "score": 0.9}
+
+
+def test_a_refused_pair_labelled_same_is_the_rule_being_too_strict():
+    """The direction that carries new information. Every measurement so far
+    could only reveal over-merging, because that is what shows up in the graph;
+    a too-strict rule fails silently by leaving two records apart."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("al", "analyze_labels.py")
+    al = importlib.util.module_from_spec(spec); spec.loader.exec_module(al)
+    assert al.verdict(_lbl(100, "blocked-surname-tier-exact")) == "too_strict"
+    assert al.verdict(_lbl(75, "blocked-uninformative")) == "too_strict"
+    assert al.verdict(_lbl(0, "auto")) == "too_loose"
+    assert al.verdict(_lbl(100, "auto")) == "agree"
+    assert al.verdict(_lbl(0, "blocked-cluster-surname")) == "agree"
+
+
+def test_fifty_percent_counts_as_neither_agreement_nor_disagreement():
+    """50% is the reviewer saying he cannot tell. Scoring it either way would
+    manufacture a signal out of an admission of uncertainty."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("al", "analyze_labels.py")
+    al = importlib.util.module_from_spec(spec); spec.loader.exec_module(al)
+    assert al.verdict(_lbl(50, "auto")) == "unclear"
+    assert al.verdict(_lbl(50, "review")) == "unclear"
+    assert al.verdict(_lbl(None, "auto")) is None
+
+
+def test_only_a_plain_auto_counts_as_the_algorithm_having_merged():
+    """Every other disposition is a refusal of some kind, including the
+    sacrament and cluster guards, which do not carry the word 'blocked' in a
+    way worth pattern-matching on."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("al", "analyze_labels.py")
+    al = importlib.util.module_from_spec(spec); spec.loader.exec_module(al)
+    assert al.merged_by_algorithm("auto")
+    for d in ("review", "below-threshold", "blocked-sacrament-principal",
+              "blocked-cluster-surname", "blocked-surname-tier-near"):
+        assert not al.merged_by_algorithm(d), d

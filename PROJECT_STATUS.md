@@ -79,12 +79,48 @@ Runs on the extracted output, all deterministic ($0):
 - **QA** (`qa.py`) — near-duplicate entries (guarded by the sacrament
   *principal*, so two formulaic-but-distinct baptisms aren't merged), chronology,
   dangling references, event-shape rules, vocabulary drift.
-- **Identity resolution** (`disambiguate.py`) — merges person-mentions into
-  identities; domain-guarded (a person is baptized once; enslaver/parents are
-  per-life constants; bare names need context).
+- **Identity resolution** (`disambiguate.py`) — see 2.6; `run_pipeline.py` still
+  invokes it, but it is now a stage in its own right.
 - **Cross-chunk linking** (`link.py`) — unifies people across volumes.
 - **Social graph** (`network.py`) — person registry + GraphML.
 - **Review UI** (`review_html.py`) — a page to decide borderline merges.
+
+### 2.6 Merging — `run_merge.py` (`disambiguate.py`), separate since 2026-07-29
+Daniel: *"handle merging completely separately from extraction."* Extraction is
+the only paid step and it is settled; merging is free and its rules are still
+moving, so fusing them made every merge experiment look like it needed a
+re-extraction. `run_merge.py` reads delivered extraction output and never writes
+to it; re-running with different thresholds costs minutes and $0.
+
+**The governing rule is his**: *"No people should be merged strictly based on
+name correspondence; it should depend on a combination of date overlap,
+same-named relation, same/similar qualities."* So nothing merges on a name.
+Corroborating signals are **counted, not scored** — a score threshold let one
+weak signal through, and shared register (which everyone in a volume has) was
+clearing bars by itself. Signals: date overlap, same-named relation, matching
+qualities, discriminative relation. Two are required for an exact surname, three
+for a near variant, four for a distant one.
+
+One sanctioned shortcut, also his: clergy in consecutive records merge on the
+name, narrowly (clergy both sides, name similarity ≥ 0.92, within 12 pages).
+
+Corpus effect vs. the pre-2026-07-29 behaviour: people 18,228 → **22,702**,
+largest connected component 8,960 → **1,526**, cross-register edges 228 → **200**.
+The last figure is the point — dissolving the giant cluster cost 28 of 228 real
+links, so it was almost entirely an over-merging artefact.
+
+### 2.7 Training the merge model — `build_training_sample.py`, `analyze_labels.py`
+Rules have gone as far as they can. Measured: after all of the above, *María del
+Rosario* still holds 31 mentions and *María de la Concepción* 45, because two
+different women of that name, both parda, both free, baptised in the same decade,
+genuinely do have two matching signals. No threshold separates them.
+
+`build_training_sample.py` draws a stratified pair sample (2,000 pairs covering
+**185/185** case types; a literal 10% would be 89,868 and ~250 review-hours), and
+`likelihood_review_html.py` renders Daniel's 0/25/50/75/100 scale. When
+`labels.json` returns, `analyze_labels.py` reports per-rule where each is **too
+strict** and **too loose** — the former being the direction no internal
+measurement can see, since a wrongly-refused merge fails silently.
 
 ---
 
@@ -243,11 +279,24 @@ reservations on network/5xx, release only definitive unbilled 4xx.
 
 ---
 
-## 6. The one thing blocking "complete"
+## 6. The one thing blocking "complete" (updated 2026-07-30)
 
-The pipeline is **built, tested, and validated**; the free deterministic output
-exists; the paid step is staged and priced. What remains is not more building —
-it is **(a) sending this status to Daniel for sign-off**, which also settles the
-open convention/cross-language questions, and **(b) running the ~$15 Luna
-extraction** once approved, then `run_pipeline.py` on the result. After that, the
-extracted, resolved, graphed dataset is the finished product.
+Not building. **Labelled data.**
+
+The five-volume corpus is delivered and conformant (5,228 records, ethnicity
+100%, age 100%, $24.53 of a $35 cap). Merging has been rebuilt to Daniel's rule
+and is as good as rules get — the residual common-name clusters survive because
+they genuinely satisfy every criterion he named, which is his own argument for a
+statistical model rather than an objection to one.
+
+So the critical path is a single artifact: **`labels.json`**, 2,000 pairs on the
+0/25/50/75/100 scale. Everything else is either done or waiting behind it.
+
+Secondary, and independent of it:
+- **Burial gold** — 12 candidates awaiting correction. Burials are 2,169 events,
+  the commonest type in the corpus, and Daniel's gold set contains none, so
+  burial accuracy has never been measured at all.
+- **701157 + 701179** — segmented, batches staged and dry-run clean at
+  `production/approved_extract/`, ~$4.52 projected against $10.47 remaining.
+  Approved 2026-07-30; needs a key holder to submit.
+- **API key rotation** — outstanding across several sessions.
