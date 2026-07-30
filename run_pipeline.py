@@ -40,6 +40,11 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=0.86)
     ap.add_argument("--review", type=float, default=0.70)
     ap.add_argument("--dup", type=float, default=0.75)
+    ap.add_argument("--review-limit", type=int, default=5000,
+                    help="rows written to review.html, highest-scoring first. The "
+                         "corpus review queue is ~750k pairs and rendering all of "
+                         "them produced a 230 MB page no browser will open. 0 = no "
+                         "cap. The full queue is always in the JSON artifacts.")
     args = ap.parse_args(argv)
 
     os.makedirs(args.outdir, exist_ok=True)
@@ -69,7 +74,15 @@ def main(argv=None):
     to_csv(res["network"], out("nodes.csv"), out("edges.csv"))
     with open(out("network.json"), "w", encoding="utf-8") as fh:
         json.dump(res["network"], fh, ensure_ascii=False, indent=2)
-    render_review_html(res["review_queue"], out("review.html"), tag=args.tag)
+    queue = res["review_queue"]
+    shown = queue if not args.review_limit else sorted(
+        queue, key=lambda p: -p.get("score", 0))[:args.review_limit]
+    render_review_html(shown, out("review.html"), tag=args.tag)
+    if len(shown) < len(queue):
+        # say what was dropped: a silently truncated page reads as "this is the
+        # whole queue" when it is 0.7% of it
+        sections.append(f"review.html: {len(shown):,} of {len(queue):,} pairs "
+                        f"(highest-scoring first; full queue in the JSON artifacts)")
 
     with open(out("summary.txt"), "w", encoding="utf-8") as fh:
         fh.write("\n\n".join(sections))
