@@ -7,7 +7,9 @@ import json
 
 import pytest
 
-from ssda_nlp_tools.disambiguate import (SURNAME_TIERS, context_strength,
+from ssda_nlp_tools.disambiguate import (MIN_SIGNALS_FOR_ANY_MERGE,
+                                         SURNAME_TIERS, context_strength,
+                                         corroborating_signals,
                                          disambiguate_volume, surname_affinity,
                                          surname_tier_allows)
 from ssda_nlp_tools.likelihood_review_html import (label_summary, labels_to_constraints,
@@ -31,38 +33,100 @@ def test_daniels_three_cases_land_in_three_different_tiers():
     """"Llopiz/Llopis is something that I'd want to merge assuming context is
     reasonable, and likely Llepiz as well. Llepico less certain unless context
     is very clear." Those are three bars, not one."""
-    tier = lambda s: next(l for lo, _, l in SURNAME_TIERS
-                          if surname_affinity("Miguel Llopiz", "Miguel " + s) >= lo)
-    assert tier("Llopis") == "orthographic"
-    assert tier("Llepiz") == "near"
-    assert tier("Llepico") == "distant"
+    bar = lambda s: next(need for lo, need, _ in SURNAME_TIERS
+                         if surname_affinity("Miguel Llopiz", "Miguel " + s) >= lo)
+    # three cases, three increasing evidential bars -- his sentence as numbers
+    assert bar("Llopis") < bar("Llepiz") < bar("Llepico")
+    assert bar("Llopis") == MIN_SIGNALS_FOR_ANY_MERGE
 
 
 def test_the_bar_rises_as_the_spelling_drifts():
     bars = [need for _, need, _ in SURNAME_TIERS]
-    assert bars == sorted(bars, reverse=True) or bars[0] < bars[1] < bars[2]
+    assert bars == sorted(bars), bars           # monotonic, exact -> distant
+    assert bars[0] >= MIN_SIGNALS_FOR_ANY_MERGE  # even an exact match needs some
 
 
-def test_an_exact_surname_is_exempt_from_the_tiered_bar():
-    """The ruling is about spelling DRIFT. Demanding extra corroboration for an
-    exact surname match would block ordinary same-name merges — it broke four
-    existing tests when the exemption was missing."""
+def test_even_an_exact_surname_needs_corroboration():
+    """Daniel, 2026-07-29: "No people should be merged strictly based on name
+    correspondence; it should depend on a combination of date overlap,
+    same-named relation, same/similar qualities."
+
+    This test asserted the opposite for two days. The exemption it defended was
+    the root of both defects found since: the devotional-epithet merges and the
+    41 women recorded only as "Maria" were each special cases of a rule that let
+    a name alone carry a merge."""
     a, b = _m("Pedro Gomez"), _m("Pedro Gomez")
-    assert context_strength(a, b) < 0.30        # no register, date or context
-    assert surname_tier_allows(a, b) == (True, "exact")
+    assert len(corroborating_signals(a, b)) < MIN_SIGNALS_FOR_ANY_MERGE
+    assert surname_tier_allows(a, b) == (False, "exact")
+    # with a date overlap and a same-named relation, it merges
+    ctx = dict(_year=1880, _ctx={("spouse", "ana ruiz")}, occupation="soldier")
+    assert surname_tier_allows(_m("Pedro Gomez", **ctx),
+                               _m("Pedro Gomez", **ctx)) == (True, "exact")
 
 
-def test_a_single_token_name_is_exempt_too():
-    """Enslaved people are routinely recorded by given name alone; there is no
-    surname to disagree about, and blocking those undoes context-based merging."""
-    assert surname_tier_allows(_m("Maria"), _m("Maria"))[0]
+def test_a_bare_given_name_needs_a_person_named_in_both_entries():
+    """This test previously asserted the opposite, that a surname-less name was
+    exempt. Measurement overturned it: the exemption merged 41 women recorded
+    only as "Maria" into a single identity across two registers, plus 36
+    "Francisco" and 21 "Rafael".
+
+    Absence of a surname is absence of evidence, not permission. The bar is
+    specifically a shared third party, because sharing a register and a rough
+    date is what every bare "Maria" in a parish has in common -- that is what
+    let them chain -- whereas a shared enslaver or spouse is how these registers
+    actually identify someone with no surname."""
+    assert not surname_tier_allows(_m("Maria", _register="R1", _year=1880),
+                                   _m("Maria", _register="R1", _year=1881))[0]
+    linked = dict(_register="R1", _year=1880, _ctx={("enslaver", "juan vives")})
+    assert surname_tier_allows(_m("Maria", **linked), _m("Maria", **linked)) ==         (True, "uninformative")
     assert surname_affinity("Maria", "Maria Gomez") == 1.0
 
 
+def test_nomen_nescio_placeholders_are_not_surnames():
+    """'Francisco N.' is Francisco surname-unknown. Treating N. as a surname let
+    it match another 'Francisco N.' EXACTLY, so two people merged on the
+    strength of both being unnamed."""
+    from ssda_nlp_tools.disambiguate import is_placeholder_surname, _surname_of
+    assert _surname_of("Francisco N.") == "n"
+    assert is_placeholder_surname("n")          # nomen nescio
+    assert is_placeholder_surname("C")          # bare initial
+    assert is_placeholder_surname("desconocido")
+    assert is_placeholder_surname(None)         # no surname at all
+    assert not is_placeholder_surname("gomez")
+
+
+def test_canonical_name_is_the_form_actually_used_most():
+    """"Longest wins" promoted a transcription artefact over the real name: 31
+    'Maria' plus one stray 'Maria Maria' was labelled 'Maria Maria'."""
+    from ssda_nlp_tools.disambiguate import disambiguate_volume
+    people = [{"id": "P01", "name": "Maria"}, {"id": "P02", "name": "Juan Vives"}]
+    entries = [{"id": f"000{i}-01", "data": {"people": [
+        {**people[0]}, {**people[1]},
+    ], "events": [{"type": "baptism", "date": f"188{i}-01-01",
+                   "principals": ["P02"]}]}} for i in range(1, 4)]
+    entries[2]["data"]["people"][0]["name"] = "Maria Maria"
+    for e in entries:
+        e["data"]["people"][0]["relationships"] = [
+            {"related_person": "P02", "relationship_type": "enslaver"}]
+    res = disambiguate_volume({"id": "V", "entries": entries})
+    marias = [i for i in res["identities"] if "aria" in (i["canonical_name"] or "")]
+    biggest = max(marias, key=lambda i: i["n_mentions"])
+    assert biggest["canonical_name"] == "Maria"      # modal, not longest
+
+
 def test_orthographic_variants_merge_on_reasonable_context_but_not_on_none():
-    same_reg = dict(_register="R1", _year=1880)
-    assert surname_tier_allows(_m("Miguel Llopiz", **same_reg),
-                               _m("Miguel Llopis", **same_reg)) == (True, "orthographic")
+    """Llopiz and Llopis fold to the same phonetic form, so they now land in the
+    `exact` tier rather than `orthographic`. The tier LABEL is incidental; both
+    carry the same bar, and the bar is what Daniel's ruling was about."""
+    # a date overlap AND agreeing qualities: two signals, so it merges
+    corroborated = dict(_register="R1", _year=1880, occupation="Cleric")
+    assert surname_tier_allows(_m("Miguel Llopiz", **corroborated),
+                               _m("Miguel Llopis", **corroborated))[0]
+    # the same pair on a shared register and a date alone is ONE signal, and a
+    # shared register is not a signal at all -- everyone in a volume has it
+    thin = dict(_register="R1", _year=1880)
+    assert not surname_tier_allows(_m("Miguel Llopiz", **thin),
+                                   _m("Miguel Llopis", **thin))[0]
     assert not surname_tier_allows(_m("Miguel Llopiz"), _m("Miguel Llopis"))[0]
 
 
@@ -249,24 +313,35 @@ def test_an_exact_epithet_match_no_longer_skips_every_tier():
     that bypasses all the tiers. The most-shared names got the least scrutiny.
     63 merged identities and 699 mentions rested on this."""
     bare = dict(_register=None, _year=None)
-    ok, tier = surname_tier_allows(_m("María Josefa de la Cruz", **bare),
-                                   _m("María Josefa de la Cruz", **bare))
-    assert tier == "epithet" and not ok          # no corroboration -> refused
+    ok, _ = surname_tier_allows(_m("María Josefa de la Cruz", **bare),
+                                _m("María Josefa de la Cruz", **bare))
+    assert not ok                                # no corroboration -> refused
 
 
 def test_a_real_family_still_merges_on_corroboration():
     """This is a bar, not a ban. A genuine Cruz family shares a register,
     relatives and dates; two strangers sharing a Marian epithet do not."""
     ctx = dict(_register="R1", _year=1880, _ctx={("parent", "juan perez")})
-    ok, tier = surname_tier_allows(_m("María de la Cruz", **ctx),
-                                   _m("María de la Cruz", **ctx))
-    assert tier == "epithet" and ok
+    ok, _ = surname_tier_allows(_m("María de la Cruz", **ctx),
+                                _m("María de la Cruz", **ctx))
+    assert ok
 
 
-def test_ordinary_surnames_keep_the_exact_match_exemption():
-    """Only epithets lose the shortcut. Requiring corroboration for every exact
-    surname would block the ordinary merges this stage exists to make."""
-    assert surname_tier_allows(_m("Pedro Gómez"), _m("Pedro Gómez")) == (True, "exact")
+def test_clergy_in_consecutive_records_are_the_one_sanctioned_shortcut():
+    """Daniel's carve-out: "perhaps a very strict rules-based starting point for
+    obvious merges like the clergy that appear in many consecutive records"."""
+    p = dict(occupation="cleric", _register="201991")
+    a = _m("Miguel O'Reilly", _entry="201991-0004-A-01", **p)
+    b = _m("Miguel O'Reilly", _entry="201991-0005-A-02", **p)
+    assert surname_tier_allows(a, b) == (True, "clergy-consecutive")
+    # far apart in the book: no longer "consecutive", so back to normal rules
+    far = _m("Miguel O'Reilly", _entry="201991-0299-A-02", **p)
+    assert surname_tier_allows(a, far)[1] != "clergy-consecutive"
+    # a layman with the same name gets no shortcut
+    lay = dict(_register="201991")
+    assert surname_tier_allows(_m("Miguel O'Reilly", _entry="201991-0004-A-01", **lay),
+                               _m("Miguel O'Reilly", _entry="201991-0005-A-02", **lay)
+                               )[1] != "clergy-consecutive"
 
 
 def test_a_missing_epithet_file_falls_back_to_previous_behaviour(monkeypatch):

@@ -187,15 +187,22 @@ def test_sacrament_principal_guard_blocks_two_baptizees():
 def test_sacrament_guard_does_not_block_recurring_godparent():
     # A godparent (never a baptism principal) recurring across entries must
     # still merge even though each entry has its own baptizee.
+    # The fixture carries a date and a recorded status because real entries do.
+    # Daniel (2026-07-29) ruled that a name alone may not carry a merge, so a
+    # godmother with no date, no attributes and a different godchild each time
+    # legitimately has nothing but her name -- which would make this a test of
+    # the merge policy rather than of the sacrament guard it is named for.
     vol = {"id": 1, "entries": [
         {"id": f"000{i}-01", "data": {
             "people": [
                 {"id": "P01", "name": f"Nino Distinto{i}", "age": "infant"},
-                {"id": "P02", "name": "Isabel de los Rios",
+                {"id": "P02", "name": "Isabel de los Rios", "free": True,
+                 "phenotype": "parda",
                  "relationships": [{"related_person": "P01",
                                     "relationship_type": "godparent"}]},
             ],
-            "events": [{"type": "baptism", "principals": ["P01"]}]}}
+            "events": [{"type": "baptism", "date": f"188{i}-01-01",
+                        "principals": ["P01"]}]}}
         for i in range(3)
     ]}
     res = dis.disambiguate_volume(vol)

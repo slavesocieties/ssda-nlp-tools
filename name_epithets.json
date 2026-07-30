@@ -26,6 +26,21 @@
 
   "context_required": 0.60,
 
+  "_placeholders_README": [
+    "Tokens that occupy the surname slot while explicitly meaning 'surname not",
+    "recorded'. `N.` is nomen nescio; single initials are the same thing",
+    "abbreviated. Treating them as surnames let 'Francisco N.' match 'Francisco",
+    "N.' EXACTLY and merge on the strength of two people both being unnamed.",
+    "Any single-character token is treated this way, so the list only needs the",
+    "multi-character cases."
+  ],
+  "placeholders": [
+    "n", "nn", "na", "no", "nc",
+    "desconocido", "desconocida", "incognito", "incognita",
+    "ignorado", "ignorada", "expuesto", "expuesta",
+    "desconhecido", "desconhecida", "incognito", "ignorado"
+  ],
+
   "devotional": [
     "concepcion", "conceicao",
     "rosario", "carmen", "carmo",

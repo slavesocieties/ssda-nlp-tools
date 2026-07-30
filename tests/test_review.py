@@ -32,18 +32,33 @@ def test_must_link_constraint_merges_review_pair():
 
 
 def test_cannot_link_constraint_blocks_auto_merge():
-    # identical names + agreeing attrs would auto-merge; a human says no
-    vol = {"id": 1, "entries": [
-        {"id": "0001-01", "data": {"people": [{"id": "P01", "name": "Pedro Gomez",
-                                               "occupation": "soldier"}], "events": []}},
-        {"id": "0002-01", "data": {"people": [{"id": "P01", "name": "Pedro Gomez",
-                                               "occupation": "soldier"}], "events": []}},
-    ]}
-    assert disambiguate_volume(vol)["stats"]["identities"] == 1     # merges by default
+    # A CORROBORATED pair would auto-merge; a human says no.
+    #
+    # This fixture used to be two identical names with one agreeing attribute
+    # and nothing else, on the assumption that a matching name is enough. Daniel
+    # (2026-07-29) ruled it is not -- "no people should be merged strictly based
+    # on name correspondence" -- so the pair now carries what he asked for: a
+    # date overlap and a same-named relation. The constraint is still what is
+    # under test; only the setup had to become a merge the rules would make.
+    def _entry(eid):
+        return {"id": eid, "data": {"people": [
+            {"id": "P01", "name": "Pedro Gomez", "occupation": "soldier",
+             "relationships": [{"related_person": "P02",
+                                "relationship_type": "spouse"}]},
+            {"id": "P02", "name": "Ana Ruiz"},
+        ], "events": [{"type": "burial", "date": "1880-01-01"}]}}
+    vol = {"id": 1, "entries": [_entry("0001-01"), _entry("0002-01")]}
+    pedros = [i for i in disambiguate_volume(vol)["identities"]
+              if "Pedro" in (i["canonical_name"] or "")]
+    assert len(pedros) == 1 and pedros[0]["n_mentions"] == 2   # merges by default
     cons = {"must": [], "cannot": [[{"entry": "0001-01", "id": "P01"},
                                     {"entry": "0002-01", "id": "P01"}]]}
     after = disambiguate_volume(vol, constraints=cons)
-    assert after["stats"]["identities"] == 2                        # kept apart
+    # assert on Pedro, not the total: the fixture now carries a spouse to supply
+    # the corroboration, so a total count would also be measuring whether Ana
+    # merged, which is not what this test is about
+    split = [i for i in after["identities"] if "Pedro" in (i["canonical_name"] or "")]
+    assert len(split) == 2 and all(i["n_mentions"] == 1 for i in split)  # kept apart
 
 
 def test_decisions_to_constraints_mapping():

@@ -145,11 +145,64 @@ def _surname_of(name: Optional[str]) -> Optional[str]:
 # 'iopis', Llepiz scores 0.80 against it, Llepico 0.55), so the tiers below are
 # his sentence with numbers attached rather than a new heuristic.
 SURNAME_TIERS = (
-    # (min affinity, required context strength, label)
-    (0.90, 0.30, "orthographic"),   # Llopiz/Llopis -- reasonable context
-    (0.65, 0.60, "near"),           # Llepiz        -- wants real corroboration
-    (0.00, 0.85, "distant"),        # Llepico       -- only if context is very clear
+    # (min affinity, corroborating signals required, label)
+    (1.00, 2, "exact"),          # same surname  -- STILL needs corroboration
+    (0.90, 2, "orthographic"),   # Llopiz/Llopis -- reasonable context
+    (0.65, 3, "near"),           # Llepiz        -- wants real corroboration
+    (0.00, 4, "distant"),        # Llepico       -- only if context is very clear
 )
+
+# Daniel, 2026-07-29: "No people should be merged strictly based on name
+# correspondence; it should depend on a combination of date overlap, same-named
+# relation, same/similar qualities."
+#
+# That removes the exemption an exact surname used to get, and with it the need
+# for the epithet and placeholder special cases -- those were patches around a
+# rule that let a name alone carry a merge. They are kept below only because
+# reading "N." (nomen nescio) as a surname is simply wrong, not because they are
+# still load-bearing.
+#
+# The operative word in his sentence is "combination". A single weak signal is
+# what a score threshold lets through: tuned to 0.30, shared register plus a
+# rough date cleared it, and every "Maria de la Concepcion" in a parish has both.
+# So corroboration is COUNTED, not scored -- independent signals, each of which
+# says something about this pair rather than about the volume:
+#
+#   1. date overlap
+#   2. a same-named relation (a person named in both entries)
+#   3. same/similar qualities (attributes agree, none conflict)
+#   4. a discriminative relation specifically (enslaver / spouse / parent),
+#      which is how these registers identify someone in the first place
+#
+# Shared register is deliberately NOT a signal. Everyone in a volume shares it.
+MIN_SIGNALS_FOR_ANY_MERGE = 2
+
+
+def corroborating_signals(a: dict, b: dict) -> List[str]:
+    """Which independent things support these being one person."""
+    out: List[str] = []
+    ya, yb = a.get("_year"), b.get("_year")
+    if ya is not None and yb is not None and abs(ya - yb) <= 40:
+        out.append("date-overlap")
+    if _shares_third_party(a, b):
+        out.append("same-named-relation")
+        ad, bd = _ctx_by_type(a.get("_ctx")), _ctx_by_type(b.get("_ctx"))
+        if any(_namesets_overlap(ad.get(k, set()), bd.get(k, set()))
+               for k in DISCRIMINATIVE_CTX):
+            out.append("discriminative-relation")
+    agree = conflict = 0
+    for k in ("occupation", "ethnicity", "phenotype", "free", "legitimate",
+              "rank", "origin"):
+        x, y = _val(a, k), _val(b, k)
+        if x is None or y is None:
+            continue
+        if x == y:
+            agree += 1
+        else:
+            conflict += 1
+    if agree and not conflict:
+        out.append("matching-qualities")
+    return out
 
 
 _EPITHETS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
@@ -157,30 +210,50 @@ _EPITHETS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 _epithets_cache: Optional[Tuple[set, float]] = None
 
 
-def _load_epithets() -> Tuple[set, float]:
-    """Devotional name elements that occupy the surname slot without naming a
-    family. See name_epithets.json for the reasoning and the term list."""
+def _load_epithets() -> Tuple[set, float, set]:
+    """Name elements that occupy the surname slot without naming a family.
+    See name_epithets.json for the reasoning and the term lists."""
     global _epithets_cache
     if _epithets_cache is None:
         terms: set = set()
+        holders: set = set()
         need = 0.60
         try:
             with open(_EPITHETS_PATH, "r", encoding="utf-8") as f:
                 raw = json.load(f)
             terms = {str(t).lower() for t in (raw.get("devotional") or [])}
             terms |= {str(t).lower() for t in (raw.get("ambiguous") or {})}
+            holders = {str(t).lower() for t in (raw.get("placeholders") or [])}
             need = float(raw.get("context_required", 0.60))
         except (OSError, json.JSONDecodeError, TypeError, ValueError):
             pass                      # absent or malformed -> previous behaviour
-        _epithets_cache = (terms, need)
+        _epithets_cache = (terms, need, holders)
     return _epithets_cache
 
 
-def is_devotional_epithet(surname: Optional[str]) -> bool:
+def _norm_surname(surname: Optional[str]) -> str:
     if not surname:
-        return False
+        return ""
     from .textmatch import normalize_name
-    return normalize_name(surname).strip().lower() in _load_epithets()[0]
+    return normalize_name(surname).strip().lower()
+
+
+def is_devotional_epithet(surname: Optional[str]) -> bool:
+    return bool(surname) and _norm_surname(surname) in _load_epithets()[0]
+
+
+def is_placeholder_surname(surname: Optional[str]) -> bool:
+    """Does this surname slot say "not recorded" rather than name a family?
+
+    `N.` is nomen nescio and a bare initial is the same thing abbreviated, so
+    any single character counts. Without this, "Francisco N." matched "Francisco
+    N." EXACTLY and two people merged on the strength of both being unnamed:
+    one such identity reached 37 mentions across volumes.
+    """
+    s = _norm_surname(surname)
+    if not s:
+        return True                   # no surname at all
+    return len(s) <= 1 or s in _load_epithets()[2]
 
 
 def surname_affinity(a_name: Optional[str], b_name: Optional[str]) -> float:
@@ -203,6 +276,62 @@ def surname_affinity(a_name: Optional[str], b_name: Optional[str]) -> float:
     return SequenceMatcher(None, fa, fb, autojunk=False).ratio()
 
 
+CLERGY_ENTRY_WINDOW = 12          # pages apart, i.e. a few folios
+
+
+def _entry_seq(entry_id: Optional[str]) -> Optional[Tuple[int, int]]:
+    """(page, index) for "consecutive records".
+
+    Takes the LAST TWO numbers in the id rather than matching a fixed shape:
+    entry ids come in at least `201991-0279-A-02` and `0013-00` forms, and a
+    pattern written for the first silently returns None for the second, which
+    disabled the clergy rule on exactly the recurring-priest fixtures it exists
+    to handle.
+    """
+    nums = re.findall(r"\d+", str(entry_id or ""))
+    return (int(nums[-2]), int(nums[-1])) if len(nums) >= 2 else None
+
+
+def _is_clergy(m: dict) -> bool:
+    if str(_val(m, "occupation") or "").startswith("cleric"):
+        return True
+    titles = " ".join(str(t).lower() for t in (m.get("titles") or []))
+    return any(k in titles for k in ("cura", "presb", "vicar", "padre", "pbro",
+                                     "coadjutor", "capellan", "vig"))
+
+
+def _is_recurring_clergy(a: dict, b: dict) -> bool:
+    """The officiant of consecutive entries in one register.
+
+    Daniel's sanctioned exception to "never merge on the name alone", and it is
+    narrow on purpose: same register, clergy on both sides, near-identical name,
+    and entries close together in the book. A priest signing folio after folio is
+    the one pattern where the sequence itself is the corroboration.
+    """
+    if not (_is_clergy(a) and _is_clergy(b)):
+        return False
+    # Deliberately NOT keyed on `_register`. That field is the entry-id prefix,
+    # which is the volume for `201991-0279-A-02` but the page for `0001-01`, so
+    # requiring it to match disabled this rule on the very fixtures of a
+    # recurring priest. The sequence window below carries the "consecutive
+    # records" requirement, and `_shares_context` has already screened the pair.
+    if name_similarity(a.get("name"), b.get("name")) < 0.92:
+        return False
+    sa, sb = _entry_seq(a.get("_entry")), _entry_seq(b.get("_entry"))
+    if not sa or not sb:
+        return False
+    return abs(sa[0] - sb[0]) <= CLERGY_ENTRY_WINDOW
+
+
+def _shares_third_party(a: dict, b: dict) -> bool:
+    """Is some person named in BOTH entries? Matched by `_third_party_same`, so
+    short forms and spelling drift count but a merely shared estate surname does
+    not."""
+    ac = {n for _, n in (a.get("_ctx") or set())}
+    bc = {n for _, n in (b.get("_ctx") or set())}
+    return any(_third_party_same(x, y) for x in ac for y in bc)
+
+
 def context_strength(a: dict, b: dict) -> float:
     """How much non-name evidence supports these being one person, in [0,1].
 
@@ -212,7 +341,10 @@ def context_strength(a: dict, b: dict) -> float:
     """
     s = 0.0
     if a.get("_register") and a.get("_register") == b.get("_register"):
-        s += 0.35
+        # A weak prior, not corroboration. Everyone in a volume shares this, so
+        # at its old weight of 0.35 it cleared bars by itself and every bare
+        # "Maria" in a parish looked mutually supported.
+        s += 0.15
     ac = {n for _, n in (a.get("_ctx") or set())}
     bc = {n for _, n in (b.get("_ctx") or set())}
     shared = sum(1 for x in ac for y in bc if _third_party_same(x, y))
@@ -243,28 +375,32 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
     exact surname match has not drifted, and demanding extra evidence for it
     would block the ordinary same-name merges this stage exists to make.
     """
+    if _is_recurring_clergy(a, b):
+        # Daniel's one sanctioned rules-based shortcut: "obvious merges like the
+        # clergy that appear in many consecutive records". A priest signing
+        # consecutive entries of his own register is the one case where the name
+        # really does carry it, because the role and the sequence corroborate.
+        return True, "clergy-consecutive"
     sa, sb = _surname_of(a.get("name")), _surname_of(b.get("name"))
-    if not sa or not sb:
-        return True, "exact"
-    if sa == sb:
-        # An exact match is normally proof enough. It is not when the matching
-        # token is a devotional epithet: "de la Cruz" and "de la Concepcion" are
-        # shared by hundreds of unrelated people, so agreeing on one carries
-        # about as much information as agreeing on a first name. Before this,
-        # such pairs took the exemption below and skipped every tier -- the
-        # most-shared names in the corpus got the least scrutiny.
+    if is_placeholder_surname(sa) or is_placeholder_surname(sb):
+        # No surname, or one that says "not recorded". This used to be exempt on
+        # the reasoning that there was nothing to disagree about -- but absence
+        # of contradiction is not evidence of identity, and treating it as a free
+        # pass merged 41 women recorded only as "Maria" into one person across
+        # two registers.
         #
-        # This does not refuse the merge. It asks the same corroboration a
-        # near-variant spelling has to provide: a genuine Cruz family shares a
-        # register, relatives and dates; two strangers usually do not.
-        if is_devotional_epithet(sa):
-            return context_strength(a, b) >= _load_epithets()[1], "epithet"
-        return True, "exact"
+        # The requirement is a PERSON NAMED IN BOTH ENTRIES, not a general
+        # context score. That distinction is the whole fix. Sharing a register
+        # and a rough date is what every bare "Maria" in a parish has in common,
+        # so scoring those was what let them chain together; a shared enslaver,
+        # spouse or parent is how these registers actually identify someone with
+        # no surname, and it still links them.
+        return _shares_third_party(a, b), "uninformative"
     aff = surname_affinity(a.get("name"), b.get("name"))
-    ctx = context_strength(a, b)
-    for min_aff, need_ctx, label in SURNAME_TIERS:
+    n = len(corroborating_signals(a, b))
+    for min_aff, need, label in SURNAME_TIERS:
         if aff >= min_aff:
-            return ctx >= need_ctx, label
+            return n >= need, label
     return False, "distant"
 
 
@@ -656,8 +792,15 @@ def disambiguate_volume(
     for k, (root, idxs) in enumerate(sorted(clusters.items()), 1):
         members = [mentions[i] for i in idxs]
         merged_attrs, conflicts = _merge_attributes(members)
-        # canonical name = the longest (most complete) surface form
-        canonical = max((m.get("name") or "" for m in members), key=len)
+        # Canonical name = the form the scribes actually used most, with the
+        # longest spelling breaking ties.
+        #
+        # "Longest wins" alone picks the least representative variant: a cluster
+        # of 31 "Maria" and one stray "Maria Maria" was labelled "Maria Maria",
+        # and 36 "Francisco" plus one "Francisco N." became "Francisco N." --
+        # promoting a transcription artefact over the actual name in both cases.
+        _names = Counter(m.get("name") or "" for m in members)
+        canonical = max(_names, key=lambda n: (_names[n], len(n)))
         coh = cohesion.get(root, 1.0) if len(idxs) > 1 else 1.0
         needs_review = (len(idxs) > 1 and coh < auto_threshold) or root in violated_roots
         if needs_review:
