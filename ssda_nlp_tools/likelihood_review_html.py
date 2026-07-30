@@ -68,7 +68,31 @@ the pair on the record, not on the score.</p>
 <script>
 const PAIRS = __DATA__, LEVELS = __LEVELS__, TAG = __TAG__;
 const KEY = "ssda-labels-" + TAG;
-let labels = JSON.parse(localStorage.getItem(KEY) || "{}");
+// localStorage is not guaranteed on a file:// origin -- Safari refuses it
+// outright and Chrome can be configured to. An unguarded read here is a
+// top-level statement, so it would throw before a single card rendered and the
+// reviewer would get a blank page with no clue why. Persistence is a
+// convenience; labelling must work without it.
+let STORAGE_OK = true;
+function loadLabels() {
+  try { return JSON.parse(localStorage.getItem(KEY) || "{}"); }
+  catch (e) { STORAGE_OK = false; return {}; }
+}
+function saveLabels() {
+  if (!STORAGE_OK) return;
+  try { localStorage.setItem(KEY, JSON.stringify(labels)); }
+  catch (e) { STORAGE_OK = false; warnNoStorage(); }
+}
+function warnNoStorage() {
+  if (document.getElementById("nostore")) return;
+  const d = document.createElement("div");
+  d.id = "nostore"; d.className = "legend";
+  d.style.color = "#b45309";
+  d.textContent = "This browser will not save progress for a local file, so "
+    + "your labels live only in this tab. Download before closing it.";
+  document.getElementById("bar").appendChild(d);
+}
+let labels = loadLabels();
 let cursor = 0;
 const list = document.getElementById("list");
 const esc = s => String(s).replace(/[&<>"]/g,
@@ -100,7 +124,7 @@ function card(p, i) {
 }
 function label(i, v) {
   if (v === null) delete labels[i]; else labels[i] = v;
-  localStorage.setItem(KEY, JSON.stringify(labels));
+  saveLabels();
   paint(i);
   if (v !== null) { cursor = Math.min(i + 1, PAIRS.length - 1); focus(); }
 }
@@ -125,6 +149,9 @@ function focus() {
 PAIRS.forEach((p, i) => list.appendChild(card(p, i)));
 PAIRS.forEach((_, i) => paint(i));
 document.getElementById("total").textContent = PAIRS.length;
+// if the READ failed, saveLabels() short-circuits and would never warn, so the
+// reviewer would get silent non-persistence -- the worst of both behaviours
+if (!STORAGE_OK) warnNoStorage();
 document.addEventListener("keydown", e => {
   const k = "01234".indexOf(e.key);
   if (k >= 0) label(cursor, LEVELS[k][0]);
