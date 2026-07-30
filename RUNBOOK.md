@@ -111,6 +111,29 @@ before the guard existed.
 **Trap.** The pair log must be given a bounded sink (`StratifiedReservoir`), not
 a plain list, for the same reason.
 
+## 3b. Merging: what NOT to try next (2026-07-29)
+
+Daniel: "No people should be merged strictly based on name correspondence" and
+"these last names are not special cases." Nothing merges on a name now; a merge
+needs a counted combination of date overlap, same-named relation, matching
+qualities, or an identifying relation. Shared register counts for nothing --
+everyone in a volume has it, and treating it as evidence is what let a single
+weak signal clear a score threshold.
+
+**Do not try to infer inherited vs devotional "de la Cruz" from surrounding
+relationships.** It sounds tractable and is not: the parent of a "María de la
+Cruz" is often *also* recorded "de la Cruz" precisely because the epithet was
+applied to the whole household, so the corroboration signal and the thing being
+tested are entangled. `name_epithets.json` survives only because reading "N."
+(nomen nescio) as a surname is factually wrong, not because it is load-bearing.
+
+**Do not keep tuning thresholds.** Measured: after removing the exemption,
+"María del Rosario" still holds 31 mentions and "María de la Concepción" 45,
+because two different women of that name, both parda, both free, baptised in the
+same decade, genuinely have two matching signals. No threshold separates them.
+That is the boundary where rules stop and the trained model starts, which is
+Daniel's position. The next lever is labelled data, not another rule.
+
 ## 4. Open, needs Daniel
 
 - **701162** — no Archivault transcription exists; the 232-volume set does not
