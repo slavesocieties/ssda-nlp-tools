@@ -19,9 +19,11 @@ confidence are listed so ONLY those need an LLM fallback.
     --structural            validate entry counts against the register's margin numbers
 """
 import argparse
+import sys
 import json
 
 from ssda_nlp_tools.segment import load_pages, segment_page, segment_volume
+from ssda_nlp_tools.transcription_integrity import check_volume, format_report
 from ssda_nlp_tools.segeval import (
     evaluate_segmentation, format_segeval, load_reference_entries, margin_number_check)
 
@@ -34,6 +36,8 @@ def main(argv=None):
     ap.add_argument("--per-image", action="store_true",
                     help="page-independent output (gold-pair format), no stitching")
     ap.add_argument("--eval", metavar="REF", help="score against a reference volume")
+    ap.add_argument("--strict-integrity", action="store_true",
+                    help="exit non-zero if any page fails the integrity gate")
     ap.add_argument("--structural", action="store_true",
                     help="check entry counts against margin numbers")
     args = ap.parse_args(argv)
@@ -42,6 +46,18 @@ def main(argv=None):
     for src in args.inputs:
         pages.extend(load_pages(src))
     print(f"{len(pages)} page(s) loaded from {len(args.inputs)} input(s)")
+
+    # Integrity gate, always, before anything is parsed. A page whose text is
+    # the transcriber's apology rather than the manuscript will segment
+    # perfectly happily and produce invented records; two such pages reached
+    # delivery before this existed. Reported, never silently dropped.
+    integrity = check_volume([{"file": img, "transcription": txt}
+                              for img, txt in pages])
+    if integrity["failed"]:
+        print(format_report(integrity), file=sys.stderr)
+        if args.strict_integrity:
+            print("REFUSING to segment: --strict-integrity is set.", file=sys.stderr)
+            return 3
 
     if args.per_image:
         result = [segment_page(t, image=img) for img, t in pages]
