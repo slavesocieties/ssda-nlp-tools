@@ -78,3 +78,52 @@ def test_volume_report_counts_and_never_edits():
 def test_a_clean_volume_reports_clean():
     rep = check_volume([{"file": "a.jpg", "transcription": "Aos treze dias do mes"}])
     assert rep["failed"] == 0 and "no problems" in format_report(rep)
+
+
+# --- the pipeline's own failure marker (found 2026-07-31 against hand gold) --- #
+
+def test_failed_marker_is_caught():
+    """The Archivault pipeline writes its error into the content field. 1,281
+    pages of the 232-volume set carry this and none were flagged before."""
+    r = check_page("[TRANSCRIPTION FAILED: Max retries reached]", "701157-0001.jpg")
+    assert not r["ok"]
+    assert r["codes"] == ["failed_marker"]
+
+
+def test_all_observed_marker_variants():
+    for text in ("[TRANSCRIPTION FAILED: Max retries reached]",
+                 "[TRANSCRIPTION FAILED: Empty response. Finish Reason: Finish]",
+                 "[TRANSCRIPTION FAILED: 400 FAILED_PRECONDITION. {'error': {'x': 1}}]",
+                 "[TRANSCRIPTION FAILED: Server disconnected without sending a response]"):
+        assert not check_page(text)["ok"], text
+
+
+def test_marker_caught_mid_page():
+    """A page can transcribe partly and then fail, which is the dangerous shape:
+    it looks like real content right up to the marker."""
+    r = check_page("Yo Miguel de Linares Cura Rector bautice a Manuel "
+                   "[TRANSCRIPTION FAILED: Max retries reached]")
+    assert not r["ok"] and "failed_marker" in r["codes"]
+
+
+def test_scribal_gaps_are_not_failures():
+    """Bracketed markers are how a good transcription records damage. Matching
+    'bracketed status note' generally would flag every damaged folio we have."""
+    for gap in LEGITIMATE_GAPS:
+        assert check_page(f"bautice a Maria {gap} hija de Juan Congo")["ok"], gap
+
+
+def test_marker_and_refusal_are_distinct_codes():
+    r = check_page("[TRANSCRIPTION FAILED: Max retries reached] I'm sorry, "
+                   "I cannot transcribe this image.")
+    assert set(r["codes"]) == {"failed_marker", "refusal"}
+
+
+def test_volume_report_counts_both_classes():
+    vol = [{"file": "a.jpg", "transcription": "[TRANSCRIPTION FAILED: Max retries reached]"},
+           {"file": "b.jpg", "transcription": "I'm sorry, I cannot transcribe this."},
+           {"file": "c.jpg", "transcription": "En la Yglesia Parroquial bautice a Maria."}]
+    rep = check_volume(vol)
+    assert rep["pages"] == 3 and rep["failed"] == 2
+    assert rep["by_code"]["failed_marker"] == 1
+    assert rep["by_code"]["refusal"] == 1

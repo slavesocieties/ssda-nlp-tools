@@ -74,8 +74,27 @@ _REFUSAL = re.compile(
     r"|(?:the )?(?:image|handwriting) is (?:too )?(?:blurry|illegible|faded|unclear)"
     r")", re.I)
 
+# The transcriber's OWN failure marker, emitted by the Archivault pipeline when
+# a page exhausts its retries. Found 2026-07-31 by comparing against SSDA's hand
+# transcriptions: pages where a human read 1,000+ characters carried only
+#
+#     "[TRANSCRIPTION FAILED: Max retries reached]"      (43 chars)
+#
+# Measured across all 62,320 pages of the 232-volume set: 1,281 pages in 184 of
+# 232 volumes, 2.06%. That is roughly 200x more common than the model-apology
+# class this module was built for, and it was invisible here because the string
+# is neither an apology nor English assistant-speak -- it is our own tooling
+# reporting an error into the content field.
+#
+# Precision is 100% by construction: this is a literal marker emitted by the
+# pipeline, not natural language, so no register text can produce it. Unlike the
+# heuristics that were cut, there is nothing to tune.
+_FAILED_MARKER = re.compile(r"\[TRANSCRIPTION FAILED\b[^\]]*\]", re.I)
+
 # Scribal illegibility markers are NOT failures -- a good transcription of a
 # damaged folio is full of them. Listed so nobody adds them to _REFUSAL later.
+# Note these are bracketed too, which is why the marker above is matched by its
+# literal text rather than by "looks like a bracketed status note".
 LEGITIMATE_GAPS = ("[torn]", "[illegible]", "[roto]", "[ilegible]", "[...]")
 
 
@@ -84,6 +103,10 @@ def check_page(text: Optional[str], page_id: str = "") -> Dict[str, Any]:
     """Reason codes for one page. `ok` False means DO NOT segment this."""
     t = (text or "").strip()
     problems: List[Dict[str, Any]] = []
+    m = _FAILED_MARKER.search(t)
+    if m:
+        problems.append({"code": "failed_marker", "detail": m.group(0).strip(),
+                         "context": t[max(0, m.start() - 60):m.start() + 120]})
     m = _REFUSAL.search(t)
     if m:
         problems.append({"code": "refusal", "detail": m.group(0).strip(),
@@ -113,7 +136,8 @@ def check_volume(volume: Any) -> Dict[str, Any]:
             failed.append(res)
     return {"pages": total, "failed": len(failed),
             "rate": round(len(failed) / total, 6) if total else 0.0,
-            "by_code": {"refusal": sum(1 for f in failed if "refusal" in f["codes"])},
+            "by_code": {code: sum(1 for f in failed if code in f["codes"])
+                        for code in ("failed_marker", "refusal")},
             "failures": failed}
 
 
