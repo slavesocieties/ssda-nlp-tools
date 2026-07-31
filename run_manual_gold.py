@@ -19,6 +19,7 @@ import os
 
 from ssda_nlp_tools.manual_gold import (aggregate, align_pages, entry_counts,
                                         human_pages, machine_pages)
+from ssda_nlp_tools.transcription_integrity import check_page
 
 
 def main(argv=None):
@@ -44,7 +45,13 @@ def main(argv=None):
         h = json.load(open(manual[vol], encoding="utf-8"))
         m = json.load(open(machine[vol], encoding="utf-8"))
         hp, mp = human_pages(h), machine_pages(m)
+        # A page the transcriber never produced is not a transcription error;
+        # averaging its 100% deletion into an accuracy figure describes an
+        # outage, not quality. Counted separately, excluded from the rates.
+        hard = {p for p, t in mp.items() if not check_page(t)["ok"]}
         res = align_pages(hp, mp)
+        res["hard_failures"] = sorted(hard & set(hp))
+        res["pages"] = [r for r in res["pages"] if r["machine_page"] not in hard]
         agg = aggregate(res["pages"])
         res["aggregate"] = agg
         res["human_entries"] = sum(entry_counts(h).values())
@@ -54,6 +61,10 @@ def main(argv=None):
         print(f"--- {vol}  ({res['human_entries']} hand-transcribed entries)")
         print(f"    pages compared {agg['pages']:4d}   "
               f"human chars {agg['human_chars']:,}")
+        print(f"    realigned for drift {res['pages_realigned']:4d}   "
+              f"offsets {res['offsets_used']}")
+        print(f"    excluded, transcriber failed outright: "
+              f"{len(res['hard_failures'])}")
         print(f"    substitution {100*agg['sub_rate']:6.2f}%   <- quality signal")
         print(f"    deletion     {100*agg['del_rate']:6.2f}%   <- machine missed "
               f"text a human read")

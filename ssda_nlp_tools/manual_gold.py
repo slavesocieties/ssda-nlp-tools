@@ -52,6 +52,7 @@ from __future__ import annotations
 
 import json
 import re
+import statistics
 import unicodedata
 from collections import Counter, defaultdict
 from difflib import SequenceMatcher
@@ -176,18 +177,77 @@ def machine_pages(pages: Any) -> Dict[str, str]:
     return out
 
 
-def align_pages(human: Dict[str, str], machine: Dict[str, str]) -> Dict[str, Any]:
-    """Compare only pages a human actually transcribed, and flag bad pairings."""
-    shared = sorted(set(human) & set(machine))
-    rows, suspect = [], []
-    for pid in shared:
-        r = compare_text(human[pid], machine[pid])
+def _best_offset(human_text: str, machine: Dict[str, str], page: int,
+                 window: int) -> Optional[int]:
+    cands = []
+    for off in range(-window, window + 1):
+        t = str(page + off).zfill(4)
+        if t in machine:
+            cands.append((compare_text(human_text, machine[t])["similarity"], off))
+    return max(cands)[1] if cands else None
+
+
+def offset_map(human: Dict[str, str], machine: Dict[str, str],
+               window: int = 6, neighbourhood: int = 10) -> Dict[str, int]:
+    """Which machine page each human page really is, allowing for DRIFT.
+
+    Page numbering between the two sources is not a constant offset. Measured on
+    15834: human pages 30-69 line up at +0, pages 70-189 at +1, and 190 onward
+    back at +0 -- a numbering discontinuity mid-volume, not a transcription
+    problem. A single-offset check cannot see this; it reports +0 as globally
+    best and silently scores 120 pages against the wrong folio.
+
+    THE BIAS THIS AVOIDS. Aligning each page to its own best-scoring match would
+    maximise similarity by construction and inflate every accuracy number:
+    whatever the machine produced, we would go find the human page it most
+    resembles. So a page's offset is decided by its NEIGHBOURS -- the modal best
+    offset over surrounding pages, excluding the page itself -- and then applied.
+    Local consensus fixes the alignment; the page's own score never votes on
+    where it belongs.
+    """
+    raw: Dict[int, int] = {}
+    for pid, text in human.items():
+        off = _best_offset(text, machine, int(pid), window)
+        if off is not None:
+            raw[int(pid)] = off
+    smoothed: Dict[str, int] = {}
+    for page in raw:
+        votes = [o for p, o in raw.items()
+                 if p != page and abs(p - page) <= neighbourhood]
+        smoothed[str(page).zfill(4)] = (
+            Counter(votes).most_common(1)[0][0] if votes else raw[page])
+    return smoothed
+
+
+def align_pages(human: Dict[str, str], machine: Dict[str, str],
+                drift: bool = True, window: int = 6,
+                neighbourhood: int = 10) -> Dict[str, Any]:
+    """Compare only pages a human actually transcribed, and flag bad pairings.
+
+    `neighbourhood` must be smaller than the run of pages sharing an offset, or
+    one region's consensus is imposed on the whole volume.
+    """
+    offs = offset_map(human, machine, window, neighbourhood) if drift else {}
+    rows, suspect, shifted = [], [], 0
+    for pid in sorted(human):
+        off = offs.get(pid, 0)
+        tgt = str(int(pid) + off).zfill(4)
+        if tgt not in machine:
+            tgt, off = pid, 0
+        if tgt not in machine:
+            continue
+        r = compare_text(human[pid], machine[tgt])
         r["page"] = pid
+        r["machine_page"] = tgt
+        r["offset"] = off
+        shifted += bool(off)
         rows.append(r)
         if r["similarity"] < SUSPECT_SIMILARITY:
             suspect.append(pid)
     return {
         "pages_compared": len(rows),
+        "pages_realigned": shifted,
+        "offsets_used": dict(Counter(r["offset"] for r in rows)),
         "human_only_pages": sorted(set(human) - set(machine)),
         "machine_only_pages": len(set(machine) - set(human)),
         "suspect_alignment": suspect,
@@ -209,10 +269,12 @@ def aggregate(rows: List[Dict[str, Any]]) -> Dict[str, Any]:
     agg["del_rate"] = round(agg["delete"] / tot, 5)
     agg["ins_rate"] = round(agg["insert"] / tot, 5)
     agg["cer"] = round((agg["substitute"] + agg["delete"] + agg["insert"]) / tot, 5)
+    # statistics.median, not sorted[len//2]: the latter takes the UPPER middle
+    # on an even count, which nudges every reported median up a little.
     agg["median_similarity"] = round(
-        sorted(r["similarity"] for r in rows)[len(rows) // 2], 5)
+        statistics.median(r["similarity"] for r in rows), 5)
     agg["median_cer_nospace"] = round(
-        sorted(r["cer_nospace"] for r in rows)[len(rows) // 2], 5)
+        statistics.median(r["cer_nospace"] for r in rows), 5)
     return agg
 
 
