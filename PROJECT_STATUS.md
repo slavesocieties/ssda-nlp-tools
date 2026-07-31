@@ -1,6 +1,6 @@
 # SSDA NLP pipeline — project status & how it works
-*Single source of truth. Last updated 2026-07-22 (commit `9b0b24f`). Supersedes
-the 2026-07-15 and 2026-07-20 supervisor drafts.*
+*Single source of truth. Last updated 2026-07-30. Supersedes the 2026-07-15 and
+2026-07-20 supervisor drafts.*
 
 This document covers the whole Task-3 pipeline — what it does, exactly how each
 stage works, the current state (done / staged / open), the measured evidence,
@@ -158,36 +158,37 @@ measurement can see, since a wrongly-refused merge fails silently.
 - **Engineering**: 155 offline tests (<1s, no network), reproducible builds,
   spend-safety rails, provenance throughout.
 
-### 🟢 Live extraction — final Batch job in progress under a $20 cap (2026-07-23)
-Approved capped Luna run via `run_luna_production.py` (hard cap, reserve-before-
-send, validates stop/JSON/exact-IDs, `--confirm` required, key from env only).
-Ledger `production/luna_live/spend_ledger.json`:
+### ✅ Validated V3 corpus delivery (2026-07-28)
+The five approved corpus volumes (176899, 201991, 29597, 375062, 701054) are
+complete end-to-end. `production/luna_v3/CORPUS_SUMMARY.json` records **5,228
+delivered records**, **0 missing source records**, and **0 invalid batches**.
+Seven page-truncated source records remain in the auditable deterministic corpus
+and are excluded from delivery under the approved convention. The delivery keeps
+the deterministic ID, image provenance, faithful transcription, normalized text,
+and structured people/events data together.
 
-| Volume | State | Records |
-|---|---|---:|
-| **701054** (Portuguese) | ✅ **complete end-to-end** — extracted + QA + identity + graph | 212 |
-| 176899 | 🟡 500 records materialized + QA/identity/graph; 587 records included in final provider job | 500 / 1,087 locally ready |
-| 201991 · 29597 · 375062 | 🟡 included in final provider job | 0 / 3,936 locally materialized |
+Provider outputs passed normal-stop, exact-ID, JSON, project-schema, and usage
+validation. Raw output is audit-only; `*.accepted.jsonl` is the only input to
+assembly, so a malformed batch cannot reach the delivered corpus. The final V3
+cost is **$24.5323885 confirmed** of the $35 cap; no V3 reservation remains.
+QA, identity, graph, and review artifacts live in `production/luna_v3/`;
+`SUPERVISOR_RESULTS.md` is the concise handoff.
 
-The first 176899 job returned 499 complete records and omitted one requested
-entry. Exact-ID validation caught the omission; the one record was retried and
-validated independently, yielding the 500-record partial demonstration. The
-original incomplete job remains as an audit artifact and was billed.
+### 🟢 Approved additional extraction — submitted, awaiting validation (2026-07-30)
+Only Daniel-approved volumes 701157 and 701179 were staged in
+`production/approved_extract/`; the three exploratory volumes are excluded.
+Both staged files use `gpt-5.6-luna` with `reasoning_effort=low`, and their entry
+IDs were checked against the delivered corpus with **zero collisions**.
 
-**Final provider submission:** `batch_6a61ad7d08f88190968f330fb7d529b7` contains
-the remaining **455** non-overlapping 10-record requests (4,523 records) in one
-OpenAI Batch job. It is capped by an $18.20 reservation and may take up to 24
-hours. A read-only monitor may download and validate it, but cannot submit any
-additional paid work.
+| Volume | Source entries | Requests | Batch job | State |
+|---|---:|---:|---|---|
+| 701157 | 873 | 88 | `batch_6a6be918838c81908f35e07fc553d51f` | submitted; validate before assembly |
+| 701179 | 697 | 70 | `batch_6a6be91b5d8481908a93b337619d89ff` | submitted; validate before assembly |
 
-Spend at submission: **$1.6030095 confirmed + $18.20 reserved = $19.8030095 of
-the $20 cap.** This leaves $0.1969905 for any individually approved repairs.
-After exact-ID/JSON/stop/usage validation, the remaining outputs will be
-materialized by volume and passed through the free QA, identity, and graph
-pipeline. 701054 is already complete and materialized with faithful + normalized
-text + people/events + provenance (`production/luna_live/701054.materialized.json`);
-its QA flagged 11 possible duplicates + 5 chronology issues **for review, not
-auto-edited**. Supervisor package: `production/luna_live/SUPERVISOR_DEMO_TOMORROW.md`.
+The two jobs hold a conservative **$6.32 reservation**. Together with the
+validated V3 spend, this is **$30.8523885 of the $35 cap**, leaving
+**$4.1476115**. The staged cost projection is $4.52; the ledger will be settled
+only from provider-reported usage after all requested IDs and schemas validate.
 
 ### ✅ Resolved by Daniel's 2026-07-24 review
 - **Schema approved** ("schema looks fine; I approve of only recording
@@ -199,19 +200,24 @@ auto-edited**. Supervisor package: `production/luna_live/SUPERVISOR_DEMO_TOMORRO
   of these volumes mix Spanish and Portuguese, and the manual examples are
   consistent. Segmentation is validated cross-language (47/47); entity F1
   remains measured on Spanish, which Daniel did not flag as a concern.
-- **Remaining volumes green-lit** by Daniel; extracting under the $20 cap.
+- **Additional volumes approved** by Daniel. The 701157 and 701179 Batch jobs
+  are submitted under the shared $35 cap and awaiting provider validation; see
+  the current-state table above.
 
 ### ❗ Open — needs a decision or human step
-- **Re-extraction with the vocabulary-aware prompt is UNMEASURED.** The prompt
-  fix is in `main` and the batches are re-staged
-  (`production/batches_v2/`, +$0.02 vs the old prompt), but whether age climbs
-  off 26.4% and ethnicity off 0% is a prediction until a run happens.
-- **Poll/settle the final 455-request batch** (keyed step). Ledger still shows it
-  `submitted` with the $18.20 reservation held, though Daniel observed $12.28
-  billed at OpenAI — so it likely ran and needs validating + settling.
-- **Cost reconciliation**: Daniel's $0.017/image used the 712 demo records as the
-  denominator; across all 2,366 pages the full run is ~$0.005/image. Confirm once
-  the batch settles.
+- **Validate and assemble 701157 + 701179.** Both are already submitted. Do not
+  assemble them until normal-stop, exact-ID, JSON, project-schema, and usage
+  checks settle their shared-ledger reservations.
+- **Transcription-model comparison is staged, not yet paid.** The controlled
+  Gemini-3.1-Pro-versus-Luna harness is available in
+  `run_transcription_bakeoff.py`. Its one-page Archivault probe requires a
+  separate approval because it submits an upstream transcription job; the Opus
+  adjudication step is optional and requires its own explicit local cap.
+- **Vocabulary-aware extraction is measured for age.** On held-out Portuguese
+  701054, age-category conformance rose from 26.6% (46/173) to 100.0%
+  (173/173). Ethnicity remains an open historical descriptor field; it is
+  preserved verbatim and routed to its term-level review queue, not judged by a
+  closed-vocabulary percentage.
 - **Weak extraction dimensions → human review**: relationships (~0.83) and fine
   attributes route to the review queue (built, not yet run).
 - **108 fallback records + 16 re-transcribe pages**: separate capped run /
@@ -296,7 +302,7 @@ Secondary, and independent of it:
 - **Burial gold** — 12 candidates awaiting correction. Burials are 2,169 events,
   the commonest type in the corpus, and Daniel's gold set contains none, so
   burial accuracy has never been measured at all.
-- **701157 + 701179** — segmented, batches staged and dry-run clean at
-  `production/approved_extract/`, ~$4.52 projected against $10.47 remaining.
-  Approved 2026-07-30; needs a key holder to submit.
+- **701157 + 701179** — submitted as 158 requests for 1,570 source entries.
+  A conservative $6.32 reservation is held against the shared $35 cap; validate
+  provider results before assembly.
 - **API key rotation** — outstanding across several sessions.

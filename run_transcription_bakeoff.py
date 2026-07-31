@@ -3,7 +3,8 @@
 Archivault actually does: reading colonial handwriting off a page image.
 
 Four subcommands, in the order you should run them. Only `probe` and `judge`
-touch a network or a key, and both are capped and require --confirm.
+touch a network or a key. Both require --confirm; the judge also requires an
+explicit local reservation and cap before it can send anything.
 
   probe    Does the Archivault backend even ACCEPT the candidate model string?
            Nothing in the repo validates it -- `transcription_model` is passed
@@ -11,13 +12,18 @@ touch a network or a key, and both are capped and require --confirm.
            this is unanswerable except by trying it on one page. Cheap, and it
            gates everything else.
 
+  segment  Offline, $0. Convert the page-level Archivault output from each
+           model into the deterministic, cross-page segmented JSON that score
+           consumes. It is deliberately explicit so raw pages can never be
+           mistaken for an evaluated transcription.
+
   score    Offline, $0. Runs our segmenter's metrics over two already-produced
            transcriptions and reports which better supports the downstream work.
            See ssda_nlp_tools/transcription_bakeoff for why these metrics and
            not character error rate.
 
-  judge    Opus 5 adjudicates the pages where the two transcriptions diverge
-           MOST, with the page image in front of it. Capped, opt-in, and a
+  judge    An explicitly selected Anthropic vision model adjudicates the pages
+           where the two transcriptions diverge MOST. It is a guarded, opt-in
            SCREEN rather than a verdict -- see the warning under `judge`.
 
   report   Builds a side-by-side HTML of the divergent passages for Daniel,
@@ -27,9 +33,10 @@ Credentials are read from the environment and never written, printed, or passed
 on a command line.
 """
 import argparse
+import importlib.util
 import json
 import os
-import subprocess
+import runpy
 import sys
 from pathlib import Path
 
@@ -41,36 +48,57 @@ CANDIDATE = "gpt-5.6-luna"
 
 
 def cmd_probe(args):
-    """One page, one model, straight through submit_job.py."""
+    """One page, one model, through Archivault without exposing its password."""
     submit = Path(args.archivault) / "submit_job.py"
     if not submit.exists():
         sys.exit(f"submit_job.py not found at {submit}. Clone "
                  "https://github.com/slavesocieties/ssda-archivault first.")
-    if not os.environ.get("ARCHIVAULT_PASSWORD"):
-        sys.exit("set ARCHIVAULT_PASSWORD in the environment first; this script "
-                 "never takes a password on the command line.")
-    cmd = [sys.executable, str(submit),
+    key_path = Path(args.keys_file)
+    if not key_path.exists():
+        sys.exit(f"S3 key file not found: {key_path}")
+    keys = [line.strip() for line in key_path.read_text(encoding="utf-8").splitlines()
+            if line.strip()]
+    if len(keys) != 1:
+        sys.exit("the probe requires exactly one non-empty S3 key in --keys-file")
+    argv = [str(submit),
            "--source-bucket", args.bucket, "--email", args.email,
            "--title", f"model-probe-{args.model}",
            "--steps", "transcribe",
            "--transcription-model", args.model,
-           "--keys-file", args.keys_file,
+           "--keys", keys[0],
            "--out-dir", args.outdir,
            "--language", args.language, "--writing-style", "handwritten",
            "--time-period", "19th_century_or_earlier"]
-    print("  " + " ".join(cmd))
+    shown = list(argv)
+    shown[shown.index("--keys") + 1] = "[one S3 key]"
+    print("  " + " ".join(shown) + " --password [from ARCHIVAULT_PASSWORD]")
     if not args.confirm:
         print("\nDRY RUN -- rerun with --confirm to submit. One page only.")
         return 0
-    # password travels in the child's environment, not argv, so it cannot leak
-    # into a process listing or a shell history
-    env = dict(os.environ)
-    r = subprocess.run(cmd, env=env)
-    if r.returncode:
-        print(f"\nsubmit_job.py exited {r.returncode}. If the backend rejected "
+    if not os.environ.get("ARCHIVAULT_PASSWORD"):
+        sys.exit("set ARCHIVAULT_PASSWORD in the environment first; this script "
+                 "never takes a password on the command line.")
+    if importlib.util.find_spec("requests") is None:
+        sys.exit("the selected Python interpreter lacks Archivault's `requests` "
+                 "dependency; use an interpreter with requests installed. No "
+                 "network call was made.")
+    # Archivault's CLI requires --password.  Run it in this process and only
+    # append the secret to its *in-memory* argv after process start: neither a
+    # shell history nor an OS process listing can contain it.
+    old_argv = sys.argv
+    try:
+        sys.argv = argv + ["--password", os.environ["ARCHIVAULT_PASSWORD"]]
+        runpy.run_path(str(submit), run_name="__main__")
+        code = 0
+    except SystemExit as exc:
+        code = int(exc.code) if isinstance(exc.code, int) else 1
+    finally:
+        sys.argv = old_argv
+    if code:
+        print(f"\nsubmit_job.py exited {code}. If the backend rejected "
               f"'{args.model}', that is the answer: the model is not available "
               f"through Archivault and the comparison stops here.")
-    return r.returncode
+    return code
 
 
 def cmd_score(args):
@@ -78,6 +106,9 @@ def cmd_score(args):
     b = json.load(open(args.candidate, encoding="utf-8"))
     sa = score_transcription(a)
     sb = score_transcription(b)
+    if not sa["entries"] or not sb["entries"]:
+        sys.exit("refusing to score an output with zero segmented entries; check "
+                 "the Archivault artifact and run `segment` on a real register page")
     res = compare(sa, sb, args.label_a, args.label_b)
 
     w = max(len(r["metric"]) for r in res["rows"]) + 2
@@ -104,6 +135,15 @@ def cmd_score(args):
         json.dump(div, f, ensure_ascii=False, indent=1)
     print(f"\n-> {out/'bakeoff_score.json'}\n-> {out/'bakeoff_divergent.json'}")
     return 0
+
+
+def cmd_segment(args):
+    """Run the project's tested deterministic segmenter over one model output."""
+    from run_segment import main as segment_main
+    argv = [args.input, "--out", args.out]
+    if args.structural:
+        argv.append("--structural")
+    return segment_main(argv)
 
 
 JUDGE_PROMPT = """You are shown one page of a colonial sacramental register and two
@@ -138,20 +178,25 @@ def cmd_judge(args):
     reports low confidence or `unclear`, believe that. The accuracy question is
     settled by Daniel reading the pages this stage surfaces.
     """
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        sys.exit("set ANTHROPIC_API_KEY in the environment first.")
+    if args.reservation_per_page <= 0 or args.max_usd <= 0:
+        sys.exit("--reservation-per-page and --max-usd must both be positive")
     div = json.load(open(args.divergent, encoding="utf-8"))[:args.limit]
     imgs = Path(args.images)
     missing = [d["image"] for d in div if not (imgs / d["image"]).exists()]
     if missing:
         sys.exit(f"{len(missing)} page image(s) not found under {imgs}, "
                  f"e.g. {missing[0]}. The judge is worthless without the image.")
-    est = len(div) * args.cost_per_page
-    print(f"{len(div)} pages, ~${est:.2f} at ${args.cost_per_page}/page "
-          f"(cap {args.limit})")
+    reservation = len(div) * args.reservation_per_page
+    print(f"{len(div)} pages, local reservation ${reservation:.2f} at "
+          f"${args.reservation_per_page}/page (cap ${args.max_usd:.2f})")
+    if reservation > args.max_usd + 1e-9:
+        print("REFUSING: the declared local reservation exceeds --max-usd.")
+        return 2
     if not args.confirm:
-        print("DRY RUN -- rerun with --confirm to call the API.")
+        print("DRY RUN -- no key access. Rerun with --confirm to call the API.")
         return 0
+    if not os.environ.get("ANTHROPIC_API_KEY"):
+        sys.exit("set ANTHROPIC_API_KEY in the environment first.")
 
     import base64
     import urllib.request
@@ -238,6 +283,13 @@ def main(argv=None):
     p.add_argument("--confirm", action="store_true")
     p.set_defaults(func=cmd_probe)
 
+    g = sub.add_parser("segment", help="segment one raw Archivault transcription JSON offline")
+    g.add_argument("input", help="page-level Archivault transcription JSON")
+    g.add_argument("--out", required=True, help="segmented JSON output path")
+    g.add_argument("--structural", action="store_true",
+                   help="also compare segment starts with visible margin numbers")
+    g.set_defaults(func=cmd_segment)
+
     s = sub.add_parser("score", help="offline downstream-usability comparison")
     s.add_argument("baseline"); s.add_argument("candidate")
     s.add_argument("--label-a", default="gemini-3.1-pro")
@@ -246,13 +298,19 @@ def main(argv=None):
     s.add_argument("--outdir", default="production/bakeoff")
     s.set_defaults(func=cmd_score)
 
-    j = sub.add_parser("judge", help="Opus 5 screen on divergent pages")
+    j = sub.add_parser("judge", help="Anthropic vision-model screen on divergent pages")
     j.add_argument("divergent", help="bakeoff_divergent.json from `score`")
     j.add_argument("--images", required=True, help="directory of page images")
     j.add_argument("--limit", type=int, default=15)
-    j.add_argument("--cost-per-page", type=float, default=0.05)
-    j.add_argument("--model", default="claude-opus-5",
-                   help="the judge, not a contestant")
+    j.add_argument("--reservation-per-page", type=float, required=True,
+                   help="conservative local USD reservation per page")
+    j.add_argument("--max-usd", type=float, required=True,
+                   help="hard cap for this local reservation")
+    j.add_argument("--model", required=True,
+                   help="Anthropic model ID for the judge (not a contestant), "
+                        "e.g. claude-opus-5. Required rather than defaulted: this "
+                        "is a paid call, and the operator should name a model "
+                        "their account actually has.")
     j.add_argument("--outdir", default="production/bakeoff")
     j.add_argument("--confirm", action="store_true")
     j.set_defaults(func=cmd_judge)

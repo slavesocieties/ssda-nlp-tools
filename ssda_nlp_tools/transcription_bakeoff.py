@@ -56,7 +56,22 @@ _ERROR_MARKS = re.compile(
 
 
 def _entries(volume: Dict[str, Any]) -> List[dict]:
-    return volume.get("entries") or volume.get("records") or []
+    if not isinstance(volume, dict):
+        raise ValueError("expected a segmented volume JSON object, not raw Archivault page JSON; "
+                         "run `run_transcription_bakeoff.py segment` first")
+    entries = volume.get("entries") or volume.get("records")
+    if not isinstance(entries, list):
+        raise ValueError("input has no segmented entries/records; run "
+                         "`run_transcription_bakeoff.py segment` first")
+    return entries
+
+
+def _images(entry: dict) -> List[str]:
+    """Accept both the production and deterministic segmenter image fields."""
+    values = entry.get("source_images") or entry.get("images")
+    if values:
+        return [str(value) for value in values]
+    return [str(entry["image"])] if entry.get("image") else []
 
 
 def _text(entry: dict) -> str:
@@ -88,7 +103,7 @@ def score_transcription(volume: Dict[str, Any], vocab=None,
     entries = _entries(volume)
     stats = volume.get("stats") or {}
     n_pages = (pages or stats.get("pages")
-               or len({img for e in entries for img in (e.get("source_images") or [])})
+               or len({img for e in entries for img in _images(e)})
                or 0)
 
     texts = [_text(e) for e in entries]
@@ -107,7 +122,8 @@ def score_transcription(volume: Dict[str, Any], vocab=None,
         "entries_per_page": round(len(entries) / n_pages, 3) if n_pages else None,
         "partial": partial,
         "partial_rate": round(partial / len(entries), 4) if entries else None,
-        "low_confidence_pages": len(volume.get("low_confidence_pages") or []),
+        "low_confidence_pages": len(volume.get("low_confidence_pages")
+                                    or volume.get("low_confidence") or []),
         "error_pages": len(volume.get("error_pages") or []),
         "error_marks_in_text": errors,
         "chars": len(joined),
@@ -189,7 +205,7 @@ def divergent_pages(a: Dict[str, Any], b: Dict[str, Any], top: int = 15):
     def by_page(vol):
         out: Dict[str, List[str]] = {}
         for e in _entries(vol):
-            for img in (e.get("source_images") or []):
+            for img in _images(e):
                 out.setdefault(str(img), []).append(_text(e))
         return {k: "\n".join(v) for k, v in out.items()}
 

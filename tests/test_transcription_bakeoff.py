@@ -7,6 +7,7 @@ supports the downstream pipeline -- and the two ways it went wrong.
 """
 import json
 
+from run_transcription_bakeoff import main as bakeoff_main
 from ssda_nlp_tools.transcription_bakeoff import (MATERIAL, compare,
                                                   divergent_pages,
                                                   score_transcription)
@@ -73,6 +74,16 @@ def test_embedded_api_failures_are_counted_not_ignored():
     assert score_transcription(vol)["error_marks_in_text"] >= 1
 
 
+def test_raw_archivault_pages_are_rejected_until_segmented():
+    """A raw page list has text, but no record boundaries to score."""
+    try:
+        score_transcription([{"file": "V-0001.jpg", "transcription": "Aos..."}])
+    except ValueError as exc:
+        assert "segment" in str(exc)
+    else:
+        raise AssertionError("raw Archivault pages must never score as a tie")
+
+
 def test_divergent_pages_rank_disagreement_first():
     """The reviewer's time should go where the models disagree, and long texts
     must not be silently mis-scored -- SequenceMatcher's autojunk disables
@@ -105,3 +116,37 @@ def test_report_html_escapes_and_marks_differences(tmp_path):
     assert "<img onerror=1>" not in html          # escaped
     assert "&lt;img onerror=1&gt;.jpg" in html
     assert "<del>" in html and "<ins>" in html    # word-level diff rendered
+
+
+def test_paid_dry_runs_need_no_credentials_and_never_print_inputs(tmp_path, monkeypatch, capsys):
+    """A dry-run is a planning operation, not a weaker paid operation."""
+    (tmp_path / "submit_job.py").write_text("# dry-run placeholder\n", encoding="utf-8")
+    key_file = tmp_path / "one_key.txt"
+    key_file.write_text("sensitive/source/object.jpg\n", encoding="utf-8")
+    images = tmp_path / "images"; images.mkdir()
+    (images / "page.jpg").write_bytes(b"not read in dry-run")
+    divergent = tmp_path / "divergent.json"
+    divergent.write_text(json.dumps([{"image": "page.jpg", "similarity": 0.5,
+                                      "a": "A", "b": "B"}]), encoding="utf-8")
+    monkeypatch.delenv("ARCHIVAULT_PASSWORD", raising=False)
+    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
+
+    assert bakeoff_main(["probe", "--archivault", str(tmp_path),
+                         "--email", "test@example.org", "--keys-file", str(key_file)]) == 0
+    assert bakeoff_main(["judge", str(divergent), "--images", str(images),
+                         "--model", "test-model", "--reservation-per-page", "0.05",
+                         "--max-usd", "0.10"]) == 0
+    printed = capsys.readouterr().out
+    assert "sensitive/source/object.jpg" not in printed
+    assert "one S3 key" in printed
+
+
+def test_judge_refuses_declared_reservation_above_cap(tmp_path):
+    images = tmp_path / "images"; images.mkdir()
+    (images / "page.jpg").write_bytes(b"not read in dry-run")
+    divergent = tmp_path / "divergent.json"
+    divergent.write_text(json.dumps([{"image": "page.jpg", "similarity": 0.5,
+                                      "a": "A", "b": "B"}]), encoding="utf-8")
+    assert bakeoff_main(["judge", str(divergent), "--images", str(images),
+                         "--model", "test-model", "--reservation-per-page", "0.05",
+                         "--max-usd", "0.04"]) == 2
