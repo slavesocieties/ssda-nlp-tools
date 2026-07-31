@@ -34,9 +34,16 @@ _MONTHS = (r"Enero|Febrero|Marzo|Abril|Mayo|Junio|Julio|Agosto|Se[pt]t?iembre|"
            r"Octubre|Noviembre|Diciembre|"
            r"Janeiro|Fevereiro|Mar[cç]o|Maio|Junho|Julho|Setembro|Outubro|"
            r"Novembro|Dezembro")
-# b/v swaps are the canonical Spanish scribal variation ("Juebes", "Savado")
-_WEEKDAYS = (r"Lunes|Martes|Mi[eé]rcoles|Jue[bv]es|[BV]iernes|S[aá][bv]ado|Domingo|"
-             r"Segunda|Ter[cç]a|Quarta|Quinta|Sexta")
+# b/v swaps are the canonical Spanish scribal variation ("Juebes", "Savado").
+# The trailing s is optional for the same reason: these scribes drop it, and
+# 15834 folio 0081 opens "Marte Veinte y quatro de Mayo de mill Sete Sientos".
+# That page holds three records and the segmenter found ZERO, because with no
+# opener anywhere the whole folio became one leading fragment. Dropping the s
+# costs nothing in precision here -- `_OPENER` still requires a full "… de
+# <MONTH>" date formula after the keyword, so a bare "Marte" or "Lune" in body
+# text cannot open an entry on its own.
+_WEEKDAYS = (r"Lunes?|Martes?|Mi[eé]rcoles?|Jue[bv]es?|[BV]iernes?|S[aá][bv]ados?|"
+             r"Domingos?|Segunda|Ter[cç]a|Quarta|Quinta|Sexta")
 
 # opener keywords: weekday-led ("Lunes, dia…"), "En/Em/Aos/Ao…", and the very
 # common Spanish "El día…" / "La día…" / "El primero de…" forms used by whole
@@ -59,7 +66,14 @@ _OPENER = re.compile(
 # together ("En dies y seis de Maio demil sett.os…"), which a bare \bmil\b misses
 # — and since a weak opener never splits mid-entry, that silently swallowed whole
 # records in 18th-c. volumes. Accept the concatenated form explicitly.
-_YEARISH = re.compile(r"\b(?:de)?mil\b|\b1[5-9]\d\d\b", re.IGNORECASE)
+#
+# `mil+` for the same reason, found the same way and measured against SSDA's hand
+# transcriptions rather than guessed. The 18th-century scribes write the thousand
+# as "mill": across volumes 15834/1795/419324 it is 371 occurrences against 1,604
+# of "mil", so 19% of all year formulas were invisible to this pattern. 275
+# opener lines carry year evidence ONLY in that spelling. Same failure mode as
+# "demil" above — a weak opener never splits, so whole records were swallowed.
+_YEARISH = re.compile(r"\b(?:de)?mil+\b|\b1[5-9]\d\d\b", re.IGNORECASE)
 
 # loose opener: same formula shape but the month word may be TRUNCATED by the
 # line wrap ("...de Noviem" / "bre de Mil..."). Only accepted with corroborating
