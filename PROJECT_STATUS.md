@@ -208,11 +208,37 @@ only from provider-reported usage after all requested IDs and schemas validate.
 - **Validate and assemble 701157 + 701179.** Both are already submitted. Do not
   assemble them until normal-stop, exact-ID, JSON, project-schema, and usage
   checks settle their shared-ledger reservations.
-- **Transcription-model comparison is staged, not yet paid.** The controlled
-  Gemini-3.1-Pro-versus-Luna harness is available in
-  `run_transcription_bakeoff.py`. Its one-page Archivault probe requires a
-  separate approval because it submits an upstream transcription job; the Opus
-  adjudication step is optional and requires its own explicit local cap.
+- **Upstream transcription decision: retain Gemini-3.1-Pro.** A valid,
+  same-local-image Luna probe on `701157-0056.jpg` was completed and inspected.
+  Evidence under `production/bakeoff/luna_701157_0056_probe/`.
+
+  Luna did not misread the page, it **confabulated** one. All three of its
+  entries used a formula absent from the folio (`em casas de morada de <name>`),
+  with dates in an invented sequence (23/26/28 Nov **1842**) and three
+  householders who do not appear. Reading the image directly, the folio holds
+  three marriages dated **29 Nov 1841, 18 Nov 1841, 12 Jun 1841**. Downstream
+  screen 5–1 to Gemini; text similarity 0.4381.
+
+  Two honest qualifications. Gemini is better, not clean: right on entries 1 and
+  3, but it reads *Dezembro* where the manuscript plainly says *Novembro* on
+  entry 2, and its 4-vs-3 entry "win" is partly spurious — the extra entry is a
+  right-margin annotation mis-segmented as a record. And this is **one page**.
+
+  **The finding that generalises is about our own screen, not about Luna.**
+  Every free metric in `transcription_bakeoff.py` measures *well-formedness*,
+  not fidelity, and fluent fabrication is well formed — Luna actually **won**
+  the vocabulary metric with invented text. `formula_rate` caught it only by
+  luck, because Luna invented a formula the regex does not list. Had it
+  fabricated with the correct opening formula, the screen would have read
+  near-even on a page where one model made everything up. The screen ranks where
+  to look; only the image certifies accuracy. The same bound applies to
+  `repair_burden()`: confabulated text needs no repair, so it scores as
+  *cleaner*.
+
+  A four-page Luna script (`run_probe_set.py`, 1701–1907, both languages) exists
+  as a guarded confirmation experiment, not a recommended production change.
+  Every confirmed upstream call now needs an explicit USD reservation,
+  persistent ledger, and hard cap.
 - **Vocabulary-aware extraction is measured for age.** On held-out Portuguese
   701054, age-category conformance rose from 26.6% (46/173) to 100.0%
   (173/173). Ethnicity remains an open historical descriptor field; it is
