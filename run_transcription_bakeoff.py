@@ -37,6 +37,7 @@ import importlib.util
 import json
 import os
 import runpy
+import shutil
 import sys
 from pathlib import Path
 
@@ -53,24 +54,42 @@ def cmd_probe(args):
     if not submit.exists():
         sys.exit(f"submit_job.py not found at {submit}. Clone "
                  "https://github.com/slavesocieties/ssda-archivault first.")
-    key_path = Path(args.keys_file)
-    if not key_path.exists():
-        sys.exit(f"S3 key file not found: {key_path}")
-    keys = [line.strip() for line in key_path.read_text(encoding="utf-8").splitlines()
-            if line.strip()]
-    if len(keys) != 1:
-        sys.exit("the probe requires exactly one non-empty S3 key in --keys-file")
+    source_argv = []
+    if args.keys_file:
+        key_path = Path(args.keys_file)
+        if not key_path.exists():
+            sys.exit(f"S3 key file not found: {key_path}")
+        keys = [line.strip() for line in key_path.read_text(encoding="utf-8").splitlines()
+                if line.strip()]
+        if len(keys) != 1:
+            sys.exit("the probe requires exactly one non-empty S3 key in --keys-file")
+        source_argv = ["--source-bucket", args.bucket, "--keys", keys[0]]
+    else:
+        image = Path(args.local_image)
+        if not image.is_file():
+            sys.exit(f"local probe image not found: {image}")
+        # Archivault's local-upload mode accepts a directory. Copy exactly one
+        # immutable source image into an auditable staging directory so no
+        # sibling pages can silently widen this one-page paid probe.
+        staging = Path(args.outdir) / "source_image"
+        staging.mkdir(parents=True, exist_ok=True)
+        staged_image = staging / image.name
+        shutil.copy2(image, staged_image)
+        source_argv = ["--dir", str(staging)]
     argv = [str(submit),
-           "--source-bucket", args.bucket, "--email", args.email,
+           "--email", args.email,
            "--title", f"model-probe-{args.model}",
            "--steps", "transcribe",
            "--transcription-model", args.model,
-           "--keys", keys[0],
+           *source_argv,
            "--out-dir", args.outdir,
            "--language", args.language, "--writing-style", "handwritten",
            "--time-period", "19th_century_or_earlier"]
     shown = list(argv)
-    shown[shown.index("--keys") + 1] = "[one S3 key]"
+    if "--keys" in shown:
+        shown[shown.index("--keys") + 1] = "[one S3 key]"
+    else:
+        shown[shown.index("--dir") + 1] = "[one staged local image]"
     print("  " + " ".join(shown) + " --password [from ARCHIVAULT_PASSWORD]")
     if not args.confirm:
         print("\nDRY RUN -- rerun with --confirm to submit. One page only.")
@@ -277,7 +296,9 @@ def main(argv=None):
     p.add_argument("--model", default=CANDIDATE)
     p.add_argument("--email", required=True)
     p.add_argument("--bucket", default="ssda-production-jpgs")
-    p.add_argument("--keys-file", required=True, help="ONE S3 key, one line")
+    source = p.add_mutually_exclusive_group(required=True)
+    source.add_argument("--keys-file", help="ONE S3 key, one line")
+    source.add_argument("--local-image", help="one verified local source image")
     p.add_argument("--language", default="spanish")
     p.add_argument("--outdir", default="production/bakeoff/probe")
     p.add_argument("--confirm", action="store_true")
