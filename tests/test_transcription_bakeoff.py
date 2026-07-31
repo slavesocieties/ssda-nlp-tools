@@ -1,0 +1,107 @@
+"""Comparing two transcriptions of handwriting we cannot read.
+
+There is no ground truth: no human-verified text exists for these registers, so
+character error rate is not computable and "A differs from B" says nothing about
+which is right. These tests pin the substitute -- measuring whether the text
+supports the downstream pipeline -- and the two ways it went wrong.
+"""
+import json
+
+from ssda_nlp_tools.transcription_bakeoff import (MATERIAL, compare,
+                                                  divergent_pages,
+                                                  score_transcription)
+
+
+def _vol(texts, partials=0, low_conf=(), pages=2):
+    entries = [{"id": f"V-{i:04d}", "text": t, "source_images": [f"V-{i%pages:04d}.jpg"],
+                "partial": i < partials} for i, t in enumerate(texts)]
+    return {"volume": "V", "entries": entries, "stats": {"pages": pages},
+            "low_confidence_pages": list(low_conf)}
+
+
+GOOD = ["En la Villa de Guanabacoa en cinco de Enero de mil ochocientos cuarenta "
+        "años se dio sepultura al cadaver de Jose de nacion Congo esclavo de Don "
+        "Rafael Santalla"] * 6
+MANGLED = ["En1a Vi11a de Guanabac0a en cinc0 de Ener0 de mi1 0ch0cient0s cuarenta "
+           "an0s se di0 sepu1tura a1 cadauer de J0se de naci0n C0ng0 esc1au0"] * 6
+
+
+def test_identical_transcriptions_produce_no_winner():
+    """The instrument must not invent a difference."""
+    s = score_transcription(_vol(GOOD))
+    res = compare(s, s, "a", "b")
+    assert res["wins"]["a"] == res["wins"]["b"] == 0
+    assert "no measurable difference" in res["verdict"]
+
+
+def test_a_rounding_difference_is_a_tie_not_a_win():
+    """This is the bug the tool shipped with, caught by running it: on a pair
+    where one side had 150x the dangling-entry rate, the tally came out 3-3,
+    because a 0.09% difference in vocabulary hits scored as a win exactly equal
+    to the catastrophe. An unweighted tally is an implicit EQUAL weighting."""
+    a = {"entries_per_page": 3.054, "partial_rate": 0.2103,
+         "vocab_hits_per_1k_words": 1.089, "median_entry_chars": 380}
+    b = {"entries_per_page": 3.417, "partial_rate": 0.0014,
+         "vocab_hits_per_1k_words": 1.088, "median_entry_chars": 375}
+    res = compare(a, b, "old", "new")
+    by = {r["metric"]: r["better"] for r in res["rows"]}
+    assert by["vocab_hits_per_1k_words"] == "tie"     # 0.1% apart
+    assert by["median_entry_chars"] == "tie"          # 1.3% apart
+    assert by["partial_rate"] == "new"                # 99.3% apart
+    assert res["wins"]["new"] == 2 and res["wins"]["old"] == 0
+
+
+def test_dangling_entries_dominate_because_they_break_stitching():
+    clean = score_transcription(_vol(GOOD, partials=0))
+    broken = score_transcription(_vol(GOOD, partials=5))
+    assert broken["partial_rate"] > clean["partial_rate"]
+    assert compare(clean, broken, "clean", "broken")["wins"]["clean"] >= 1
+
+
+def test_mangled_text_loses_formulae_and_vocabulary():
+    """A transcription that garbles characters drops out of the controlled
+    vocabulary and stops matching the register's opening formulae. Both are
+    countable without knowing what the page actually says."""
+    good = score_transcription(_vol(GOOD))
+    bad = score_transcription(_vol(MANGLED))
+    assert good["formula_rate"] > bad["formula_rate"]
+    assert good["vocab_hits"] > bad["vocab_hits"]
+
+
+def test_embedded_api_failures_are_counted_not_ignored():
+    vol = _vol(GOOD[:3] + ["[transcription error] unable to transcribe"] * 2)
+    assert score_transcription(vol)["error_marks_in_text"] >= 1
+
+
+def test_divergent_pages_rank_disagreement_first():
+    """The reviewer's time should go where the models disagree, and long texts
+    must not be silently mis-scored -- SequenceMatcher's autojunk disables
+    matching above 200 characters, which is every page here."""
+    a = _vol(GOOD, pages=2)
+    b = _vol([GOOD[0]] * 3 + MANGLED[:3], pages=2)
+    rows = divergent_pages(a, b, top=2)
+    assert rows and rows[0]["similarity"] <= rows[-1]["similarity"]
+    assert all(0.0 <= r["similarity"] <= 1.0 for r in rows)
+
+
+def test_material_threshold_is_relative_not_absolute():
+    """Metrics live on wildly different scales -- a rate in [0,1] and a word
+    count in the tens of thousands. An absolute epsilon would make every rate a
+    tie and every count a win."""
+    small = compare({"partial_rate": 0.001}, {"partial_rate": 0.002}, "a", "b")
+    big = compare({"words": 56954}, {"words": 56976}, "a", "b")
+    assert small["rows"][0]["better"] == "a"       # 50% apart, material
+    assert big["rows"][0]["better"] == "tie"       # 0.04% apart, noise
+    assert MATERIAL == 0.05
+
+
+def test_report_html_escapes_and_marks_differences(tmp_path):
+    from ssda_nlp_tools.bakeoff_html import render_bakeoff_html
+    div = [{"image": "<img onerror=1>.jpg", "similarity": 0.5,
+            "a": "En la Villa de Guanabacoa", "b": "En la Vi11a de Guanabac0a"}]
+    out = str(tmp_path / "b.html")
+    render_bakeoff_html(div, out, "gemini", "luna")
+    html = open(out, encoding="utf-8").read()
+    assert "<img onerror=1>" not in html          # escaped
+    assert "&lt;img onerror=1&gt;.jpg" in html
+    assert "<del>" in html and "<ins>" in html    # word-level diff rendered
