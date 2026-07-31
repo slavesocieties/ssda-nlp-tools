@@ -24,82 +24,296 @@
     "belong to a different field. They are listed so the decision stays visible and",
     "reversible, not to override it."
   ],
-
   "ethnicity": {
     "new_terms": [
-      {"english": "Asian",      "spanish": "asiático",  "portuguese": "asiático",
-       "count": 29, "note": "Cienfuegos/Havana 1880s: the Chinese indentured labour cohort, recorded as 'asiático'. Distinct from Indigenous."},
-      {"english": "African",    "spanish": "africano",  "portuguese": "africano",
-       "count": 13, "note": "Recorded as 'de nación africana' when the specific ethnonym was not known or not given."},
-      {"english": "Chinese",    "spanish": "chino",     "portuguese": "chinês",
-       "count": 8,  "note": "Appears alongside 'asiático' in the same registers, so kept separate rather than merged into it."},
-      {"english": "Islander",   "spanish": "isleño",    "portuguese": "ilhéu",
-       "count": 3,  "note": "Canary Islander in Cuban registers."},
-      {"english": "Cebu",       "spanish": "Cebú",      "portuguese": "Cebu",     "count": 2},
-      {"english": "Aragonese",  "spanish": "aragonés",  "portuguese": "aragonês", "count": 1},
-      {"english": "Mongol",     "spanish": "mongol",    "portuguese": "mongol",   "count": 1},
-      {"english": "Cassange",   "spanish": "Cassange",  "portuguese": "Cassange",
-       "count": 1,  "note": "Kasanje, an Angolan polity. Kept distinct from Cacanga rather than folded into it."},
-      {"english": "Cabinda",    "spanish": "Cabinda",   "portuguese": "Cabinda",  "count": 1},
-      {"english": "Bamba",      "spanish": "Bamba",     "portuguese": "Bamba",
-       "count": 1,  "note": "Plausibly a Bambara variant, but Bamba is also a Kongo region. Kept separate; collapsing on one occurrence would assert an equivalence we cannot support."},
-      {"english": "Langa",      "spanish": "Langa",     "portuguese": "Langa",    "count": 3},
-      {"english": "Arrabal",    "spanish": "Arrabal",   "portuguese": "Arrabal",  "count": 2},
-      {"english": "Caray",      "spanish": "Caray",     "portuguese": "Caray",    "count": 1},
-      {"english": "Cova",       "spanish": "Cova",      "portuguese": "Cova",     "count": 1},
-      {"english": "Jausa",      "spanish": "Jausa",     "portuguese": "Jausa",
-       "count": 1,  "note": "Probably Hausa."},
-      {"english": "Macamba",    "spanish": "Macambá",   "portuguese": "Macambá",  "count": 1},
-      {"english": "Macusi",     "spanish": "Macusí",    "portuguese": "Macuxi",   "count": 1},
-      {"english": "Malugo",     "spanish": "Malugo",    "portuguese": "Malugo",   "count": 1},
-      {"english": "Manana",     "spanish": "Manana",    "portuguese": "Manana",   "count": 1},
-      {"english": "Mayanda",    "spanish": "Mayanda",   "portuguese": "Mayanda",  "count": 1},
-      {"english": "Ninga",      "spanish": "ninga",     "portuguese": "ninga",    "count": 1},
-      {"english": "Sanga",      "spanish": "Sanga",     "portuguese": "Sanga",    "count": 1},
-      {"english": "Toaguina",   "spanish": "Toaguina",  "portuguese": "Toaguina", "count": 1},
-      {"english": "Inca",       "spanish": "Inga",      "portuguese": "Inca",     "count": 1},
-
-      {"english": "Maroon",     "spanish": "cimarrón",  "portuguese": "quilombola",
-       "count": 1,  "flagged": "status-not-ethnicity",
-       "note": "A person who escaped enslavement. A legal/social status, not an ethnolinguistic descriptor."},
-      {"english": "Caste",      "spanish": "casta",     "portuguese": "casta",
-       "count": 1,  "flagged": "generic-placeholder",
-       "note": "Means 'caste'. The scribe naming the category rather than filling it in."},
-      {"english": "Unknown nation", "spanish": "nación no conocida", "portuguese": "nação não conhecida",
-       "count": 1,  "flagged": "explicit-null",
-       "note": "An explicit statement that the origin was not known. Semantically a null, not a value."},
-      {"english": "Augustinian", "spanish": "Agustino", "portuguese": "Agostinho",
-       "count": 1,  "flagged": "wrong-field",
-       "note": "A religious order. Belongs in titles or occupation."},
-      {"english": "Brown",      "spanish": "moreno",    "portuguese": "moreno",
-       "count": 9,  "flagged": "wrong-field",
-       "note": "Already a PHENOTYPE value. Adding it here means the ethnicity conformance metric can no longer flag a phenotype term landing in the ethnicity field."},
-
-      {"english": "Parga",      "spanish": "Parga",     "portuguese": "Parga",
-       "count": 1,  "flagged": "likely-surname"},
-      {"english": "Rebollo",    "spanish": "Rebollo",   "portuguese": "Rebollo",
-       "count": 1,  "flagged": "likely-surname"},
-      {"english": "Yanes",      "spanish": "Yanes",     "portuguese": "Yanes",
-       "count": 1,  "flagged": "likely-surname"}
+      {
+        "english": "Asian",
+        "spanish": "asiático",
+        "portuguese": "asiático",
+        "count": 29,
+        "note": "Cienfuegos/Havana 1880s: the Chinese indentured labour cohort, recorded as 'asiático'. Distinct from Indigenous."
+      },
+      {
+        "english": "African",
+        "spanish": "africano",
+        "portuguese": "africano",
+        "count": 13,
+        "note": "Recorded as 'de nación africana' when the specific ethnonym was not known or not given."
+      },
+      {
+        "english": "Chinese",
+        "spanish": "chino",
+        "portuguese": "chinês",
+        "count": 8,
+        "note": "Appears alongside 'asiático' in the same registers, so kept separate rather than merged into it."
+      },
+      {
+        "english": "Islander",
+        "spanish": "isleño",
+        "portuguese": "ilhéu",
+        "count": 3,
+        "note": "Canary Islander in Cuban registers."
+      },
+      {
+        "english": "Cebu",
+        "spanish": "Cebú",
+        "portuguese": "Cebu",
+        "count": 2
+      },
+      {
+        "english": "Aragonese",
+        "spanish": "aragonés",
+        "portuguese": "aragonês",
+        "count": 1
+      },
+      {
+        "english": "Mongol",
+        "spanish": "mongol",
+        "portuguese": "mongol",
+        "count": 1
+      },
+      {
+        "english": "Cassange",
+        "spanish": "Cassange",
+        "portuguese": "Cassange",
+        "count": 1,
+        "note": "Kasanje, an Angolan polity. Kept distinct from Cacanga rather than folded into it."
+      },
+      {
+        "english": "Cabinda",
+        "spanish": "Cabinda",
+        "portuguese": "Cabinda",
+        "count": 1
+      },
+      {
+        "english": "Bamba",
+        "spanish": "Bamba",
+        "portuguese": "Bamba",
+        "count": 1,
+        "note": "Plausibly a Bambara variant, but Bamba is also a Kongo region. Kept separate; collapsing on one occurrence would assert an equivalence we cannot support."
+      },
+      {
+        "english": "Langa",
+        "spanish": "Langa",
+        "portuguese": "Langa",
+        "count": 3
+      },
+      {
+        "english": "Arrabal",
+        "spanish": "Arrabal",
+        "portuguese": "Arrabal",
+        "count": 2
+      },
+      {
+        "english": "Caray",
+        "spanish": "Caray",
+        "portuguese": "Caray",
+        "count": 1
+      },
+      {
+        "english": "Cova",
+        "spanish": "Cova",
+        "portuguese": "Cova",
+        "count": 1
+      },
+      {
+        "english": "Jausa",
+        "spanish": "Jausa",
+        "portuguese": "Jausa",
+        "count": 1,
+        "note": "Probably Hausa."
+      },
+      {
+        "english": "Macamba",
+        "spanish": "Macambá",
+        "portuguese": "Macambá",
+        "count": 1
+      },
+      {
+        "english": "Macusi",
+        "spanish": "Macusí",
+        "portuguese": "Macuxi",
+        "count": 1
+      },
+      {
+        "english": "Malugo",
+        "spanish": "Malugo",
+        "portuguese": "Malugo",
+        "count": 1
+      },
+      {
+        "english": "Manana",
+        "spanish": "Manana",
+        "portuguese": "Manana",
+        "count": 1
+      },
+      {
+        "english": "Mayanda",
+        "spanish": "Mayanda",
+        "portuguese": "Mayanda",
+        "count": 1
+      },
+      {
+        "english": "Ninga",
+        "spanish": "ninga",
+        "portuguese": "ninga",
+        "count": 1
+      },
+      {
+        "english": "Sanga",
+        "spanish": "Sanga",
+        "portuguese": "Sanga",
+        "count": 1
+      },
+      {
+        "english": "Toaguina",
+        "spanish": "Toaguina",
+        "portuguese": "Toaguina",
+        "count": 1
+      },
+      {
+        "english": "Inca",
+        "spanish": "Inga",
+        "portuguese": "Inca",
+        "count": 1
+      },
+      {
+        "english": "Maroon",
+        "spanish": "cimarrón",
+        "portuguese": "quilombola",
+        "count": 1,
+        "flagged": "status-not-ethnicity",
+        "note": "A person who escaped enslavement. A legal/social status, not an ethnolinguistic descriptor."
+      },
+      {
+        "english": "Caste",
+        "spanish": "casta",
+        "portuguese": "casta",
+        "count": 1,
+        "flagged": "generic-placeholder",
+        "note": "Means 'caste'. The scribe naming the category rather than filling it in."
+      },
+      {
+        "english": "Unknown nation",
+        "spanish": "nación no conocida",
+        "portuguese": "nação não conhecida",
+        "count": 1,
+        "flagged": "explicit-null",
+        "note": "An explicit statement that the origin was not known. Semantically a null, not a value."
+      },
+      {
+        "english": "Augustinian",
+        "spanish": "Agustino",
+        "portuguese": "Agostinho",
+        "count": 1,
+        "flagged": "wrong-field",
+        "note": "A religious order. Belongs in titles or occupation."
+      },
+      {
+        "english": "Brown",
+        "spanish": "moreno",
+        "portuguese": "moreno",
+        "count": 9,
+        "flagged": "wrong-field",
+        "note": "Already a PHENOTYPE value. Adding it here means the ethnicity conformance metric can no longer flag a phenotype term landing in the ethnicity field."
+      },
+      {
+        "english": "Parga",
+        "spanish": "Parga",
+        "portuguese": "Parga",
+        "count": 1,
+        "flagged": "likely-surname"
+      },
+      {
+        "english": "Rebollo",
+        "spanish": "Rebollo",
+        "portuguese": "Rebollo",
+        "count": 1,
+        "flagged": "likely-surname"
+      },
+      {
+        "english": "Yanes",
+        "spanish": "Yanes",
+        "portuguese": "Yanes",
+        "count": 1,
+        "flagged": "likely-surname"
+      },
+      {
+        "english": "Monjolo",
+        "spanish": "Monjolo",
+        "portuguese": "Monjolo",
+        "count": 1,
+        "note": "Observed in 701157 (Brazilian Portuguese). A West-Central African ethnonym common in Brazilian registers and absent from the Cuba-weighted source list."
+      },
+      {
+        "english": "Cabra",
+        "spanish": "cabra",
+        "portuguese": "cabra",
+        "count": 16,
+        "note": "Observed 16x in 701157/701179. A casta term (African-Indigenous descent) standard in Brazilian records. Arguably belongs in phenotype rather than ethnicity; flagged for Daniel.",
+        "flagged": "field-uncertain"
+      }
     ],
-
     "variants": {
-      "Carabali": ["Cazabalí", "Casabalí", "Caravali", "Carabaly", "Canabali",
-                   "Canabalí", "Cambali", "Cacú Jabali"],
-      "Congo":    ["Gongo", "Conga (Mina)"],
-      "Lucumi":   ["Lucumí Chacha", "Lucumí, Carabalí, Apapá"],
-      "Cacanga":  ["Casanga"],
-      "Creole":   ["parda criolla"],
-      "Asian":    ["indio asiático"],
-      "African":  ["Africa"],
-      "Inca":     ["Ynga"],
-      "Indigenous": ["indio", "aborigen"]
+      "Carabali": [
+        "Cazabalí",
+        "Casabalí",
+        "Caravali",
+        "Carabaly",
+        "Canabali",
+        "Canabalí",
+        "Cambali",
+        "Cacú Jabali"
+      ],
+      "Congo": [
+        "Gongo",
+        "Conga (Mina)"
+      ],
+      "Lucumi": [
+        "Lucumí Chacha",
+        "Lucumí, Carabalí, Apapá"
+      ],
+      "Cacanga": [
+        "Casanga"
+      ],
+      "Creole": [
+        "parda criolla",
+        "Criolo",
+        "Criola",
+        "Criolos"
+      ],
+      "Asian": [
+        "indio asiático"
+      ],
+      "African": [
+        "Africa"
+      ],
+      "Inca": [
+        "Ynga"
+      ],
+      "Indigenous": [
+        "indio",
+        "aborigen"
+      ],
+      "Monjolo": [
+        "Monjollo",
+        "Monjolos"
+      ]
     },
-
     "variant_notes": {
       "Indigenous": "'indio/india/Yndio/Yndia' in these registers is the source-language surface form of a descriptor already present as Indigenous/Indígena. Evidence: 201991-0279-A-02 'Tomas Yndio natural de Yucatan'. Aliasing keeps one concept in one place; a separate row would split it. 'indio asiático' is deliberately NOT routed here, since it denotes an Asian person.",
       "Carabali": "Eight scribal renderings of Carabalí, 14 instances. Orthographic only.",
-      "Congo": "'Gongo' is a C/G scribal confusion. 'Conga (Mina)' names two affiliations; it resolves to the first."
-    }
+      "Congo": "'Gongo' is a C/G scribal confusion. 'Conga (Mina)' names two affiliations; it resolves to the first.",
+      "Monjolo": "The manuscript spelling in 701157 is 'Monjollo' with a doubled l; the term is conventionally Monjolo. Recording the variant rather than correcting the scribe."
+    },
+    "_brazilian_watchlist": [
+      "NOT added: these are common in Brazilian sacramental registers but do NOT",
+      "occur in any volume we currently hold, so adding them would be inventing",
+      "vocabulary rather than recording it. Revisit if SSDA expands into Brazilian",
+      "material -- 19 of 32 tested Brazilian ethnonyms are missing, which is noise",
+      "across two volumes and systematic across a Brazilian corpus.",
+      "Benguela, Rebolo, Nago/Nagô, Jeje/Gêge, Hausa/Hauçá, Calabar, Cabunda,",
+      "Ganguela, Camunda, Songo, Muxicongo, Curiboca, Cafuzo"
+    ]
   }
 }
