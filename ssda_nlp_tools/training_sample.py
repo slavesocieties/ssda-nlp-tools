@@ -116,10 +116,19 @@ def info_bucket(pair: Dict[str, Any]) -> str:
     hard-by-construction case however rich the other side is, and it is a
     different judgement from two equally sparse mentions.
 
-    Measured on the previous 2,000-pair draw, which had no such axis: 37.9% of
-    pairs had a side with <=1 attribute and only 19 of 2,000 had 5 on both. The
-    rich end -- where a merge is decidable on evidence rather than on a guess --
-    was effectively absent from the material Daniel would have labelled.
+    Measured like for like, scoring both draws with this same function:
+
+        info-rich share    old 2,000-pair draw   1.7%   (34 pairs)
+                           new 1,000-pair draw  12.5%   (125 pairs)
+
+    The rich end -- where a merge is decidable on evidence rather than on a
+    guess -- was nearly absent from the material Daniel would have labelled.
+
+    Careful with a related figure: 37.9% of the old draw had a side carrying at
+    most one attribute, and only 19 of 2,000 had five on BOTH sides. That 19 is
+    a different statistic (a stricter threshold, and it counted `context`), so
+    it is not the before-figure for the 12.5% above. Quoting it as such
+    overstates the improvement by about 13x, which I did once already.
     """
     d = min(info_depth(pair["a"]), info_depth(pair["b"]))
     if d == 0:

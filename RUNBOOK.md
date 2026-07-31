@@ -197,3 +197,55 @@ in this repo carries authentication.
 student inherits the teacher's errors, including the Dezembro-for-Novembro miss
 on 701157-0056. Human-corrected pages are worth more per page than machine ones,
 for measurement as well as training.
+
+## 7. Hand transcriptions: the first real accuracy measurement (2026-07-31)
+
+Daniel: the current pre-summer infrastructure is `slavesocieties/openai`, and it
+carries hand transcriptions in `json/`. Nine volumes, 3,452 entries. Three
+(1795, 15834, 419324) are also in the 232-volume Archivault set.
+
+```bash
+python run_manual_gold.py     # $0, offline, needs ../ssda-openai and ../transcriptions
+```
+
+Result over 335 pages / 421,756 human characters: substitution 6.31%, deletion
+9.06%, insertion 15.27%, median page similarity 0.891. Read the three rates
+SEPARATELY. Insertion is mostly scope (human transcribed entries, machine
+transcribed whole folios with marginalia and stamps), so it is not error.
+Substitution is the quality signal.
+
+**Trap that already cost one wrong set of figures: page alignment DRIFTS.** In
+15834 human pages 30-69 sit at machine offset +0, 70-189 at +1, 190 onward back
+at +0. A constant-offset check reports +0 as globally best, which is true on
+average and wrong for 129 pages, and both texts are well-formed register prose
+so nothing downstream complains. `offset_map` follows the drift using the modal
+offset of NEIGHBOURING pages. Never align a page by its own best score: that
+maximises similarity by construction and inflates every accuracy number.
+
+**Trap: exclude hard failures before averaging.** 12 of these pages contain only
+`[TRANSCRIPTION FAILED: ...]`. Averaging their 100% deletion into an accuracy
+figure measures availability, not quality.
+
+**Corpus-wide finding: 1,281 of 62,320 pages (2.06%) across 184 of 232 volumes
+carry that marker instead of a transcription**, in four variants; 266286 is 34%
+failed. `transcription_integrity.check_page` now catches it exactly (a literal
+tooling marker, so no false positives, unlike the three heuristics that were
+cut). Our delivered corpus is clean: 701157's four are covers/end matter.
+
+## 8. The 1,000-pair labelling set (2026-07-31)
+
+```bash
+python build_training_sample.py --size 1000 --tag daniel1k
+```
+
+444 strata, all covered. Singletons fall 288 (size 600) -> 88 (800) -> 37 (1000)
+and then stay at 37, because those 37 case types occur exactly once in 7.3M
+pairs. So 1,000 is the knee; more budget only deepens cells that already have
+depth. Daniel asked for ~1k and ~1k is right.
+
+`info_bucket` is the axis he asked for and we lacked ("range of pieces of
+identifying information"), bucketed on the POORER side because that bounds the
+decision. Rich pairs went 1.7% -> 12.5% like-for-like. Do NOT quote "19 of
+2,000" as the before-figure; that is a stricter statistic and counted `context`.
+
+The scoring pass is cached (`_reservoir.pkl`, ~506s). `--rescore` to redo.
