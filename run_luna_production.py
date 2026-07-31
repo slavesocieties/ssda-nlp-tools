@@ -16,6 +16,8 @@ import os
 import sys
 import urllib.error
 import urllib.request
+
+from ssda_nlp_tools.spendlock import exclusive
 from pathlib import Path
 
 from ssda_nlp_tools.batch_extract import parse_response
@@ -321,33 +323,48 @@ def main(argv=None):
     key = os.environ.get("OPENAI_API_KEY")
     if not key:
         raise RuntimeError("OPENAI_API_KEY is not set")
-    volume = str(header.get("volume", args.batch_file.stem.split('.')[0]))
-    payload_path = args.outdir / f"{volume}-next.payload.jsonl"
-    payload_path.parent.mkdir(parents=True, exist_ok=True)
-    payload_path.write_text("".join(json.dumps(item, ensure_ascii=False) + "\n" for item in request_lines(header, rows)), encoding="utf-8")
-    # Upload uses multipart; use the standard library rather than retaining a key or SDK state.
-    boundary = "----ssda-luna-batch-boundary"
-    content = payload_path.read_bytes()
-    multipart = (f'--{boundary}\r\nContent-Disposition: form-data; name="purpose"\r\n\r\nbatch\r\n'
-                 f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{payload_path.name}"\r\nContent-Type: application/jsonl\r\n\r\n').encode() + content + f"\r\n--{boundary}--\r\n".encode()
-    upload_req = urllib.request.Request("https://api.openai.com/v1/files", data=multipart, method="POST",
-        headers={"Authorization": f"Bearer {key}", "Content-Type": f"multipart/form-data; boundary={boundary}"})
-    with urllib.request.urlopen(upload_req, timeout=120) as reply:
-        uploaded = json.loads(reply.read().decode("utf-8"))
-    created = api(key, "POST", "https://api.openai.com/v1/batches", json.dumps({
-        "input_file_id": uploaded["id"], "endpoint": "/v1/chat/completions", "completion_window": "24h"}).encode())
-    receipt = {"job_id": created["id"], "input_file_id": uploaded["id"], "volume": volume,
-               "request_count": len(rows), "expected_custom_ids": [r["custom_id"] for r in rows],
-               "reserved_usd": reservation, "status": "submitted"}
-    if args.run_id:
-        receipt["run_id"] = args.run_id
-        receipt["source_custom_ids"] = {row["custom_id"]: source_custom_ids[row["custom_id"]]
-                                        for row in rows}
-    ledger["reserved_usd"] = round(float(ledger.get("reserved_usd", 0)) + reservation, 7)
-    ledger.setdefault("jobs", []).append(receipt)
-    write_json(args.outdir / f"{created['id']}.receipt.json", receipt)
-    write_json(ledger_path, ledger)
-    print(f"SUBMITTED {created['id']}: {len(rows)} requests, reservation ${reservation:.2f}")
+    # Everything that spends or mutates the ledger runs under an exclusive lock
+    # on a FRESH read. The cap check above is only a preview: the ledger was
+    # loaded at startup and a network upload plus batch creation sit between
+    # there and here. Two runs launched in two terminals would each pass the
+    # preview, both submit, and the second write would discard the first's
+    # reservation -- measured at $6 authorised against a $4 cap with the ledger
+    # reporting $3. The lock is held across the upload deliberately: serialising
+    # human-initiated submissions is the desired behaviour, not a cost.
+    with exclusive(ledger_path, timeout=900):
+        ledger = load_ledger(ledger_path, args.cap_usd)
+        remaining = args.cap_usd - float(ledger.get("confirmed_usd", 0)) - float(ledger.get("reserved_usd", 0))
+        if reservation > remaining + 1e-9:
+            print(f"REFUSING: another run reserved while this one prepared; "
+                  f"${remaining:.6f} remains against a ${reservation:.2f} reservation.")
+            return 2
+        volume = str(header.get("volume", args.batch_file.stem.split('.')[0]))
+        payload_path = args.outdir / f"{volume}-next.payload.jsonl"
+        payload_path.parent.mkdir(parents=True, exist_ok=True)
+        payload_path.write_text("".join(json.dumps(item, ensure_ascii=False) + "\n" for item in request_lines(header, rows)), encoding="utf-8")
+        # Upload uses multipart; use the standard library rather than retaining a key or SDK state.
+        boundary = "----ssda-luna-batch-boundary"
+        content = payload_path.read_bytes()
+        multipart = (f'--{boundary}\r\nContent-Disposition: form-data; name="purpose"\r\n\r\nbatch\r\n'
+                     f'--{boundary}\r\nContent-Disposition: form-data; name="file"; filename="{payload_path.name}"\r\nContent-Type: application/jsonl\r\n\r\n').encode() + content + f"\r\n--{boundary}--\r\n".encode()
+        upload_req = urllib.request.Request("https://api.openai.com/v1/files", data=multipart, method="POST",
+            headers={"Authorization": f"Bearer {key}", "Content-Type": f"multipart/form-data; boundary={boundary}"})
+        with urllib.request.urlopen(upload_req, timeout=120) as reply:
+            uploaded = json.loads(reply.read().decode("utf-8"))
+        created = api(key, "POST", "https://api.openai.com/v1/batches", json.dumps({
+            "input_file_id": uploaded["id"], "endpoint": "/v1/chat/completions", "completion_window": "24h"}).encode())
+        receipt = {"job_id": created["id"], "input_file_id": uploaded["id"], "volume": volume,
+                   "request_count": len(rows), "expected_custom_ids": [r["custom_id"] for r in rows],
+                   "reserved_usd": reservation, "status": "submitted"}
+        if args.run_id:
+            receipt["run_id"] = args.run_id
+            receipt["source_custom_ids"] = {row["custom_id"]: source_custom_ids[row["custom_id"]]
+                                            for row in rows}
+        ledger["reserved_usd"] = round(float(ledger.get("reserved_usd", 0)) + reservation, 7)
+        ledger.setdefault("jobs", []).append(receipt)
+        write_json(args.outdir / f"{created['id']}.receipt.json", receipt)
+        write_json(ledger_path, ledger)
+        print(f"SUBMITTED {created['id']}: {len(rows)} requests, reservation ${reservation:.2f}")
     return 0
 
 

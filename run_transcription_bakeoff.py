@@ -41,6 +41,7 @@ import shutil
 import sys
 from pathlib import Path
 
+from ssda_nlp_tools.spendlock import exclusive
 from ssda_nlp_tools.transcription_bakeoff import (compare, divergent_pages,
                                                   score_transcription)
 
@@ -90,17 +91,21 @@ def _reserve_probe(args, source_label: str) -> None:
     if args.reservation_usd <= 0 or args.max_usd <= 0:
         raise ValueError("--reservation-usd and --max-usd must both be positive")
     ledger_path = Path(args.ledger)
-    ledger = _read_probe_ledger(ledger_path, args.max_usd)
-    committed = float(ledger["confirmed_usd"]) + float(ledger["reserved_usd"])
-    if committed + args.reservation_usd > args.max_usd + 1e-9:
-        raise ValueError(
-            f"REFUSING: ${args.reservation_usd:.2f} reservation would exceed the "
-            f"${args.max_usd:.2f} hard cap; ${args.max_usd - committed:.2f} remains")
-    ledger["reserved_usd"] = round(float(ledger["reserved_usd"]) + args.reservation_usd, 7)
-    ledger["reservations"].append({"model": args.model, "source": source_label,
-                                   "reserved_usd": args.reservation_usd,
-                                   "status": "submitted_billing_pending"})
-    _write_probe_ledger(ledger_path, ledger)
+    # The lock MUST span the read and the write. Guarding only the write still
+    # lets two processes read the same balance and both clear the cap check,
+    # which is the actual race: measured $6 authorised against a $4 cap.
+    with exclusive(ledger_path):
+        ledger = _read_probe_ledger(ledger_path, args.max_usd)
+        committed = float(ledger["confirmed_usd"]) + float(ledger["reserved_usd"])
+        if committed + args.reservation_usd > args.max_usd + 1e-9:
+            raise ValueError(
+                f"REFUSING: ${args.reservation_usd:.2f} reservation would exceed the "
+                f"${args.max_usd:.2f} hard cap; ${args.max_usd - committed:.2f} remains")
+        ledger["reserved_usd"] = round(float(ledger["reserved_usd"]) + args.reservation_usd, 7)
+        ledger["reservations"].append({"model": args.model, "source": source_label,
+                                       "reserved_usd": args.reservation_usd,
+                                       "status": "submitted_billing_pending"})
+        _write_probe_ledger(ledger_path, ledger)
 
 
 def cmd_probe(args):
