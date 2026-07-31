@@ -92,14 +92,75 @@ def signal_of(reasons: Iterable[str]) -> str:
     return "name-only"
 
 
+# Fields that identify a *person* rather than describe the ceremony. `context`
+# is deliberately excluded: it holds relation strings like "godchild: catalina
+# benigna", which are already the `signal` axis, and counting them here would
+# make an axis that duplicates another one.
+_IDENTIFYING = ("age", "phenotype", "free", "titles", "occupation",
+                "ethnicity", "legitimate", "origin")
+
+
+def info_depth(side: Dict[str, Any]) -> int:
+    """How many identifying attributes this person mention actually carries."""
+    detail = side.get("detail") or {}
+    return sum(1 for k in _IDENTIFYING
+               if detail.get(k) not in (None, "", [], {}, ()))
+
+
+def info_bucket(pair: Dict[str, Any]) -> str:
+    """Daniel, 2026-07-31: the sample should span "a range of pieces of
+    identifying information".
+
+    Bucketed on the POORER of the two sides, because that is what bounds the
+    decision. A pair joining a fully described woman to a bare name is a
+    hard-by-construction case however rich the other side is, and it is a
+    different judgement from two equally sparse mentions.
+
+    Measured on the previous 2,000-pair draw, which had no such axis: 37.9% of
+    pairs had a side with <=1 attribute and only 19 of 2,000 had 5 on both. The
+    rich end -- where a merge is decidable on evidence rather than on a guess --
+    was effectively absent from the material Daniel would have labelled.
+    """
+    d = min(info_depth(pair["a"]), info_depth(pair["b"]))
+    if d == 0:
+        return "info-none"
+    if d == 1:
+        return "info-thin"
+    if d <= 3:
+        return "info-fair"
+    return "info-rich"
+
+
+def coarse_disposition(disposition: Optional[str]) -> str:
+    """Collapse the 10 dispositions to 4 outcomes.
+
+    Every `blocked-surname-tier-*` value is recoverable from the surname axis
+    plus "blocked", so keeping them separate multiplies the strata without
+    adding a distinct case type -- and strata are the budget here. This is what
+    pays for the info axis: 10 dispositions x 1 info bucket becomes 4 x 4.
+    """
+    d = str(disposition or "?")
+    return "blocked" if d.startswith("blocked") else d
+
+
+# Named, in key order. Positional `split("|")[2]` indexing is how the label
+# mix-up happened in the review UI; the axis names are the contract now.
+STRATUM_AXES = ("band", "disposition", "surname", "scope", "signal", "info")
+
+
+def parse_stratum(key: str) -> Dict[str, str]:
+    return dict(zip(STRATUM_AXES, key.split("|")))
+
+
 def stratum_of(pair: Dict[str, Any]) -> str:
     a, b = pair["a"], pair["b"]
     return "|".join((
         band_of(pair["score"]),
-        pair.get("disposition", "?"),
+        coarse_disposition(pair.get("disposition")),
         surname_relation(a.get("name"), b.get("name")),
         "same-vol" if volume_of(a["entry"]) == volume_of(b["entry"]) else "cross-vol",
         signal_of(pair.get("reasons")),
+        info_bucket(pair),
     ))
 
 
@@ -175,20 +236,32 @@ class StratifiedReservoir:
 
     def coverage(self, drawn: List[dict]) -> Dict[str, Any]:
         got = Counter(p["stratum"] for p in drawn)
+        axes = {axis: dict(Counter(parse_stratum(p["stratum"])[axis] for p in drawn))
+                for axis in STRATUM_AXES}
+        # Depth matters as well as breadth: a stratum labelled once teaches the
+        # model its location but nothing about how noisy that judgement is.
+        depths = Counter(got.values())
         return {
             "pairs_scored": self.total,
             "strata_present": len(self.cells),
             "strata_represented": len(got),
             "strata_missed": sorted(set(self.cells) - set(got)),
             "sampled": len(drawn),
-            "by_band": dict(Counter(band_of(p["score"]) for p in drawn)),
+            "singleton_strata": sum(1 for v in got.values() if v == 1),
+            "depth_histogram": dict(sorted(depths.items())),
+            "by_axis": axes,
+            # kept for the existing report and any downstream reader
+            "by_band": axes["band"],
             "by_disposition": dict(Counter(p.get("disposition") for p in drawn)),
-            "by_surname_relation": dict(Counter(p["stratum"].split("|")[2] for p in drawn)),
-            "by_scope": dict(Counter(p["stratum"].split("|")[3] for p in drawn)),
-            "by_signal": dict(Counter(p["stratum"].split("|")[4] for p in drawn)),
-            "population_by_band": {
-                b: sum(c for k, c in self.seen.items() if k.split("|")[0] == b)
-                for b in {k.split("|")[0] for k in self.seen}},
+            "by_surname_relation": axes["surname"],
+            "by_scope": axes["scope"],
+            "by_signal": axes["signal"],
+            "by_info": axes["info"],
+            "population_by_axis": {
+                axis: {v: sum(c for k, c in self.seen.items()
+                              if parse_stratum(k)[axis] == v)
+                       for v in {parse_stratum(k)[axis] for k in self.seen}}
+                for axis in STRATUM_AXES},
         }
 
 

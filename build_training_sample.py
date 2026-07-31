@@ -20,11 +20,13 @@ character and the large one can be generated later without rescoring.
 import argparse
 import json
 import os
+import pickle
 import time
 
 from ssda_nlp_tools.disambiguate import disambiguate_volume
 from ssda_nlp_tools.likelihood_review_html import render_likelihood_review_html
-from ssda_nlp_tools.training_sample import StratifiedReservoir, attach_entry_text
+from ssda_nlp_tools.training_sample import (STRATUM_AXES, StratifiedReservoir,
+                                            attach_entry_text)
 
 
 def load_corpus(paths):
@@ -55,6 +57,8 @@ def main(argv=None):
     ap.add_argument("--floor", type=float, default=0.30,
                     help="do not even log pairs below this score")
     ap.add_argument("--seed", type=int, default=20260729)
+    ap.add_argument("--rescore", action="store_true",
+                    help="ignore the cached scoring pass and redo it")
     ap.add_argument("--html-limit", type=int, default=2500)
     ap.add_argument("--no-text", action="store_true",
                     help="omit register text (much smaller, much less reviewable)")
@@ -70,16 +74,36 @@ def main(argv=None):
     volume, texts = load_corpus(paths)
     print(f"{len(paths)} volumes, {len(volume['entries'])} entries")
 
-    res = StratifiedReservoir(per_cell=args.per_cell, seed=args.seed)
-    t0 = time.time()
-    # collect_review=False: the pair log already carries every review item with
-    # its disposition, so materialising the ~1.1M-entry review queue as well is
-    # gigabytes spent to build a list this pass never reads.
-    stats = disambiguate_volume(volume, volume_tag="corpus",
-                                pair_log=res, pair_log_floor=args.floor,
-                                collect_review=False)["stats"]
-    print(f"scored {res.total:,} pairs (>= {args.floor}) in {time.time()-t0:.0f}s; "
-          f"{len(res.cells)} strata")
+    # Scoring 7.3M pairs takes ~8.5 minutes and does not depend on --size, so a
+    # size sweep would otherwise pay for it repeatedly. The cache key includes
+    # every input that changes what gets scored; --size is deliberately not one.
+    cache = os.path.join(args.outdir, "_reservoir.pkl")
+    key = {"paths": paths, "floor": args.floor, "seed": args.seed,
+           "per_cell": args.per_cell, "axes": list(STRATUM_AXES)}
+    res = stats = None
+    if os.path.exists(cache) and not args.rescore:
+        with open(cache, "rb") as f:
+            blob = pickle.load(f)
+        if blob.get("key") == key:
+            res, stats = blob["res"], blob["stats"]
+            print(f"reusing cached scoring: {res.total:,} pairs, "
+                  f"{len(res.cells)} strata  (--rescore to redo)")
+        else:
+            print("cache is stale (inputs changed); rescoring")
+
+    if res is None:
+        res = StratifiedReservoir(per_cell=args.per_cell, seed=args.seed)
+        t0 = time.time()
+        # collect_review=False: the pair log already carries every review item
+        # with its disposition, so materialising the ~1.1M-entry review queue as
+        # well is gigabytes spent to build a list this pass never reads.
+        stats = disambiguate_volume(volume, volume_tag="corpus",
+                                    pair_log=res, pair_log_floor=args.floor,
+                                    collect_review=False)["stats"]
+        print(f"scored {res.total:,} pairs (>= {args.floor}) in "
+              f"{time.time()-t0:.0f}s; {len(res.cells)} strata")
+        with open(cache, "wb") as f:
+            pickle.dump({"key": key, "res": res, "stats": stats}, f)
 
     drawn = res.draw(args.size)
     if not args.no_text:
@@ -99,9 +123,10 @@ def main(argv=None):
                                          limit=args.html_limit)
 
     print(f"\ndrew {len(drawn):,} pairs covering {cov['strata_represented']}"
-          f"/{cov['strata_present']} strata")
-    for k in ("by_band", "by_disposition", "by_surname_relation", "by_scope", "by_signal"):
-        print(f"  {k:22s} {cov[k]}")
+          f"/{cov['strata_present']} strata "
+          f"({cov['singleton_strata']} seen only once)")
+    for axis, counts in cov["by_axis"].items():
+        print(f"  {axis:14s} {counts}")
     if len(drawn) > args.html_limit:
         print(f"  NOTE: page shows the top {args.html_limit:,} by score; "
               f"the JSON holds all {len(drawn):,}")
