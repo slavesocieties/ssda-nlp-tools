@@ -123,10 +123,24 @@ def main(argv=None):
             human_starts[pid] += 1
 
         seg = segment_volume(pages)
-        # Segmenter entry starts per folio. A leading fragment continuing from
-        # the previous page is not a start, which is why per_image entries are
-        # used rather than the merged volume list.
-        pred_starts = {pg["image"]: len(pg.get("entries") or [])
+        # Records VISIBLE on the folio, which is the human convention -- and
+        # getting this wrong is what produced the first version of this report.
+        #
+        # `pg["entries"]` excludes the leading fragment, because a record
+        # continuing from the previous folio did not START here. That is correct
+        # for the segmenter and wrong as a comparison, because the transcribers
+        # number every record they can see on the folio: 15834's `0034-01` reads
+        # "Abril de mil sietec.tos y diez, y nueve o Thmas de vera bapizo",
+        # opening mid-date, and `0042-01` opens ": Joseph esc.o de Pedro Hern.z".
+        # Both are continuations and both are numbered -01.
+        #
+        # Counting starts against their visible-records therefore subtracted one
+        # from every folio carrying a continuation, which is most of them. It
+        # showed up as 88% of under-by-1 folios having a leading fragment against
+        # 18% of exact matches -- and only 11 of those 172 fragments contained a
+        # date, so they were genuine continuations rather than missed openers.
+        pred_starts = {pg["image"]: (len(pg.get("entries") or [])
+                                     + bool(pg.get("leading_fragment")))
                        for pg in seg.get("per_image") or []}
 
         rows, exact, off_by_one, hsum, psum = [], 0, 0, 0, 0
