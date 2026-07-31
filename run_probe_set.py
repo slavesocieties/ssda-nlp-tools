@@ -10,6 +10,9 @@ output for that exact page rather than a fresh run that might differ from it.
 That halves the paid calls and removes a confound.
 
 Without --confirm this prints the plan and exits, having touched no network.
+With --confirm, an explicit per-page reservation and persistent hard-cap ledger
+are required; submitted upstream requests remain reserved until authoritative
+billing evidence is reconciled.
 
 Page selection (production/bakeoff/probe_set.json) spans the difficulty range
 deliberately -- 1701 to 1907, Portuguese and Spanish, 450 to 2,900 characters of
@@ -62,6 +65,11 @@ def main(argv=None):
     ap.add_argument("--email", required=True)
     ap.add_argument("--model", default="gpt-5.6-luna")
     ap.add_argument("--archivault", default=r"C:/Users/mahajar/Downloads/ssda-archivault")
+    ap.add_argument("--reservation-usd", type=float,
+                    help="conservative USD reservation per submitted Luna page")
+    ap.add_argument("--max-usd", type=float,
+                    help="hard cumulative USD cap for all pages in --ledger")
+    ap.add_argument("--ledger", default="production/bakeoff/transcription_spend_ledger.json")
     ap.add_argument("--confirm", action="store_true")
     args = ap.parse_args(argv)
 
@@ -84,6 +92,15 @@ def main(argv=None):
     if not os.environ.get("ARCHIVAULT_PASSWORD"):
         sys.exit("set ARCHIVAULT_PASSWORD first; this script never takes it "
                  "on the command line.")
+    if args.reservation_usd is None or args.max_usd is None:
+        sys.exit("--confirm requires --reservation-usd and --max-usd; no upstream "
+                 "transcription job may bypass a hard spend cap.")
+    if args.reservation_usd <= 0 or args.max_usd <= 0:
+        sys.exit("--reservation-usd and --max-usd must both be positive.")
+    total_reservation = len(pages) * args.reservation_usd
+    if total_reservation > args.max_usd + 1e-9:
+        sys.exit(f"REFUSING: four-page reservation ${total_reservation:.2f} exceeds "
+                 f"the ${args.max_usd:.2f} cap.")
 
     py = sys.executable
     for p in pages:
@@ -100,7 +117,10 @@ def main(argv=None):
                             "--archivault", args.archivault,
                             "--email", args.email, "--model", args.model,
                             "--local-image", str(IMAGES / p["file"]),
-                            "--outdir", str(pdir / "luna"), "--confirm"],
+                            "--outdir", str(pdir / "luna"),
+                            "--reservation-usd", str(args.reservation_usd),
+                            "--max-usd", str(args.max_usd), "--ledger", args.ledger,
+                            "--confirm"],
                            env=dict(os.environ))
         if r.returncode:
             print(f"  probe failed for {p['file']}; continuing with the rest")

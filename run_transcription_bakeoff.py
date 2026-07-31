@@ -48,6 +48,61 @@ BASELINE = "gemini-3.1-pro-preview"      # what every production script hardcode
 CANDIDATE = "gpt-5.6-luna"
 
 
+def _read_probe_ledger(path: Path, cap_usd: float) -> dict:
+    """Read a conservative local reservation ledger for upstream jobs.
+
+    Archivault currently exposes a credit balance rather than per-job USD
+    usage, so a submitted reservation cannot be automatically settled.  That
+    is intentional: an unknown charge must remain held until a human records
+    authoritative billing evidence.
+    """
+    if not path.exists():
+        return {"cap_usd": cap_usd, "confirmed_usd": 0.0,
+                "reserved_usd": 0.0, "reservations": []}
+    try:
+        ledger = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise RuntimeError(f"Cannot safely read transcription spend ledger {path}: {exc}") from exc
+    required = {"cap_usd", "confirmed_usd", "reserved_usd", "reservations"}
+    if not isinstance(ledger, dict) or not required.issubset(ledger):
+        raise RuntimeError(f"Transcription spend ledger {path} has an invalid format.")
+    if float(ledger["cap_usd"]) != cap_usd:
+        raise RuntimeError(
+            f"Transcription spend ledger cap is ${float(ledger['cap_usd']):.2f}, "
+            f"not the requested ${cap_usd:.2f}. Start a new explicitly named ledger "
+            "rather than silently changing a cap.")
+    return ledger
+
+
+def _write_probe_ledger(path: Path, ledger: dict) -> None:
+    """Atomically persist the reservation before an upstream request is sent."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(ledger, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(path)
+
+
+def _reserve_probe(args, source_label: str) -> None:
+    if args.reservation_usd is None or args.max_usd is None:
+        raise ValueError(
+            "--confirm requires both --reservation-usd and --max-usd; "
+            "upstream transcription has no automatic price reconciliation")
+    if args.reservation_usd <= 0 or args.max_usd <= 0:
+        raise ValueError("--reservation-usd and --max-usd must both be positive")
+    ledger_path = Path(args.ledger)
+    ledger = _read_probe_ledger(ledger_path, args.max_usd)
+    committed = float(ledger["confirmed_usd"]) + float(ledger["reserved_usd"])
+    if committed + args.reservation_usd > args.max_usd + 1e-9:
+        raise ValueError(
+            f"REFUSING: ${args.reservation_usd:.2f} reservation would exceed the "
+            f"${args.max_usd:.2f} hard cap; ${args.max_usd - committed:.2f} remains")
+    ledger["reserved_usd"] = round(float(ledger["reserved_usd"]) + args.reservation_usd, 7)
+    ledger["reservations"].append({"model": args.model, "source": source_label,
+                                   "reserved_usd": args.reservation_usd,
+                                   "status": "submitted_billing_pending"})
+    _write_probe_ledger(ledger_path, ledger)
+
+
 def cmd_probe(args):
     """One page, one model, through Archivault without exposing its password."""
     submit = Path(args.archivault) / "submit_job.py"
@@ -101,6 +156,11 @@ def cmd_probe(args):
         sys.exit("the selected Python interpreter lacks Archivault's `requests` "
                  "dependency; use an interpreter with requests installed. No "
                  "network call was made.")
+    try:
+        _reserve_probe(args, image.name if not args.keys_file else "one S3 key")
+    except ValueError as exc:
+        print(exc)
+        return 2
     # Archivault's CLI requires --password.  Run it in this process and only
     # append the secret to its *in-memory* argv after process start: neither a
     # shell history nor an OS process listing can contain it.
@@ -301,6 +361,12 @@ def main(argv=None):
     source.add_argument("--local-image", help="one verified local source image")
     p.add_argument("--language", default="spanish")
     p.add_argument("--outdir", default="production/bakeoff/probe")
+    p.add_argument("--reservation-usd", type=float,
+                   help="conservative USD hold for this upstream job; required with --confirm")
+    p.add_argument("--max-usd", type=float,
+                   help="hard cumulative USD cap for --ledger; required with --confirm")
+    p.add_argument("--ledger", default="production/bakeoff/transcription_spend_ledger.json",
+                   help="persistent upstream-transcription reservation ledger")
     p.add_argument("--confirm", action="store_true")
     p.set_defaults(func=cmd_probe)
 

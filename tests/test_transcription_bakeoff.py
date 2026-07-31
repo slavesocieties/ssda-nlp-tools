@@ -141,6 +141,37 @@ def test_paid_dry_runs_need_no_credentials_and_never_print_inputs(tmp_path, monk
     assert "one S3 key" in printed
 
 
+def test_confirmed_probe_requires_a_persistent_hard_cap(tmp_path, monkeypatch, capsys):
+    """A prior one-page probe is not a precedent for uncapped upstream spend."""
+    (tmp_path / "submit_job.py").write_text("# placeholder\n", encoding="utf-8")
+    image = tmp_path / "page.jpg"; image.write_bytes(b"one page")
+    monkeypatch.setenv("ARCHIVAULT_PASSWORD", "process-only-test-secret")
+    assert bakeoff_main(["probe", "--archivault", str(tmp_path),
+                         "--email", "test@example.org", "--local-image", str(image),
+                         "--outdir", str(tmp_path / "out"), "--confirm"]) == 2
+    assert "requires both --reservation-usd and --max-usd" in capsys.readouterr().out
+
+
+def test_confirmed_probe_reserves_before_running_and_never_exceeds_cap(
+        tmp_path, monkeypatch):
+    """Unknown Archivault billing remains held, so a rerun cannot overspend."""
+    import run_transcription_bakeoff as runner
+    (tmp_path / "submit_job.py").write_text("# placeholder\n", encoding="utf-8")
+    image = tmp_path / "page.jpg"; image.write_bytes(b"one page")
+    ledger = tmp_path / "ledger.json"
+    monkeypatch.setenv("ARCHIVAULT_PASSWORD", "process-only-test-secret")
+    monkeypatch.setattr(runner.runpy, "run_path", lambda *a, **k: {})
+    args = ["probe", "--archivault", str(tmp_path), "--email", "test@example.org",
+            "--local-image", str(image), "--outdir", str(tmp_path / "out"),
+            "--reservation-usd", "0.03", "--max-usd", "0.05",
+            "--ledger", str(ledger), "--confirm"]
+    assert bakeoff_main(args) == 0
+    saved = json.loads(ledger.read_text(encoding="utf-8"))
+    assert saved["reserved_usd"] == 0.03
+    assert saved["reservations"][0]["status"] == "submitted_billing_pending"
+    assert bakeoff_main(args) == 2
+
+
 def test_judge_refuses_declared_reservation_above_cap(tmp_path):
     images = tmp_path / "images"; images.mkdir()
     (images / "page.jpg").write_bytes(b"not read in dry-run")
