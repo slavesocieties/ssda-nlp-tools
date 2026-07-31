@@ -167,3 +167,33 @@ Daniel's position. The next lever is labelled data, not another rule.
 submit paid jobs with **no `--confirm` guard and no ledger**. They predate the
 guarded runner and are deliberately left untracked. Do not commit them without
 adding the guards first.
+
+## 6. Transcription: what exists, and what is missing (2026-07-31)
+
+Read from source, not assumed. `ssda-htr` **does not transcribe**. `driver.py`
+pulls a page, pools/resizes to 960x1280, runs `layout_analyze` to find blocks
+(= entries, the thing Daniel's masks are ground truth for), deskews each, cuts
+it into LINE images, and PUTs them to a bucket named `ssda-htr-training`. It
+returns a count. No text is produced anywhere in the repo.
+
+So the line-cutting half of an HTR system exists and has been run; the
+recogniser does not exist and the crops appear to be unlabelled. All actual
+transcription is Gemini, whole-page, in the Archivault backend Lambda.
+
+**Blocking fact for any HTR training:** the 232 volumes with transcriptions and
+the 6 volumes whose images we can reach are DISJOINT (`ssda-production-jpgs`
+returns AccessDenied). Usable pairs today are ~1,600, not 62,320. That is an
+access problem, not a data problem.
+
+**SECURITY, reported to Daniel, not ours to fix:** `driver.py` uploads each crop
+with a plain unauthenticated `requests.put` to a public API Gateway URL. No key,
+token or signature anywhere in the repo. If the gateway does not enforce auth,
+that training bucket is writable by anyone who knows the URL, which is a
+data-poisoning surface rather than a mere storage leak. NOT tested from here --
+probing their endpoint is not ours to do. Our side is clean: every outbound call
+in this repo carries authentication.
+
+**Do not train a recogniser on Gemini output and expect to beat Gemini.** The
+student inherits the teacher's errors, including the Dezembro-for-Novembro miss
+on 701157-0056. Human-corrected pages are worth more per page than machine ones,
+for measurement as well as training.
