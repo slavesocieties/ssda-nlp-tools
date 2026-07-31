@@ -4,6 +4,7 @@ Covers the surname tiering (his Llopiz ruling), the stratified training sample,
 and the 0/25/50/75/100 labelling page.
 """
 import json
+import re
 
 import pytest
 
@@ -400,3 +401,32 @@ def test_only_a_plain_auto_counts_as_the_algorithm_having_merged():
     for d in ("review", "below-threshold", "blocked-sacrament-principal",
               "blocked-cluster-surname", "blocked-surname-tier-near"):
         assert not al.merged_by_algorithm(d), d
+
+
+def test_labels_are_keyed_by_pair_identity_not_array_position():
+    """The sample was regenerated twice in one day. Under position-keyed
+    storage a reviewer who had labelled the earlier build would reopen the new
+    one to find it apparently pre-filled, every answer silently attached to a
+    different pair."""
+    import tempfile, os
+    a = [_pair(0.9, a="Ana", ea="E1"), _pair(0.8, a="Bea", ea="E2")]
+    b = [_pair(0.8, a="Bea", ea="E2"), _pair(0.9, a="Ana", ea="E1")]   # reordered
+    d = tempfile.mkdtemp()
+    fa, fb = os.path.join(d, "a.html"), os.path.join(d, "b.html")
+    render_likelihood_review_html(a, fa, tag="core")
+    render_likelihood_review_html(b, fb, tag="core")
+    ha, hb = open(fa, encoding="utf-8").read(), open(fb, encoding="utf-8").read()
+    fp = lambda h: re.search(r'FINGERPRINT = "([0-9a-f]+)"', h).group(1)
+    assert fp(ha) == fp(hb)          # same pairs, order irrelevant -> resumable
+    assert "pairKey" in ha and "labels[pairKey(" in ha
+
+
+def test_a_different_sample_cannot_inherit_the_previous_labels():
+    import tempfile, os
+    d = tempfile.mkdtemp()
+    one = os.path.join(d, "1.html"); two = os.path.join(d, "2.html")
+    render_likelihood_review_html([_pair(0.9, ea="E1")], one, tag="core")
+    render_likelihood_review_html([_pair(0.9, ea="E9")], two, tag="core")
+    fp = lambda p: re.search(r'FINGERPRINT = "([0-9a-f]+)"',
+                             open(p, encoding="utf-8").read()).group(1)
+    assert fp(one) != fp(two)        # different pairs -> different storage key

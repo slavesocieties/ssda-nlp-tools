@@ -16,6 +16,7 @@ a closed tab does not lose a session's work.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from typing import Any, Dict, List
 
@@ -66,8 +67,16 @@ for reference only &mdash; it is one of the things being tested, so please judge
 the pair on the record, not on the score.</p>
 <div id=list></div>
 <script>
-const PAIRS = __DATA__, LEVELS = __LEVELS__, TAG = __TAG__;
-const KEY = "ssda-labels-" + TAG;
+const PAIRS = __DATA__, LEVELS = __LEVELS__, TAG = __TAG__, FINGERPRINT = __FP__;
+// Storage is keyed by PAIR IDENTITY and by a fingerprint of the dataset, not
+// by array position under a bare tag. Position-keyed storage silently
+// mis-attributes: this sample was regenerated twice in one day, and a reviewer
+// who had labelled the earlier build would have reopened the new one to find it
+// apparently pre-filled, with every answer attached to a different pair. The
+// fingerprint means a different dataset simply starts clean instead of
+// colliding.
+const KEY = "ssda-labels-" + TAG + "-" + FINGERPRINT;
+const pairKey = p => [p.a.entry, p.a.id, p.b.entry, p.b.id].join("|");
 // localStorage is not guaranteed on a file:// origin -- Safari refuses it
 // outright and Chrome can be configured to. An unguarded read here is a
 // top-level statement, so it would throw before a single card rendered and the
@@ -123,14 +132,15 @@ function card(p, i) {
   return d;
 }
 function label(i, v) {
-  if (v === null) delete labels[i]; else labels[i] = v;
+  const k = pairKey(PAIRS[i]);
+  if (v === null) delete labels[k]; else labels[k] = v;
   saveLabels();
   paint(i);
   if (v !== null) { cursor = Math.min(i + 1, PAIRS.length - 1); focus(); }
 }
 function paint(i) {
   const d = document.getElementById("p" + i);
-  const v = labels[i];
+  const v = labels[pairKey(PAIRS[i])];
   const colour = v === undefined ? "" : (LEVELS.find(l => l[0] === v) || [])[3];
   d.style.borderLeftColor = colour || "";
   d.querySelectorAll("button").forEach(b => {
@@ -166,7 +176,7 @@ document.getElementById("dl").onclick = () => {
       names: [p.a.name, p.b.name], score: p.score,
       disposition: p.disposition || null, stratum: p.stratum || null,
       weight: p.weight === undefined ? null : p.weight,
-      likelihood: labels[i] === undefined ? null : labels[i]}))};
+      likelihood: labels[pairKey(p)] === undefined ? null : labels[pairKey(p)]}))};
   const blob = new Blob([JSON.stringify(out, null, 2)], {type: "application/json"});
   const a = document.createElement("a");
   a.href = URL.createObjectURL(blob); a.download = "labels.json"; a.click();
@@ -180,11 +190,20 @@ def render_likelihood_review_html(pairs: List[Dict[str, Any]], out_path: str,
     out at 230 MB and no browser opens that, so truncation is explicit and the
     highest-scoring work goes first rather than being silently dropped."""
     ordered = sorted(pairs, key=lambda p: -p.get("score", 0))[:limit]
+    # Fingerprint of WHICH pairs are present: stable under reordering, different
+    # the moment the sample changes. It goes into the localStorage key so a
+    # regenerated sample starts clean instead of inheriting labels that were
+    # given for different pairs at the same positions.
+    ident = sorted("|".join((str(p["a"]["entry"]), str(p["a"]["id"]),
+                             str(p["b"]["entry"]), str(p["b"]["id"])))
+                   for p in ordered)
+    fingerprint = hashlib.sha256("\n".join(ident).encode("utf-8")).hexdigest()[:12]
     # <-escape so no data value can close the script block or inject markup
     enc = lambda o: json.dumps(o, ensure_ascii=False).replace("<", "\\u003c")
     page = (_PAGE.replace("__DATA__", enc(ordered))
                  .replace("__LEVELS__", enc([list(l) for l in LEVELS]))
-                 .replace("__TAG__", enc(tag)))
+                 .replace("__TAG__", enc(tag))
+                 .replace("__FP__", enc(fingerprint)))
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(page)
     return out_path
