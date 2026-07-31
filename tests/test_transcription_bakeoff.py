@@ -150,3 +150,29 @@ def test_judge_refuses_declared_reservation_above_cap(tmp_path):
     assert bakeoff_main(["judge", str(divergent), "--images", str(images),
                          "--model", "test-model", "--reservation-per-page", "0.05",
                          "--max-usd", "0.04"]) == 2
+
+
+def test_repair_burden_measures_what_the_extractor_had_to_fix():
+    """The most direct evidence that transcription quality reaches the end of
+    the pipeline: the gap between the faithful text handed to the extractor and
+    the normalised text it returns. Baseline on the delivered corpus is 0.909
+    median with 11.2% heavily rewritten."""
+    from ssda_nlp_tools.transcription_bakeoff import repair_burden
+    clean = {"entries": [{"text_faithful": t, "normalized": t} for t in GOOD]}
+    assert repair_burden(clean)["median_similarity"] == 1.0
+    assert repair_burden(clean)["heavily_rewritten"] == 0
+
+    repaired = {"entries": [{"text_faithful": a, "normalized": b}
+                            for a, b in zip(MANGLED, GOOD)]}
+    r = repair_burden(repaired)
+    assert r["median_similarity"] < 1.0
+    assert r["entries_compared"] == len(GOOD)
+
+
+def test_repair_burden_ignores_entries_too_short_to_score():
+    """A 20-character fragment produces an unstable ratio; counting it would
+    make the metric noisy in exactly the volumes with the worst transcription."""
+    from ssda_nlp_tools.transcription_bakeoff import repair_burden
+    vol = {"entries": [{"text_faithful": "corto", "normalized": "corto"}]}
+    assert repair_burden(vol)["entries_compared"] == 0
+    assert repair_burden(vol)["median_similarity"] is None
