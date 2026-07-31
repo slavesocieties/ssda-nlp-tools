@@ -102,3 +102,39 @@ def test_raw_provider_output_is_never_assembled(tmp_path):
     (tmp_path / "unvalidated.output.jsonl").write_text(
         json.dumps(_resp_row("701054-b0000", good)), encoding="utf-8")
     assert mod.read_rows_by_volume(tmp_path)["701054"]["valid"] == {}
+
+
+def test_a_new_volume_is_not_silently_discarded():
+    """The volume list was hardcoded to the original five. 701157 and 701179 were
+    submitted and billed before anyone noticed that `_volume_of` returned None
+    for them and `read_rows_by_volume` skips a None volume without a word -- an
+    entire paid extraction would have vanished at assembly with no error."""
+    v = _module()._volume_of
+    assert v("701157-b0000") == "701157"
+    assert v("701179-b0069") == "701179"
+    assert v("v3-176899-b0000") == "176899"          # run-id prefix
+    assert v("176899-repair-0013-B-04") == "176899"  # repair carrying an entry id
+    assert v("run2026-176899-b0000") == "176899"     # digits in the run id lose
+
+
+def test_unmappable_paid_responses_are_reported_not_dropped(tmp_path, capsys):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "701157-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    rows = [_resp_row("701157-b0000", good), _resp_row("totally-unparseable", good)]
+    (tmp_path / "j.accepted.jsonl").write_text(
+        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
+    by = mod.read_rows_by_volume(tmp_path)
+    assert set(by["701157"]["valid"]) == {"701157-0001-01"}     # new volume assembled
+    err = capsys.readouterr().err
+    assert "could not be mapped" in err and "totally-unparseable" in err
+
+
+def test_vocabtest_is_a_deliberate_none_and_not_warned_about(tmp_path, capsys):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    (tmp_path / "j.accepted.jsonl").write_text(
+        json.dumps(_resp_row("701054-vocabtest-b0000", good)), encoding="utf-8")
+    mod.read_rows_by_volume(tmp_path)
+    assert "could not be mapped" not in capsys.readouterr().err

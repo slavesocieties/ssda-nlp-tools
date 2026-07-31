@@ -23,12 +23,26 @@ import argparse
 import glob
 import json
 import re
+import sys
 from pathlib import Path
 
 from ssda_nlp_tools.batch_extract import parse_response
 
+# The five volumes of the original delivery. Kept only as a default for
+# reporting; volume detection is NO LONGER limited to this list.
 VOLUMES = ["176899", "201991", "29597", "375062", "701054"]
-_VOL_RE = re.compile(r"(" + "|".join(VOLUMES) + r")")
+
+# A volume id is a 4-7 digit run followed by the request suffix. The lookahead
+# is what makes this safe against run-id prefixes: in `v3-176899-b0000` the
+# leading `3` is too short to match, and in a hypothetical `run2026-176899-b0`
+# the `2026` is not followed by `-b`/`-repair`, so only the real volume wins.
+#
+# This replaced a hardcoded whitelist of the five delivered volumes. That
+# whitelist silently returned None for 701157 and 701179 -- both already
+# submitted and paid for -- and `read_rows_by_volume` skips a None volume
+# without a word, so an entire extraction would have vanished at assembly with
+# no error to explain it.
+_VOL_RE = re.compile(r"(\d{4,7})-(?=b\d|repair\b)")
 
 
 def _volume_of(custom_id: str):
@@ -61,7 +75,14 @@ def apply_delivery_convention(entries, keep_partials: bool):
 
 def read_rows_by_volume(live: Path):
     """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
+    # Seeded with the original five so existing callers still find their keys,
+    # but ANY volume present in the data is added. The previous version could
+    # only ever see the five, and skipped the rest without a word.
     by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in VOLUMES}
+    unmapped = []
+
+    def slot(v):
+        return by.setdefault(v, {"valid": {}, "invalid": [], "batches": 0})
     # Never assemble raw provider output.  The guarded runner writes a separate
     # accepted artifact containing only request-level responses that passed the
     # exact-ID, stop-reason, JSON, and usage checks.  This lets a large Batch
@@ -72,34 +93,46 @@ def read_rows_by_volume(live: Path):
             if not line.strip():
                 continue
             row = json.loads(line)
-            vol = _volume_of(row.get("custom_id", ""))
+            cid = row.get("custom_id", "")
+            vol = _volume_of(cid)
             if vol is None:
+                # vocabtest is a deliberate None and is not a problem; anything
+                # else is a paid response we are about to throw away, and the
+                # caller must hear about it.
+                if "vocabtest" not in (cid or ""):
+                    unmapped.append(cid)
                 continue
-            by[vol]["batches"] += 1
+            slot(vol)["batches"] += 1
             resp = row.get("response") or {}
             body = resp.get("body") or {}
             choices = body.get("choices") or []
             if resp.get("status_code") != 200 or len(choices) != 1 \
                     or choices[0].get("finish_reason") != "stop":
-                by[vol]["invalid"].append(row.get("custom_id"))
+                slot(vol)["invalid"].append(row.get("custom_id"))
                 continue
             text = choices[0].get("message", {}).get("content")
             try:
                 values, missing = parse_response(text, [], validate=True)
             except Exception:
-                by[vol]["invalid"].append(row.get("custom_id"))
+                slot(vol)["invalid"].append(row.get("custom_id"))
                 continue
             if missing:
-                by[vol]["invalid"].append(row.get("custom_id"))
+                slot(vol)["invalid"].append(row.get("custom_id"))
                 continue
             overlap = set(by[vol]["valid"]) & set(values)
             if overlap:
                 # A repeated provider entry might hide a conflicting result; keep
                 # the first provenance-bearing result and make the anomaly visible.
-                by[vol]["invalid"].append(
+                slot(vol)["invalid"].append(
                     f"{row.get('custom_id')}: duplicate entries {sorted(overlap)[:3]}")
-            by[vol]["valid"].update({eid: value for eid, value in values.items()
+            slot(vol)["valid"].update({eid: value for eid, value in values.items()
                                       if eid not in overlap})
+    if unmapped:
+        # These are PAID responses about to be discarded. Silence here is what
+        # would have thrown away 701157 and 701179 after they were billed.
+        print(f"WARNING: {len(unmapped)} accepted response(s) could not be mapped "
+              f"to a volume and were NOT assembled, e.g. {unmapped[:3]}. Check the "
+              f"custom_id convention before delivering.", file=sys.stderr)
     return by
 
 
@@ -188,7 +221,7 @@ def main(argv=None):
         corpus_ids = {str(entry.get("id")) for entry in corpus.get("entries", [])}
         unexpected_ids = sorted(set(extracted) - corpus_ids)
         if unexpected_ids:
-            by[vol]["invalid"].extend(
+            slot(vol)["invalid"].extend(
                 f"provider-only entry ID: {entry_id}" for entry_id in unexpected_ids)
             extracted = {entry_id: value for entry_id, value in extracted.items()
                          if entry_id in corpus_ids}
