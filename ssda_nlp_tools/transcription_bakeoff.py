@@ -59,11 +59,20 @@ def _entries(volume: Dict[str, Any]) -> List[dict]:
     if not isinstance(volume, dict):
         raise ValueError("expected a segmented volume JSON object, not raw Archivault page JSON; "
                          "run `run_transcription_bakeoff.py segment` first")
-    entries = volume.get("entries") or volume.get("records")
-    if not isinstance(entries, list):
-        raise ValueError("input has no segmented entries/records; run "
-                         "`run_transcription_bakeoff.py segment` first")
-    return entries
+    # `or` short-circuits on an EMPTY list, so `entries or records` turned a
+    # volume that legitimately segmented to zero entries -- blank pages, a failed
+    # transcription -- into "run segment first", telling the caller to redo a
+    # step they had already done. Absent-or-malformed and empty are different
+    # answers and must not share an error.
+    for key in ("entries", "records"):
+        if key in volume:
+            value = volume[key]
+            if not isinstance(value, list):
+                raise ValueError(f"`{key}` is {type(value).__name__}, not a list; "
+                                 f"this is not segmented volume JSON")
+            return value
+    raise ValueError("input has no segmented entries/records; run "
+                     "`run_transcription_bakeoff.py segment` first")
 
 
 def _images(entry: dict) -> List[str]:

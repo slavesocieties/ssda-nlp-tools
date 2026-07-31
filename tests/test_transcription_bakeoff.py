@@ -7,6 +7,8 @@ supports the downstream pipeline -- and the two ways it went wrong.
 """
 import json
 
+import pytest
+
 from run_transcription_bakeoff import main as bakeoff_main
 from ssda_nlp_tools.transcription_bakeoff import (MATERIAL, compare,
                                                   divergent_pages,
@@ -207,3 +209,20 @@ def test_repair_burden_ignores_entries_too_short_to_score():
     vol = {"entries": [{"text_faithful": "corto", "normalized": "corto"}]}
     assert repair_burden(vol)["entries_compared"] == 0
     assert repair_burden(vol)["median_similarity"] is None
+
+
+def test_an_empty_volume_is_not_the_same_as_an_unsegmented_one():
+    """`entries or records` short-circuits on an EMPTY list, so a volume that
+    legitimately segmented to zero entries -- blank pages, a failed
+    transcription -- raised "run segment first", telling the caller to redo a
+    step they had already done. Absent and empty are different answers."""
+    from ssda_nlp_tools.transcription_bakeoff import repair_burden
+    s = score_transcription({"entries": []})
+    assert s["entries"] == 0 and s["partial_rate"] is None
+    assert repair_burden({"entries": []})["entries_compared"] == 0
+    # raw Archivault page JSON still refuses, which is the guard that matters
+    with pytest.raises(ValueError, match="run .*segment"):
+        score_transcription({"volume": "V", "pages": [{"file": "x.jpg"}]})
+    # and a malformed type says so specifically rather than blaming the caller
+    with pytest.raises(ValueError, match="not a list"):
+        score_transcription({"entries": {"nope": 1}})
