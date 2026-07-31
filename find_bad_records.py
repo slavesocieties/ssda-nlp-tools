@@ -110,21 +110,32 @@ def main(argv=None):
     print(f"\n          (short event-less records, correctly margin "
           f"annotations: {short_none:,})")
 
-    rate = (len(refusal) + len(no_event)) / total if total else 0
-    print(f"\naffected {len(refusal) + len(no_event)} of {total:,} records "
-          f"({100*rate:.3f}%)")
+    # A record can be in BOTH lists, and one is: 201991-0275-A-04 has no event
+    # BECAUSE the refusal truncated its text mid-sentence. Summing the two
+    # classes double-counts it and overstates the damage.
+    both = {r["id"] for r in refusal} & {r["id"] for r in no_event}
+    distinct = len({r["id"] for r in refusal} | {r["id"] for r in no_event})
+    print(f"\naffected {distinct} DISTINCT records of {total:,} "
+          f"({100*distinct/total:.3f}%)")
+    if both:
+        print(f"  {len(both)} in both classes: {sorted(both)}")
+        print("  these have no event BECAUSE the refusal cut the text short, so")
+        print("  re-extraction cannot fix them -- they need re-transcription.")
     print("\nNothing is repaired here. Inventing an event we did not extract, or")
     print("paraphrasing a page we could not read, would put made-up content into")
     print("the corpus -- which is the failure being reported.")
 
     if args.stage:
         os.makedirs(args.stage, exist_ok=True)
+        # re-extraction cannot fix a record whose SOURCE TEXT is truncated
+        reextract = [r["id"] for r in no_event if r["id"] not in both]
         plan = {"refusal": refusal, "no_event": no_event,
+                "in_both": sorted(both),
                 "note": "REFUSAL needs RE-TRANSCRIPTION (the source text is "
                         "wrong). NO_EVENT needs RE-EXTRACTION only (the source "
                         "text is fine; the extractor missed the event).",
                 "entry_ids_retranscribe": [r["id"] for r in refusal],
-                "entry_ids_reextract": [r["id"] for r in no_event]}
+                "entry_ids_reextract": reextract}
         out = os.path.join(args.stage, "bad_records.json")
         with open(out, "w", encoding="utf-8") as f:
             json.dump(plan, f, ensure_ascii=False, indent=2)
