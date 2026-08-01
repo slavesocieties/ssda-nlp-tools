@@ -249,3 +249,31 @@ decision. Rich pairs went 1.7% -> 12.5% like-for-like. Do NOT quote "19 of
 2,000" as the before-figure; that is a stricter statistic and counted `context`.
 
 The scoring pass is cached (`_reservoir.pkl`, ~506s). `--rescore` to redo.
+
+## 9. The segmenter fix does NOT justify re-extracting the delivered corpus
+
+Measured, because "we improved the segmenter" normally implies "re-extract",
+which is ~$15 and invalidates the delivered dataset.
+
+Re-segmenting all five delivered volumes from `_task2/drive_ready/<vol>/<vol>.json`
+with the fixed segmenter changes the entry count by **+1 out of 5,343 (0.02%)**,
+and the one change is in 29597.
+
+The reason is orthographic era, not luck. The "mill" and "Marte" fixes target
+18th-century scribal habits:
+
+| volume | mil | mill | era |
+|---|---|---|---|
+| 176899 | 1,050 | 0 | 19th |
+| 201991 | 2,200 | 4 | 19th |
+| 29597 | 756 | 11 | **18th** |
+| 375062 | 1,131 | 0 | 19th |
+| 701054 | 679 | 0 | 19th |
+| 15834 (gold) | 257 | **369** | 18th |
+
+Our delivered corpus is overwhelmingly 19th-century, where "mil" is standard.
+15834 is 18th-century and writes "mill" more often than "mil". 29597 is our only
+18th-century volume and is exactly where the +1 landed.
+
+So: keep the fix (it is real and free), do NOT re-extract, and expect it to
+matter for older volumes as they arrive.
