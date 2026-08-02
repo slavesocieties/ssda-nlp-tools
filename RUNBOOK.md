@@ -277,3 +277,36 @@ Our delivered corpus is overwhelmingly 19th-century, where "mil" is standard.
 
 So: keep the fix (it is real and free), do NOT re-extract, and expect it to
 matter for older volumes as they arrive.
+
+## 10. Two silent-subtraction bugs, both found by RUNNING things (2026-07-31)
+
+Neither raised. Both removed data.
+
+**Re-assembly dropped 160 paid records.** Repair requests are addressed to an
+entry, so their custom_id is `v3-repair1-176899-0236-B-01` -- volume followed by
+a page number, not by `-b0`. `_VOL_RE` matched none of them and unmapped ids are
+skipped silently, so `assemble_corpus.py` took the corpus from 5,226 to 5,066
+with every volume downgraded to PARTIAL. Second time this mapping has discarded
+delivered work (see §the whitelist note). Fixed + tested against every custom_id
+shape actually present.
+
+**Withdrawn records came back.** `withdraw_records.py` edits the materialized
+files; assembly rebuilds them from source. Assembly now re-applies
+`withdrawn_records.json` every run. A withdrawal that lasts until the next
+rebuild is not a withdrawal.
+
+**Trap for anyone re-running assembly:** always check the record total against
+CORPUS_SUMMARY afterwards. Both bugs above are invisible in the exit code.
+
+## 11. Markdown-table transcriptions (2026-07-31)
+
+3,622 of 62,320 pages (5.81%, 123 of 232 volumes) are transcribed as markdown
+tables, because the registers are physically two-column and Gemini renders that
+faithfully. 439941 is 85.8% tables. `detect_page_type` read the pipes as an
+INDEX page and skipped them whole -- zero entries each.
+
+`strip_markdown_table` flattens them before classification. Benchmark: entries
+found 96.4% -> 98.2% of human ground truth.
+
+Do NOT loosen the three-row-and-most-of-the-page guard; a stray pipe in prose
+would then mangle ordinary pages.
