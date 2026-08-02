@@ -310,3 +310,20 @@ found 96.4% -> 98.2% of human ground truth.
 
 Do NOT loosen the three-row-and-most-of-the-page guard; a stray pipe in prose
 would then mangle ordinary pages.
+
+## 12. 701054 needs re-extraction; the other four do not (2026-07-31)
+
+Measured, per §11. Re-segmenting the delivered volumes with the table fix:
+
+| volume | table pages | delivered | re-segmented | delta |
+|---|---|---|---|---|
+| 176899 | 0 | 1,087 | 1,087 | 0 |
+| 201991 | 2 | 2,085 | 2,090 | +5 |
+| 29597 | 0 | 813 | 814 | +1 |
+| 375062 | 1 | 1,137 | 1,140 | +3 |
+| **701054** | **54 of 105** | **221** | **596** | **+375** |
+
+701054 shipped missing ~63% of itself. ~$1.76 to extract the recovered entries
+at the measured $0.0047/record, $2.80 to redo the volume; $4.15 headroom remains
+under the $35 cap, so no new budget is needed. **PAID and Daniel's call** --
+see `production/luna_v3/DM_701054_MISSING.md`.
