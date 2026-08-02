@@ -392,14 +392,33 @@ def test_markdown_table_page_yields_entries():
     assert len(segment_page(page, image="419324-0007.jpg")["entries"]) >= 3
 
 
-def test_flattening_puts_the_margin_name_before_the_opener():
-    """Cells join with a space so the margin name lands where
-    _strip_margin_prefix already expects it."""
-    out = strip_markdown_table(
-        "| Victoriano Mora | En esta Santa Yglesia a |\n"
-        "| Partida 8241. | treinta de Mayo de mil ochocientos |\n"
-        "| | ochenta y cinco yo el Presbitero |")
-    assert out.startswith("Victoriano Mora En esta Santa Yglesia")
+def test_margin_column_never_splices_into_the_body_prose():
+    """The margin annotation wraps across the same rows the record does, so
+    joining each row left to right breaks words in half: "…de mil oitocentos e
+    ses-" + "innocente" + "senta e cinco" rejoins as "sesinnocente senta" and
+    destroys the year, which is the one field a burial record cannot lose. The
+    margin column is held out of the body stream instead."""
+    page = ("| Braulia | Aos desasseis dias do mez de Junho de mil oitocentos e ses- |\n"
+            "| innocente | senta e cinco encommendei e sepultou-se o cadaver |\n"
+            "| livre. | de Braulia de um anno de idade, filha do Tenente Simplicio |")
+    entries = segment_page(page, image="701054-0006.jpg")["entries"]
+    assert entries, "expected the record to be found"
+    assert "sesinnocente" not in entries[0]["text"]
+    assert "sessenta e cinco" in entries[0]["text"]
+
+
+def test_a_long_margin_prefix_does_not_hide_the_opener():
+    """_OPENER allows at most 24 characters of margin prefix. Prefixing an
+    accumulated margin unconditionally pushed past that, the opener stopped
+    being recognised, and 419324 fell from 80% to 60% exact folio counts."""
+    page = "\n".join([
+        "| Victoriano Mora Partida 8241 muy largo | En esta Santa Yglesia de "
+        "Santa Cruz de Lorica a treinta de Mayo de mil ochocientos ochenta y "
+        "cinco bautizo solemnemente a Victoriano y lo firme |",
+        "| nota | continuacion del asiento anterior |",
+        "| nota2 | mas texto del mismo asiento |"])
+    body = [l for l in strip_markdown_table(page).splitlines() if "En esta" in l][0]
+    assert body.startswith("En esta"), body
 
 
 def test_a_stray_pipe_does_not_trigger_flattening():

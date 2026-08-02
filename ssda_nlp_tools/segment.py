@@ -226,6 +226,10 @@ _TRANSCRIPTION_ERROR = re.compile(
 _MD_ROW = re.compile(r"^\s*\|.*\|?\s*$")
 _MD_SEP = re.compile(r"^\s*\|[\s\-:|]*\|?\s*$")
 
+# Must match the `pre` group width in _OPENER: a longer prefix stops the line
+# reading as an opener at all.
+_MARGIN_PREFIX_MAX = 24
+
 
 def strip_markdown_table(text: str) -> str:
     """Flatten a markdown table back into lines of register prose.
@@ -245,14 +249,97 @@ def strip_markdown_table(text: str) -> str:
     volumes, and volume 439941 is 85.8% tables. Every one of those pages would
     have silently yielded nothing.
 
-    Cells are joined with a space so the margin name lands in front of the
-    opener, exactly where `_strip_margin_prefix` already expects it. Separator
-    rules are dropped. Text with no table in it is returned unchanged.
+    Separator rules are dropped. Text with no table in it is returned unchanged.
+
+    COLUMN-AWARE, and it has to be. Naively joining every row's cells left to
+    right splices the margin column into the middle of the body prose, because
+    the margin annotation wraps across the same rows the record does:
+
+        | Braulia    | Aos desasseis dias do mez de Junho de mil oitocentos e ses- |
+        | innocente  | senta e cinco encommendei e sepultou-se o cadaver           |
+
+    joins to "...de mil oitocentos e ses- innocente senta e cinco...", breaking
+    "sessenta" in half with a word that belongs to the margin. That damages the
+    date, which is the one field a burial record cannot afford to lose.
+
+    So for a two-column table the narrower column is treated as the margin and
+    emitted on its OWN line, except on rows where the body cell opens a record --
+    there it stays in front, which is exactly the margin-prefix shape
+    `_strip_margin_prefix` already handles. A standalone margin line is then
+    classified as junk by the existing `_MARGIN_NAME` rule, so nothing is lost
+    and nothing is spliced.
     """
     lines = text.splitlines()
     rows = [ln for ln in lines if ln.strip() and _MD_ROW.match(ln)]
     if len(rows) < 3 or len(rows) < 0.5 * len([l for l in lines if l.strip()]):
         return text
+
+    split = [[c.strip() for c in ln.strip().strip("|").split("|")]
+             for ln in rows if not _MD_SEP.match(ln)]
+    # Which column is the margin? The narrower one, by total text.
+    margin_col = None
+    if split and all(len(c) == 2 for c in split):
+        w0 = sum(len(c[0]) for c in split)
+        w1 = sum(len(c[1]) for c in split)
+        if w0 and w1 and min(w0, w1) * 3 < max(w0, w1):
+            margin_col = 0 if w0 < w1 else 1
+
+    # Two columns: rebuild the body stream, and gather each record's margin
+    # annotation onto the line that OPENS that record.
+    #
+    # Emitting a margin cell on its own line is not enough. `join_lines` heals
+    # the manuscript's hyphenated line wraps by concatenation, so a lone
+    # "innocente" sitting between "…oitocentos e ses-" and "senta e cinco"
+    # rejoins as "sesinnocente senta" and the year is still destroyed. The
+    # margin has to leave the body stream entirely.
+    if margin_col is not None:
+        out: List[str] = []
+        pending: List[str] = []          # margin cells awaiting their opener
+        body_lines: List[str] = []
+        for ln in lines:
+            if not ln.strip() or _MD_SEP.match(ln):
+                continue
+            if not _MD_ROW.match(ln):
+                body_lines.append(ln.strip())
+                continue
+            cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+            if len(cells) != 2:
+                joined = " ".join(c for c in cells if c)
+                if joined:
+                    body_lines.append(joined)
+                continue
+            margin, body = cells[margin_col], cells[1 - margin_col]
+            opens = bool(body) and classify_line(body, "between") in (
+                "opener", "opener_strong")
+            if opens:
+                out.extend(body_lines)
+                body_lines = []
+                pending.append(margin)
+                prefix = " ".join(p for p in pending if p).strip()
+                pending = []
+                # `_OPENER` allows a margin prefix of at most 24 characters, so
+                # a long accumulated one does not read as a prefix -- it hides
+                # the opener entirely and the record silently merges into its
+                # predecessor. Measured: prefixing unconditionally dropped
+                # 419324 from 80% to 60% exact folio counts. Over the limit, the
+                # margin goes on its own line just BEFORE the opener, where it
+                # is a clean boundary rather than a splice into running prose.
+                if prefix and len(prefix) <= _MARGIN_PREFIX_MAX:
+                    out.append(f"{prefix} {body}".strip())
+                else:
+                    if prefix:
+                        out.append(prefix)
+                    out.append(body)
+                continue
+            if margin:
+                pending.append(margin)
+            if body:
+                body_lines.append(body)
+        out.extend(body_lines)
+        if pending:
+            out.append(" ".join(p for p in pending if p).strip())
+        return "\n".join(ln for ln in out if ln)
+
     out = []
     for ln in lines:
         if not ln.strip():
