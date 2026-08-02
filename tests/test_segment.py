@@ -9,7 +9,8 @@ from difflib import SequenceMatcher
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ssda_nlp_tools.segment import (
-    classify_line, join_lines, load_pages, segment_page, segment_volume)
+    classify_line, detect_page_type, join_lines, load_pages, segment_page,
+    segment_volume, strip_markdown_table)
 from ssda_nlp_tools.segeval import evaluate_segmentation, margin_number_check
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -365,3 +366,63 @@ def test_structural_margin_agreement_100pct():
         mc = margin_number_check(pages, res["per_image"])
         total += mc["pages"]; agree += mc["agree"]
     assert agree == total == 32
+
+
+# --- markdown-table transcriptions (found 2026-07-31 via the human gold) ----- #
+
+def test_register_rendered_as_markdown_table_is_not_an_index():
+    """These registers are laid out in two columns and Gemini often renders that
+    as a markdown table. detect_page_type counted lines starting with "|" as
+    index evidence, so 3,622 pages of the 232-volume set (5.81%, across 123
+    volumes) were skipped whole and produced ZERO entries."""
+    page = "\n".join(
+        f"| Victoriano Mora | En esta Santa Yglesia de Santa Cruz de Lorica a "
+        f"treinta de Mayo de mil ochocientos ochenta y cinco yo el Presbitero "
+        f"Jose Maria Lugo Cura Rector bautizo solemnemente a Victoriano{i} |"
+        for i in range(4))
+    assert detect_page_type(page) == "register"
+
+
+def test_markdown_table_page_yields_entries():
+    page = "| | |\n|---|---|\n" + "\n".join(
+        f"| Margin {i} | En esta Santa Yglesia de Santa Cruz de Lorica a treinta "
+        f"de Mayo de mil ochocientos ochenta y cinco yo el Presbitero Jose Maria "
+        f"Lugo Cura Rector bautizo solemnemente a Persona{i} y lo firme |"
+        for i in range(3))
+    assert len(segment_page(page, image="419324-0007.jpg")["entries"]) >= 3
+
+
+def test_flattening_puts_the_margin_name_before_the_opener():
+    """Cells join with a space so the margin name lands where
+    _strip_margin_prefix already expects it."""
+    out = strip_markdown_table(
+        "| Victoriano Mora | En esta Santa Yglesia a |\n"
+        "| Partida 8241. | treinta de Mayo de mil ochocientos |\n"
+        "| | ochenta y cinco yo el Presbitero |")
+    assert out.startswith("Victoriano Mora En esta Santa Yglesia")
+
+
+def test_a_stray_pipe_does_not_trigger_flattening():
+    """Three rows minimum, and they must be most of the page. A single line
+    containing a pipe is not a table, and treating it as one would mangle
+    ordinary prose."""
+    one = "| Victoriano Mora | En esta Santa Yglesia a |"
+    assert strip_markdown_table(one) == one
+
+
+def test_separator_rules_are_dropped():
+    out = strip_markdown_table("| a | b |\n|---|---|\n| c | d |\n| e | f |")
+    assert "---" not in out
+
+
+def test_ordinary_pages_are_untouched():
+    plain = ("Domingo nueve de Abril de mil setecientos y diez y nueve yo el "
+             "cura bautice a Maria\nhija de Juan y de Ana y lo firme")
+    assert strip_markdown_table(plain) == plain
+
+
+def test_a_genuine_index_is_still_an_index():
+    """What identifies an index is folio references and short lines, not pipes,
+    so it survives the flattening. 48 pages remain index-classified corpus-wide."""
+    page = "\n".join(f"| Perez Maria Antonia {i} | fol. {20 + i} |" for i in range(9))
+    assert detect_page_type(page) == "index"

@@ -222,15 +222,70 @@ _TRANSCRIPTION_ERROR = re.compile(
     r"\[transcription failed|max retries reached|finish\s?reason[:.]", re.IGNORECASE)
 
 
+# A markdown table row, and the |---|---| rule under its header.
+_MD_ROW = re.compile(r"^\s*\|.*\|?\s*$")
+_MD_SEP = re.compile(r"^\s*\|[\s\-:|]*\|?\s*$")
+
+
+def strip_markdown_table(text: str) -> str:
+    """Flatten a markdown table back into lines of register prose.
+
+    These registers are laid out in two columns -- a margin name and the record
+    body -- and Gemini often renders that faithfully as a markdown table:
+
+        | Victoriano Mora | En esta Santa Yglesia de Santa Cruz de Lorica a |
+        | Partida 8241.   | treinta de Mayo de mil ochocientos ochenta y    |
+
+    which is a reasonable reading of the page and completely breaks the
+    segmenter. `detect_page_type` counts lines beginning with "|" as evidence of
+    an INDEX page, so a register in this shape is skipped whole: folios 0007,
+    0013 and 0015 of 419324 each hold seven records and produced zero.
+
+    Corpus-wide this is 3,622 of 62,320 pages (5.81%) across 123 of the 232
+    volumes, and volume 439941 is 85.8% tables. Every one of those pages would
+    have silently yielded nothing.
+
+    Cells are joined with a space so the margin name lands in front of the
+    opener, exactly where `_strip_margin_prefix` already expects it. Separator
+    rules are dropped. Text with no table in it is returned unchanged.
+    """
+    lines = text.splitlines()
+    rows = [ln for ln in lines if ln.strip() and _MD_ROW.match(ln)]
+    if len(rows) < 3 or len(rows) < 0.5 * len([l for l in lines if l.strip()]):
+        return text
+    out = []
+    for ln in lines:
+        if not ln.strip():
+            out.append(ln)
+            continue
+        if _MD_SEP.match(ln):
+            continue
+        if _MD_ROW.match(ln):
+            cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+            joined = " ".join(c for c in cells if c)
+            if joined:
+                out.append(joined)
+            continue
+        out.append(ln)
+    return "\n".join(out)
+
+
 def detect_page_type(text: str) -> str:
     """'register' | 'index' | 'error' | 'blank'.
 
     Index pages (name -> folio tables) are not entries and need no LLM fallback
     — skip them. 'error' pages carry a verbatim Archivault API failure string
     ("[transcription failed: max retries reached]") and must be RE-TRANSCRIBED,
-    not segmented."""
+    not segmented.
+
+    Runs on the table-flattened text, so that a REGISTER rendered as a markdown
+    table is not mistaken for an index. A genuine index survives the flattening
+    because what identifies it is the folio references and the short lines, not
+    the pipes.
+    """
     if _TRANSCRIPTION_ERROR.search(text):
         return "error"
+    text = strip_markdown_table(text)
     lines = [ln for ln in text.splitlines() if ln.strip()]
     if not lines or len(text.strip()) < 120:
         return "blank"
@@ -245,6 +300,9 @@ def segment_page(text: str, image: str = "", min_split_len: int = 150) -> Dict[s
     gold pairs: a trailing unfinished entry gets partial=true)."""
     stem = re.sub(r"\.(jpe?g|png|tiff?)$", "", image, flags=re.IGNORECASE) or "page"
     ptype = detect_page_type(text)
+    # Flatten a markdown-table rendering of the two-column layout before the
+    # line classifier sees it; a no-op on ordinary pages.
+    text = strip_markdown_table(text)
     if ptype == "index":
         return {"image": image, "entries": [], "leading_fragment": None,
                 "dropped_fragments": [], "page_type": "index", "confidence": 0.85}
