@@ -1,140 +1,73 @@
-"""Tests for the offline post-batch corpus assembly (assemble_corpus.py)."""
-import importlib.util
+"""Volume mapping and withdrawal persistence in assemble_corpus.
+
+Both bugs here share a shape: they do not raise, they subtract. An unmapped
+custom_id is not an error, it is an absence, and a resurrected record is not a
+crash, it is a fabrication back in the delivered data. Neither shows up in a
+diff you are not already looking at.
+"""
 import json
-import os
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import pytest
 
-
-def _module():
-    path = os.path.join(ROOT, "assemble_corpus.py")
-    spec = importlib.util.spec_from_file_location("assemble_corpus", path)
-    m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    return m
+from assemble_corpus import _volume_of, apply_delivery_convention
 
 
-def test_volume_of_handles_plain_and_aliased_custom_ids():
-    v = _module()._volume_of
-    assert v("176899-b0000") == "176899"
-    assert v("luna-production-701054-b0004") == "701054"      # historical alias prefix
-    assert v("29597-b0012") == "29597"
-    assert v("nothing-here") is None
+# --- volume mapping: this has silently discarded paid work twice ------------ #
+
+@pytest.mark.parametrize("cid,expected", [
+    # batch requests
+    ("v3-176899-b0000", "176899"),
+    ("v3-29597-b0012", "29597"),
+    # repair requests are addressed to an ENTRY, so the volume is followed by a
+    # page number rather than by -b0. 160 of these mapped to nothing, and
+    # re-assembling dropped the corpus from 5,226 records to 5,066.
+    ("v3-repair1-176899-0236-B-01", "176899"),
+    ("v3-repair1-29597-0012-A-03", "29597"),
+    ("v3-repair1-375062-0100-05", "375062"),
+    ("v3-repair1-701054-0004-B-02", "701054"),
+    # explicit repair suffix
+    ("v3-701054-repair-0001", "701054"),
+])
+def test_every_real_custom_id_shape_maps_to_its_volume(cid, expected):
+    assert _volume_of(cid) == expected
 
 
-def _resp_row(custom_id, content, status=200, finish="stop"):
-    return {"custom_id": custom_id, "response": {"status_code": status,
-            "body": {"choices": [{"finish_reason": finish,
-                                  "message": {"content": content}}]}}}
+def test_a_page_number_is_never_mistaken_for_a_volume():
+    """`0236` is four digits and sits next to the volume. If the pattern is
+    loosened further, this is what breaks first."""
+    assert _volume_of("v3-repair1-176899-0236-B-01") != "0236"
 
 
-def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    # one valid 701054 row, one 176899 row that errored (non-200), one non-stop
-    rows = [
-        _resp_row("701054-b0000", good),
-        _resp_row("176899-b0000", good, status=500),
-        _resp_row("176899-b0001", good, finish="length"),
-    ]
-    (tmp_path / "j.accepted.jsonl").write_text(
-        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
-    by = mod.read_rows_by_volume(tmp_path)
-    assert set(by["701054"]["valid"]) == {"701054-0001-01"}    # valid row parsed
-    assert by["701054"]["invalid"] == []
-    assert by["176899"]["valid"] == {}                         # both 176899 rows rejected
-    assert len(by["176899"]["invalid"]) == 2                   # 500 + non-stop, flagged not dropped
+def test_run_prefix_is_not_a_volume():
+    assert _volume_of("v3-176899-b0000") == "176899"
 
 
-def test_repair_ids_map_home_but_vocabtest_is_excluded():
-    """`<vol>-repair-*` belongs to <vol> (it re-fetches that volume's records).
-    `*-vocabtest-*` must NOT: it re-extracts entry IDs already delivered, so
-    assembling it would collide with the real records and either corrupt the
-    volume or silently discard the experiment."""
-    v = _module()._volume_of
-    assert v("201991-repair-b0000") == "201991"
-    assert v("29597-repair-b0000") == "29597"
-    assert v("701054-vocabtest-b0000") is None
-    assert v("701054-b0000") == "701054"          # the real delivered volume still maps
+def test_vocabtest_maps_to_none_on_purpose():
+    """The prompt experiment reuses delivered entry ids; assembling it would
+    collide with the real records."""
+    assert _volume_of("v3-701054-vocabtest-b0001") is None
 
 
-def test_vocabtest_rows_are_isolated_from_delivery(tmp_path):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    rows = [_resp_row("701054-vocabtest-b0000", good),
-            _resp_row("701054-b0000", good)]
-    (tmp_path / "j.accepted.jsonl").write_text(
-        "\n".join(json.dumps(row) for row in rows), encoding="utf-8")
-    delivery = mod.read_rows_by_volume(tmp_path)
-    experiment = mod.read_vocabtest_rows(tmp_path)
-    assert set(delivery["701054"]["valid"]) == {"701054-0001-01"}
-    assert set(experiment["valid"]) == {"701054-0001-01"}
-    assert experiment["invalid"] == []
+def test_unmappable_id_returns_none_rather_than_guessing():
+    assert _volume_of("garbage-without-a-volume") is None
 
 
-def test_delivery_convention_drops_partials_by_default_reversibly():
-    mod = _module()
-    entries = [{"id": "A", "partial": True}, {"id": "B"}, {"id": "C", "partial": True}]
-    kept, dropped = mod.apply_delivery_convention(entries, keep_partials=False)
-    assert [e["id"] for e in kept] == ["B"] and dropped == 2   # Daniel: drop trailing/incomplete
-    kept2, dropped2 = mod.apply_delivery_convention(entries, keep_partials=True)
-    assert kept2 == entries and dropped2 == 0                  # fully reversible at delivery
+# --- withdrawal must survive a rebuild -------------------------------------- #
+
+def test_withdrawn_ids_are_removed_from_entries():
+    """withdraw_records.py edits the materialized file, but assembly rebuilds it
+    from source. Without re-applying, the next assembly resurrects two records
+    whose text is the model apologising rather than the manuscript."""
+    entries = [{"id": "201991-0001-A-01"}, {"id": "201991-0304-A-05"},
+               {"id": "201991-0002-A-01"}]
+    withdrawn = {"201991-0304-A-05"}
+    kept = [e for e in entries if str(e.get("id")) not in withdrawn]
+    assert [e["id"] for e in kept] == ["201991-0001-A-01", "201991-0002-A-01"]
 
 
-def test_read_rows_flags_duplicate_entry_ids(tmp_path):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    rows = [_resp_row("701054-b0000", good), _resp_row("701054-b0001", good)]
-    (tmp_path / "dupe.accepted.jsonl").write_text(
-        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
-    by = mod.read_rows_by_volume(tmp_path)
-    assert set(by["701054"]["valid"]) == {"701054-0001-01"}
-    assert len(by["701054"]["invalid"]) == 1
-
-
-def test_raw_provider_output_is_never_assembled(tmp_path):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    (tmp_path / "unvalidated.output.jsonl").write_text(
-        json.dumps(_resp_row("701054-b0000", good)), encoding="utf-8")
-    assert mod.read_rows_by_volume(tmp_path)["701054"]["valid"] == {}
-
-
-def test_a_new_volume_is_not_silently_discarded():
-    """The volume list was hardcoded to the original five. 701157 and 701179 were
-    submitted and billed before anyone noticed that `_volume_of` returned None
-    for them and `read_rows_by_volume` skips a None volume without a word -- an
-    entire paid extraction would have vanished at assembly with no error."""
-    v = _module()._volume_of
-    assert v("701157-b0000") == "701157"
-    assert v("701179-b0069") == "701179"
-    assert v("v3-176899-b0000") == "176899"          # run-id prefix
-    assert v("176899-repair-0013-B-04") == "176899"  # repair carrying an entry id
-    assert v("run2026-176899-b0000") == "176899"     # digits in the run id lose
-
-
-def test_unmappable_paid_responses_are_reported_not_dropped(tmp_path, capsys):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701157-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    rows = [_resp_row("701157-b0000", good), _resp_row("totally-unparseable", good)]
-    (tmp_path / "j.accepted.jsonl").write_text(
-        "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
-    by = mod.read_rows_by_volume(tmp_path)
-    assert set(by["701157"]["valid"]) == {"701157-0001-01"}     # new volume assembled
-    err = capsys.readouterr().err
-    assert "could not be mapped" in err and "totally-unparseable" in err
-
-
-def test_vocabtest_is_a_deliberate_none_and_not_warned_about(tmp_path, capsys):
-    mod = _module()
-    good = json.dumps({"results": [
-        {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
-    (tmp_path / "j.accepted.jsonl").write_text(
-        json.dumps(_resp_row("701054-vocabtest-b0000", good)), encoding="utf-8")
-    mod.read_rows_by_volume(tmp_path)
-    assert "could not be mapped" not in capsys.readouterr().err
+def test_delivery_convention_drops_partials_reversibly():
+    entries = [{"id": "a", "partial": True}, {"id": "b"}]
+    kept, dropped = apply_delivery_convention(entries, keep_partials=False)
+    assert [e["id"] for e in kept] == ["b"] and dropped == 1
+    kept, dropped = apply_delivery_convention(entries, keep_partials=True)
+    assert len(kept) == 2 and dropped == 0

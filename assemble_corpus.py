@@ -42,7 +42,19 @@ VOLUMES = ["176899", "201991", "29597", "375062", "701054"]
 # submitted and paid for -- and `read_rows_by_volume` skips a None volume
 # without a word, so an entire extraction would have vanished at assembly with
 # no error to explain it.
-_VOL_RE = re.compile(r"(\d{4,7})-(?=b\d|repair\b)")
+# `\d{4}[-.]` is the third accepted suffix and it is not cosmetic. Repair
+# requests are addressed to an ENTRY, not a batch, so their custom_id is
+# `v3-repair1-176899-0236-B-01`: the volume is followed by a page number rather
+# than by `-b0` or `-repair`. Without it those 160 responses matched nothing,
+# `read_rows_by_volume` skipped them silently, and re-assembling the corpus
+# dropped it from 5,226 records to 5,066 -- all of them paid for.
+#
+# This is the SECOND time this mapping has silently discarded delivered work;
+# the note above records the hardcoded whitelist that did the same to 701157 and
+# 701179. The lesson both times is that the failure is invisible: an unmapped id
+# is not an error, it is an absence. Hence the loud WARNING in
+# read_rows_by_volume and the shape test in tests/test_assemble_corpus.py.
+_VOL_RE = re.compile(r"(\d{4,7})-(?=b\d|repair\b|\d{4}[-.])")
 
 
 def _volume_of(custom_id: str):
@@ -190,6 +202,12 @@ def main(argv=None):
                     "convention (his references omit trailing/incomplete "
                     "records). The deterministic source corpus is unchanged, "
                     "so this is a reversible delivery-layer choice.")
+    ap.add_argument("--withdrawn", type=Path,
+                    default=Path("production/luna_v3/withdrawn_records.json"),
+                    help="quarantine file listing records withdrawn from the "
+                         "delivered corpus. Re-applied on every assembly, "
+                         "because assembly rebuilds from source and would "
+                         "otherwise resurrect them.")
     ap.add_argument("--skip-pipeline", action="store_true",
                     help="materialize and report coverage only; skip the expensive "
                     "QA, identity, and graph refresh stages")
@@ -197,6 +215,13 @@ def main(argv=None):
 
     import materialize_luna_results as M
     import run_pipeline
+
+    withdrawn_ids = set()
+    if args.withdrawn and args.withdrawn.exists():
+        _w = json.loads(args.withdrawn.read_text(encoding="utf-8")).get("withdrawn") or []
+        withdrawn_ids = {str(r.get("id")) for r in _w if r.get("id")}
+        print(f"withdrawal list: {len(withdrawn_ids)} record(s) held out "
+              f"({args.withdrawn})")
 
     by = read_rows_by_volume(args.live)
     vocabtest = read_vocabtest_rows(args.live)
@@ -241,6 +266,27 @@ def main(argv=None):
         result["entries"], dropped_partials = apply_delivery_convention(
             result["entries"], args.keep_partials)
         result["coverage"]["partials_dropped"] = dropped_partials
+
+        # Withdrawn records must be re-withdrawn on every assembly.
+        #
+        # withdraw_records.py edits the materialized files in place, but assembly
+        # rebuilds them from the batch output, so without this the next person to
+        # run this script silently RESURRECTS two records whose text is the
+        # transcription model apologising rather than the manuscript. A
+        # withdrawal that only holds until the next rebuild is not a withdrawal.
+        #
+        # The quarantine file is the single source of truth for what is out and
+        # why, so this reads it rather than keeping a second list in code.
+        withdrawn_here = 0
+        if withdrawn_ids:
+            before = len(result["entries"])
+            result["entries"] = [e for e in result["entries"]
+                                 if str(e.get("id")) not in withdrawn_ids]
+            withdrawn_here = before - len(result["entries"])
+            if withdrawn_here:
+                print(f"  {vol}: re-applied {withdrawn_here} withdrawal(s) "
+                      f"from {args.withdrawn.name}")
+        result["coverage"]["withdrawn_records"] = withdrawn_here
         result["coverage"]["materialized_records"] = len(result["entries"])
         mat_path = outdir / f"{vol}.materialized.json"
         mat_path.write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n",
@@ -304,6 +350,7 @@ def main(argv=None):
         summary["vocabtest"] = experiment
 
     summary["totals"] = {"corpus_records": tot_corpus, "materialized_records": tot_mat,
+                         "withdrawn_records": len(withdrawn_ids),
                          "missing_records": tot_missing, "invalid_batches": tot_invalid,
                          "volumes_with_output": len(materialized_files)}
     (args.live / "CORPUS_SUMMARY.json").write_text(
