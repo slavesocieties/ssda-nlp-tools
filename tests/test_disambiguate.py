@@ -7,6 +7,7 @@ compete with whatever those labels teach.
 from ssda_nlp_tools.disambiguate import (_UnionFind,
                                          _clusters_attributes_compatible,
                                          attributes_contradict,
+                                         _clusters_share_an_entry,
                                          _would_close_ancestry_cycle,
                                          surname_tier_allows)
 
@@ -129,3 +130,39 @@ def test_the_bernal_case():
     parents.setdefault(rosalia_195, set()).add(root)
     # now merging the two Rosalias would close the loop
     assert _would_close_ancestry_cycle(uf, rosalia_17, rosalia_195, parents)
+
+
+# --- same entry, two people (the third guard defeated by transitivity) ------- #
+
+def test_two_mentions_from_one_entry_never_share_an_identity():
+    """The module has always refused this PAIRWISE -- "the extractor already
+    separated them" -- but union-find routes around it: A from entry E merges
+    with X from entry F, then B from entry E merges with X too, and A and B end
+    up together without ever being compared. 35 delivered identities were in
+    that state."""
+    uf = _UnionFind(3)
+    entries = {0: {"E"}, 1: {"F"}, 2: {"E"}}
+    assert not _clusters_share_an_entry(uf, 0, 1, entries)   # E + F is fine
+    uf.union(0, 1)
+    root = uf.find(0)
+    entries[root] = {"E", "F"}
+    assert _clusters_share_an_entry(uf, root, 2, entries), "E is already in there"
+
+
+def test_unrelated_entries_still_merge():
+    uf = _UnionFind(2)
+    assert not _clusters_share_an_entry(uf, 0, 1, {0: {"E"}, 1: {"F"}})
+
+
+def test_it_does_not_fragment_a_legitimate_recurring_person():
+    """A priest signs one entry after another, so his mentions come from
+    DISTINCT entries and none of them collide. Measured: Miguel Llopiz stays at
+    887 mentions, Jose Ramirez Moreno at 444, unchanged."""
+    uf = _UnionFind(4)
+    entries = {i: {f"E{i}"} for i in range(4)}
+    for i in range(1, 4):
+        assert not _clusters_share_an_entry(uf, 0, i, entries)
+        uf.union(0, i)
+        r = uf.find(0)
+        entries[r] = set().union(*(entries.get(k, set()) for k in range(i + 1)))
+    assert len(entries[uf.find(0)]) == 4

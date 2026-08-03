@@ -426,12 +426,30 @@ conflict at all -- so the attribute guard cannot see it. Folios 17 and 195 are
 far apart, so the likeliest reading is TWO different mother/daughter pairs
 sharing the surname Bernal, collapsed by name similarity.
 
-The guard that would catch it: refuse a merge that would make a person their own
-ancestor. That needs per-cluster parent/child edges maintained through union-find
-alongside `cluster_surnames` and `cluster_sides`, which is a real change to the
-merge loop rather than another predicate. Not attempted yet, deliberately -- it
-is the obvious next piece of work on this stage and it wants doing carefully, not
-at the end of a long session.
+**Done 2026-08-03, and it is a PARTIAL fix -- read the numbers, not the
+headline.** `_would_close_ancestry_cycle` refuses a merge when a descent path
+already runs between the two clusters. Measured on the delivered graph:
+
+| invariant | before | after |
+|---|---|---|
+| parent AND child on the same pair | 16 | **0** |
+| ancestry cycles of length 2 | 12 | **0** |
+| ancestry cycles of length 3 | 12 | 9 |
+| ancestry cycles of length 4 | 4 | 6 |
+| ancestry cycles of length 5 | 0 | 1 |
+| **total ancestry cycles** | **28** | **16** |
+| contradictory role pairs (graph) | 65 | 27 |
+
+So it fully closes the 2-cycles it was designed for and cuts the total 43%, but
+LONGER CYCLES PERSIST AND SOME GREW. That is order dependence, not a bug to wave
+away: the guard refuses a merge that closes a loop VISIBLE AT THAT MOMENT, and a
+later merge can complete a longer one through clusters joined afterwards.
+Blocking a short loop sometimes reroutes the same over-merge into a 4- or 5-hop
+one.
+
+I first reported this as "28 -> 0". That was wrong: the check counted only
+2-cycles and double-counted ordered pairs. Any claim about this guard must come
+from `validate_graph.py` on the rebuilt graph, not from a bespoke count.
 
 `python validate_graph.py` is the check; it exits non-zero while any invariant
 fails.

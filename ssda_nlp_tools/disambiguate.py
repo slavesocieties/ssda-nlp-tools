@@ -514,6 +514,31 @@ def _would_close_ancestry_cycle(uf, i: int, j: int,
     return False
 
 
+def _clusters_share_an_entry(uf, i: int, j: int,
+                             cluster_entries: Dict[int, set]) -> bool:
+    """Would this merge put two people from ONE record into one identity?
+
+    The module has always refused to merge two mentions from the same entry --
+    "the extractor already separated them" -- but only PAIRWISE, and union-find
+    routes straight around that: A from entry E merges with X from entry F, then
+    B from entry E merges with X too, and A and B end up in one cluster without
+    ever being compared. 35 delivered identities were in that state.
+
+    It is the direct cause of the role contradictions left in the graph. Merging
+    two different people who appear in one record collapses their separate
+    relationships to a third person, so "Jose Antonio" comes out as both the
+    parent and the godparent of Jose Maria Almada in entry 201991-0141-B-01 --
+    a contradiction that does NOT exist in the extraction and is manufactured
+    entirely by the merge.
+
+    This is the THIRD guard in this file defeated by transitivity, after the
+    surname chain and the attribute contradiction. A pairwise rule is not a
+    rule about clusters, and every rule here is really about clusters.
+    """
+    return bool(cluster_entries.get(uf.find(i), set())
+                & cluster_entries.get(uf.find(j), set()))
+
+
 def _clusters_attributes_compatible(uf, i: int, j: int,
                                     cluster_sides: Dict[int, Dict[str, set]]) -> bool:
     """May these clusters be joined without making an impossible person?
@@ -804,10 +829,14 @@ def disambiguate_volume(
     # grandchildren. Built from the mention-level `_descendants` and rewired on
     # every union, exactly like cluster_surnames.
     cluster_parents: Dict[int, set] = defaultdict(set)
+    # Every entry a cluster already draws a mention from. Two people from one
+    # record are two people, however alike they look.
+    cluster_entries: Dict[int, set] = {}
     for _i, _m in enumerate(mentions):
         _s = _surname_of(_m.get("name"))
         cluster_surnames[_i] = {_s} if _s else set()
         cluster_sides[_i] = {f: {v} for f, v in _exclusive_sides(_m).items()}
+        cluster_entries[_i] = {_m["_entry"]}
     # index (entry, local id) -> mention index so descent edges resolve
     _by_local = {(m["_entry"], m["_local_id"]): k for k, m in enumerate(mentions)}
     for _i, _m in enumerate(mentions):
@@ -868,6 +897,18 @@ def disambiguate_volume(
                     # 209 surnames. Compare the SURNAMES ALREADY IN BOTH CLUSTERS,
                     # not just this pair: a merge is refused when both sides carry
                     # surnames and none of them are compatible.
+                    if _clusters_share_an_entry(uf, i, j, cluster_entries):
+                        _enqueue({
+                            "score": round(min(s, auto_threshold - 0.01), 3),
+                            "reasons": reasons + ["blocked: clusters already share "
+                                                  "an entry (two people in one record)"],
+                            "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                                  "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+                            "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                                  "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+                        })
+                        _log("blocked-cluster-same-entry", i, j, s, reasons)
+                        continue
                     if not _clusters_surname_compatible(uf, i, j, cluster_surnames):
                         _enqueue({
                             "score": round(min(s, auto_threshold - 0.01), 3),
@@ -940,6 +981,8 @@ def disambiguate_volume(
                     cluster_sides[root] = sides
                     kids = cluster_parents.pop(ra, set()) | cluster_parents.pop(rb, set())
                     cluster_parents[root] = kids
+                    cluster_entries[root] = (cluster_entries.pop(ra, set())
+                                             | cluster_entries.pop(rb, set()))
                     auto_edges.append((i, j, s))
                 elif s >= review_threshold:
                     _enqueue({
