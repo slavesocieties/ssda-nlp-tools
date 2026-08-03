@@ -6,7 +6,7 @@ compete with whatever those labels teach.
 """
 from ssda_nlp_tools.disambiguate import (_UnionFind, _third_party_same,
                                          birth_window, corroborating_signals,
-                                         lifespan_conflict,
+                                         lifespan_conflict, name_variants,
                                          _clusters_attributes_compatible,
                                          attributes_contradict,
                                          _clusters_share_an_entry,
@@ -232,3 +232,53 @@ def test_the_estate_surname_rule_still_holds():
 def test_short_forms_still_match():
     assert _third_party_same("rachael", "rachael macqueen")
     assert _third_party_same("francisco", "francisco pulgason")
+
+
+# --- name variants on merge (Daniel, 2026-08-03) ---------------------------- #
+
+def test_a_clergy_cluster_collapses_to_the_modal_spelling():
+    """"This is going to happen a lot with clergy, who will appear many times,
+    in which case we can just go with the name that appears most frequently"."""
+    members = ([{"name": "Jose Domingo Sanchez y Fleites"}] * 40
+               + [{"name": "Jose Domingo Sanchez y Fleitas"}] * 2)
+    r = name_variants(members, "Jose Domingo Sanchez y Fleites")
+    assert r["policy"] == "modal"
+    assert r["retained"] == ["Jose Domingo Sanchez y Fleites"]
+    rare = [v for v in r["variants"] if v["count"] == 2][0]
+    assert rare["role"] == "likely_mistranscription"
+
+
+def test_a_weak_merge_retains_every_variant():
+    """"in cases where we have a match based on only two or three very closely
+    aligned data points... retain all name variants unless one is obviously
+    mistranscribed"."""
+    members = [{"name": "Maria Llopiz"}, {"name": "Maria Llopis"},
+               {"name": "Maria Josefa Llopiz"}]
+    r = name_variants(members, "Maria Llopiz")
+    assert r["policy"] == "retain_all"
+    assert len(r["retained"]) == 3
+
+
+def test_a_fuller_name_is_a_variant_not_an_error():
+    """"Maria Josefa Llopiz" is not a misreading of "Maria Llopiz"; it is more
+    of the same person's name."""
+    members = [{"name": "Maria Llopiz"}] * 3 + [{"name": "Maria Josefa Llopiz"}]
+    r = name_variants(members, "Maria Llopiz")
+    fuller = [v for v in r["variants"] if "Josefa" in v["name"]][0]
+    assert fuller["role"] == "distinct_variant"
+
+
+def test_a_spelling_in_real_circulation_is_not_called_a_mistranscription():
+    """Near-equal counts mean both spellings were in use, not that one is a slip."""
+    members = [{"name": "Maria Llopiz"}] * 10 + [{"name": "Maria Llopis"}] * 9
+    r = name_variants(members, "Maria Llopiz")
+    other = [v for v in r["variants"] if v["name"] == "Maria Llopis"][0]
+    assert other["role"] == "distinct_variant"
+
+
+def test_nothing_is_ever_discarded():
+    """Whatever the policy, every spelling stays in the record with its count."""
+    members = [{"name": "Juan"}] * 30 + [{"name": "Juan N."}] + [{"name": "Juan Perez"}]
+    r = name_variants(members, "Juan")
+    assert {v["name"] for v in r["variants"]} == {"Juan", "Juan N.", "Juan Perez"}
+    assert sum(v["count"] for v in r["variants"]) == 32

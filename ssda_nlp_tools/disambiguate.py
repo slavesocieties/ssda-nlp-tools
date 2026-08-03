@@ -222,6 +222,11 @@ _MUTUALLY_EXCLUSIVE: Tuple[Tuple[str, Tuple[frozenset, frozenset]], ...] = (
 # life event but a contradiction. Above it, people grow up and are manumitted.
 _STATUS_STABLE_YEARS = 3
 
+# A/B switch, in the same spirit as `--no-surname-tiers`: it exists so the guard
+# can be measured against its own absence on ONE corpus. Confounding a guard's
+# effect with a corpus change is how I mis-reported this twice today.
+LIFESPAN_GUARD_ENABLED = True
+
 
 def attributes_contradict(a: dict, b: dict) -> Optional[str]:
     """Two mentions that cannot be the same person AT THE SAME TIME.
@@ -468,7 +473,7 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
 
     # Chronology, for the same reason: it is a fact about people rather than a
     # judgement about names, so nothing later can rescue it.
-    if lifespan_conflict(a, b):
+    if LIFESPAN_GUARD_ENABLED and lifespan_conflict(a, b):
         return False, "blocked-lifespan"
 
     if _is_recurring_clergy(a, b):
@@ -826,6 +831,68 @@ def _mentions_from_volume(volume: dict) -> List[dict]:
     return mentions
 
 
+# A cluster this large is carried by weight of repetition rather than by any one
+# pair, so the modal spelling is safe to present as THE name. Below it, a merge
+# rests on two or three points and the variants are evidence, not noise.
+CONFIDENT_CLUSTER_MENTIONS = 5
+# How close a rare spelling must sit to the modal one to read as a slip of the
+# pen rather than a different name.
+_MISTRANSCRIPTION_SIMILARITY = 0.85
+# ...and how much rarer. A variant appearing nearly as often as the modal form
+# is an alternative spelling in use, not an error.
+_MISTRANSCRIPTION_MAX_SHARE = 0.34
+
+
+def name_variants(members: List[dict], canonical: str) -> Dict[str, Any]:
+    """Every spelling in a merged identity, and what to do with them.
+
+    Daniel, 2026-08-03:
+
+        "We'll need logic to handle disagreements re the transcription (or
+        spelling in the original) of people's names... This is going to happen a
+        lot with clergy, who will appear many times, in which case we can just go
+        with the name that appears most frequently, but in cases where we have a
+        match based on only two or three very closely aligned data points, it's
+        possible that we should retain all name variants unless one is obviously
+        mistranscribed."
+
+    That is two rules, and which applies depends on how the merge was earned:
+
+      many mentions (clergy)  -> the modal spelling stands for the person
+      a few close data points -> keep every variant; we are not confident
+                                 enough to declare one of them the name
+
+    Within either case a variant is marked `likely_mistranscription` only when it
+    is both very close to the modal spelling AND much rarer. A spelling in
+    genuine circulation is neither.
+
+    Nothing is ever discarded. `variants` lists every form with its count
+    whatever the policy, so a decision to display only the modal one stays
+    reversible and the original readings remain in the record.
+    """
+    counts = Counter(m.get("name") or "" for m in members)
+    total = sum(counts.values()) or 1
+    top = counts.get(canonical, 0)
+    out = []
+    for name, n in counts.most_common():
+        if name == canonical:
+            role = "canonical"
+        elif (name_similarity(name, canonical) >= _MISTRANSCRIPTION_SIMILARITY
+              and top and n / top <= _MISTRANSCRIPTION_MAX_SHARE):
+            role = "likely_mistranscription"
+        else:
+            role = "distinct_variant"
+        out.append({"name": name, "count": n, "role": role,
+                    "similarity_to_canonical": round(
+                        name_similarity(name, canonical), 3)})
+    policy = ("modal" if total >= CONFIDENT_CLUSTER_MENTIONS else "retain_all")
+    return {"policy": policy, "variants": out,
+            "retained": [v["name"] for v in out
+                         if policy == "retain_all"
+                         and v["role"] != "likely_mistranscription"]
+                        or [canonical]}
+
+
 def _merge_attributes(members: List[dict]) -> Dict[str, Any]:
     """Merge attribute values across a cluster, recording conflicts as lists."""
     merged: Dict[str, Any] = {}
@@ -1175,6 +1242,7 @@ def disambiguate_volume(
         identities.append({
             "person_id": f"{tag}-{k:04d}",
             "canonical_name": canonical,
+            "name_variants": name_variants(members, canonical),
             "n_mentions": len(idxs),
             "mentions": [{"entry": m["_entry"], "id": m["_local_id"], "name": m.get("name")}
                          for m in members],

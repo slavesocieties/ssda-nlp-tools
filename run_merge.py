@@ -58,6 +58,10 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=0.86)
     ap.add_argument("--review", type=float, default=0.70)
     ap.add_argument("--year-window", type=int, default=60)
+    ap.add_argument("--no-lifespan", action="store_true",
+                    help="disable the chronology guard. For A/B measurement on a "
+                         "FIXED corpus only -- comparing runs across different "
+                         "corpora confounds the guard with the corpus.")
     ap.add_argument("--no-surname-tiers", action="store_true",
                     help="disable the tiered spelling bar (Daniel's Llopiz ruling)")
     ap.add_argument("--constraints", metavar="PATH",
