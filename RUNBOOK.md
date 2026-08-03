@@ -327,3 +327,43 @@ Measured, per §11. Re-segmenting the delivered volumes with the table fix:
 at the measured $0.0047/record, $2.80 to redo the volume; $4.15 headroom remains
 under the $35 cap, so no new budget is needed. **PAID and Daniel's call** --
 see `production/luna_v3/DM_701054_MISSING.md`.
+
+## 13. 701054 re-extraction — staged and validated, NOT sent (2026-08-01)
+
+Daniel approved this. Segmentation is redone and the batch is staged; only the
+paid submission remains.
+
+```
+production/corpus_v6/701054.segmented.json   596 entries (was 212)
+production/batches_v6/701054.batches.jsonl   60 requests, ~$1.69 Batch API
+```
+
+Validated before staging was called done: 596/596 segmentation ids present in
+the batches, all unique, custom_ids unique and mapping to volume 701054, and the
+instruction reads **"Process ALL 10 Portuguese burial entries"** rather than the
+"Spanish baptism" that every previous batch said.
+
+**That prompt defect is general, not a 701054 typo.** `build_messages` defaults
+to `record_type="baptism", language="Spanish"` and no caller ever passed them, so
+every volume so far was told it was Spanish baptisms. It did no measured damage
+-- 701054 still extracted 187 burials, 29597 723 marriages -- because the system
+prompt says explicitly not to translate and the model read the text. Pass
+`--language` / `--record-type` from now on; the flags already exist.
+
+> ### ⚠️ The trap, the same one as §2: 210 of the 596 entry ids already exist
+> The delivered run covered 210 of these entries under the SAME ids. Assembling
+> the new output into `production/luna_v3/` would collide with them. Use a fresh
+> `--outdir`, a distinct `--run-id`, and point `--ledger-path` at the ONE
+> cumulative ledger so the $35 cap stays global.
+>
+> The batch custom_ids (`701054-b0000`…) do NOT collide with anything in the
+> ledger -- checked, 0 of 60 -- because the delivered run used `v3-` prefixes.
+> The collision is at ENTRY id level, in assembly, not at submission.
+
+```bash
+python run_luna_production.py production/batches_v6/701054.batches.jsonl --outdir production/luna_v6 --ledger-path production/luna_live/spend_ledger.json --run-id v6 --cap-usd 35.00 --take 60
+```
+
+Run it once WITHOUT `--confirm` first. Headroom is $4.15 against the $35 cap
+before the two outstanding jobs settle, and this needs ~$1.69, so settle
+701157/701179 first or the reservation may not fit.
