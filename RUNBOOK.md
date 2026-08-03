@@ -453,3 +453,54 @@ from `validate_graph.py` on the rebuilt graph, not from a bespoke count.
 
 `python validate_graph.py` is the check; it exits non-zero while any invariant
 fails.
+
+## 16. 701157 + 701179 assembled from already-paid output (2026-08-03)
+
+Found by `verify_claims.py`, not by looking: the spend ledger had moved from
+$24.53 to $29.15 confirmed, and chasing that turned up ~$3.57 of extraction
+sitting on disk unassembled in `production/new_volumes/live/`.
+
+```bash
+python assemble_corpus.py --live production/luna_v3 \
+  --accepted-dir production/luna_v3 --accepted-dir production/new_volumes/live \
+  --corpus production/corpus --corpus production/new_volumes
+```
+
+**Corpus 5,226 -> 6,794 records, 5 -> 7 volumes.** 701157 adds 872 (848
+marriages), 701179 adds 696 (744 baptisms). Zero integrity failures in either.
+
+> ### ⚠️ Assemble against the OLD segmentation, not corpus_v6
+> The paid extraction ran against `production/new_volumes/*.segmented.json`.
+> Entry-id overlap is **100% (1,570/1,570)** against that and only 98.5% against
+> the table-fixed `corpus_v6`. Using the newer segmentation would silently drop
+> 23 paid records. Re-segmenting these two volumes is worth doing eventually --
+> it is +2 entries each -- but it needs its own small re-extraction.
+
+**The generalisation gap is now measured, not hypothesised.** These are the
+first substantially Portuguese volumes and ethnicity conformance falls from
+100% to 61% (701157) and 45% (701179). The strays are real Brazilian ethnonyms
+(Guiné, Nação, Benguella, gentio da Costa/Guiné/Angola), Portuguese phenotype
+spellings (crioulo/crioula), and 966 Portuguese titles (Reverendo 441,
+Coadjutor 325). Needs Daniel's ruling exactly as the 71 ethnicity terms did --
+see `production/luna_v3/DM_NEW_VOLUMES_VOCAB.md` and
+`new_volume_vocab_gaps.json`.
+
+`sibling` (20) and `cousin` (2) come out of the extractor as relationship types
+the schema does not know, which is why 4 of the 6 missing graph inverses are
+sibling edges.
+
+## 17. Graph at 7 volumes, and the extraction/merge split
+
+32,628 people, 53,800 edges. Rates per 10k edges, 5-vol -> 7-vol:
+
+| invariant | 5-vol | 7-vol | per 10k edges |
+|---|---|---|---|
+| self loops / dangling endpoints | 0 | **0** | |
+| contradictory roles | 4 | 8 | 1.05 -> 1.49 |
+| ancestry cycles | 12 | 15 | 3.14 -> **2.79** |
+| missing inverse | 1 | 6 | 0.26 -> 1.12 |
+
+`audit_corpus.py` now separates the two causes, which matters because they need
+different fixes: **same-entry role contradictions are EXTRACTION defects and
+there is exactly 1 in 6,794 records** (701179-0148-01, mutual parenthood). Every
+other role contradiction in the graph is a merge artifact. Do not conflate them.

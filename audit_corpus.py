@@ -6,49 +6,51 @@ Offline, $0, no network, no key.
     python audit_corpus.py
     python audit_corpus.py --stage production/repair_20260801
 
-`qa.py` reports 1,048 issues across the delivered corpus and nobody has ever
-triaged them. Raw, that number is useless in both directions: it looks alarming,
-and most of the largest classes are the checker being conservative rather than
-the data being wrong. This separates them, so what remains is a work list.
+`qa.py` reports well over a thousand issues across the delivered corpus and
+nobody had ever triaged them. Raw, that number is useless in both directions: it
+looks alarming, and most of the largest classes are the checker being
+conservative rather than the data being wrong. This separates them, so what
+remains is a work list.
+
+FIGURES BELOW MOVE WITH THE CORPUS. They were 5 volumes / 5,226 records when
+this was written and are 7 / 6,794 now, so run it rather than quoting it. The
+SHAPE is what is stable, and the shape is that roughly half the raw issues are
+not defects.
 
 THE TRIAGE, measured rather than assumed
 ----------------------------------------
   REAL, deterministically repairable
-    duplicate_entry (159)     Every one is confirmed: >=0.77 text similarity AND
-                              the same sacrament principal. The window-repair
-                              pass double-reported them. They inflate every
-                              count we have given Daniel, so they matter more
-                              than their share suggests.
-    null_relationship (68)    A relationship whose `related_person` is null. Not
-                              a pointer to a missing person -- a pointer to
-                              nothing. Nothing downstream can use it.
+    duplicate_entry           Confirmed: high text similarity AND the same
+                              sacrament principal. The window-repair pass
+                              double-reported them, so they inflate every count
+                              we have given Daniel.
+    null_relationship         `related_person` is null. Not a pointer to a
+                              missing person -- a pointer to nothing.
 
   REAL, needs re-extraction (the source text is fine; we misread it)
-    no_people_real (57)       A record whose text plainly describes a sacrament
-                              and which carries no people at all. Same shape as
-                              the NO_EVENT class found on 2026-07-31, and found
-                              the same way.
-    event_shape (23)          19 baptisms with 0 principals, 4 sacraments with
-                              the wrong count. A baptism with nobody baptised is
-                              not a record.
-    dangling_relationship     A relationship pointing at a person id that does
-      (178)                   not exist in its entry. Breaks the social graph
-                              silently: the edge is simply absent downstream.
+    no_people_real            Text plainly describes a sacrament, no people.
+    event_shape               Baptisms with 0 principals; wrong principal counts.
+    dangling_relationship     Edge points at a person id absent from its entry,
+                              so the edge silently vanishes downstream.
+    role_contradiction        Two people given incompatible roles toward each
+                              other IN ONE RECORD -- P01 the parent of P02 while
+                              P02 is the parent of P01. Rare and worth isolating:
+                              exactly 1 in 6,794 records, which is how we know
+                              the role contradictions in the social GRAPH are
+                              merge artifacts rather than extraction errors.
 
   MOSTLY NOT DEFECTS, and this is the important half
-    no_people_admin (242)     Cover pages, pastoral-visit certificates, oficios.
-                              They have no people because they are not records.
-    chronology_break (298)    Registers are only roughly chronological, and 61
-                              of the flagged entries carry more than one event
-                              so the "primary" date is a choice. Verified
-                              separately: only 8 of 6,844 dated events sit in a
-                              different century from the one spelled out in
-                              their own text, and 5 of those 8 are marginal
-                              annotations recording a LATER marriage, which are
-                              correct. Dates are not the problem chronology
-                              order made them look.
-    impossible_date (16)      Same cause. A baptism register ending in 1889 that
-                              carries a 1914 marriage note is right, not wrong.
+    no_people_admin           Cover pages, oficios, pastoral-visit certificates.
+                              No people because they are not records.
+    chronology_break          Registers are only roughly chronological, and many
+                              flagged entries carry more than one event so the
+                              "primary" date is a choice.
+    impossible_date           Same cause. A baptism register ending in 1889 that
+                              carries an 1914 marriage note is right, not wrong.
+
+Dates hold up under the strongest check available without images: of the records
+whose century is spelled out in words, 4 disagree with the extracted year and
+one of those is a correct marginal note.
 
 WHAT THIS DOES NOT DO
 ---------------------
@@ -127,6 +129,61 @@ def century_check(entries, field="text_faithful"):
     return out, checked
 
 
+# Roles two people cannot hold toward each other at the same moment. Checked
+# WITHIN one entry, so a hit is an extraction defect and nothing to do with
+# merging -- which is exactly what makes it worth separating.
+_ROLE_EXCLUSIVE = (("parent", "spouse"), ("child", "spouse"), ("parent", "child"),
+                   ("parent", "godparent"), ("child", "godchild"),
+                   ("parent", "grandparent"), ("child", "grandchild"))
+_ROLE_INVERSE = {"parent": "child", "child": "parent",
+                 "godparent": "godchild", "godchild": "godparent",
+                 "grandparent": "grandchild", "grandchild": "grandparent",
+                 "enslaver": "slave", "slave": "enslaver"}
+
+
+def same_entry_role_contradictions(entries):
+    """Two people given incompatible roles toward each other in ONE record.
+
+    The graph validator reports role contradictions, but most of those turned
+    out to be merge artifacts -- two different people from one entry collapsed
+    into one identity, which manufactures a contradiction that is not in the
+    data. This checks the extraction directly, before any merging, so the two
+    causes can be told apart.
+
+    Relationships are read in BOTH directions: the registers state "parent of X"
+    and "child of Y" interchangeably, and the contradiction usually shows up as
+    one person claiming to be the parent of someone who claims to be theirs.
+    701179-0148-01 is the whole class: P01 is recorded as the parent of P02 and
+    P02 as the parent of P01.
+
+    Measured over 6,794 delivered records: exactly 1. Extraction is clean here;
+    the residue in the graph is the merge stage.
+    """
+    out = []
+    for e in entries:
+        rel = defaultdict(set)
+        for p in (e.get("data") or {}).get("people") or []:
+            a = str(p.get("id"))
+            for r in p.get("relationships") or []:
+                if not isinstance(r, dict):
+                    continue
+                b = str(r.get("related_person") or "")
+                t = str(r.get("relationship_type") or "").lower()
+                if not b or b == "None" or a == b or not t:
+                    continue
+                rel[(a, b)].add(t)
+                rel[(b, a)].add(_ROLE_INVERSE.get(t, t))
+        for (a, b), types in rel.items():
+            if a > b:
+                continue
+            for x, y in _ROLE_EXCLUSIVE:
+                if x in types and y in types:
+                    out.append({"type": "role_contradiction", "entry": e.get("id"),
+                                "detail": f"{a} and {b} are both {x} and {y}"})
+                    break
+    return out
+
+
 def audit(paths):
     entries, issues = {}, []
     for p in paths:
@@ -134,6 +191,7 @@ def audit(paths):
         for e in d.get("entries") or []:
             entries[e["id"]] = e
         issues.extend(qa_volume(d)["issues"])
+        issues.extend(same_entry_role_contradictions(d.get("entries") or []))
 
     buckets = defaultdict(list)
     for i in issues:
@@ -159,7 +217,7 @@ def audit(paths):
 
 REPAIRABLE = ("duplicate_entry", "null_relationship")
 REEXTRACT = ("no_people_real", "event_shape", "dangling_relationship",
-             "dangling_principal", "vocab_violation")
+             "dangling_principal", "vocab_violation", "role_contradiction")
 BENIGN = ("no_people_admin", "chronology_break", "impossible_date")
 
 

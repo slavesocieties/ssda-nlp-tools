@@ -82,3 +82,54 @@ def test_events_without_a_parseable_date_are_not_counted():
                 [{"type": "baptism", "date": None}])],
         field="text_faithful")
     assert checked == 0
+
+
+# --- same-entry role contradictions (extraction, not merge) ------------------ #
+
+def _people(*specs):
+    return [{"id": pid, "relationships": [{"related_person": o, "relationship_type": t}
+                                          for o, t in rels]}
+            for pid, rels in specs]
+
+
+def test_mutual_parenthood_is_caught():
+    """701179-0148-01: P01 is recorded as the parent of P02 and P02 as the
+    parent of P01. Both cannot be true and no merging is involved."""
+    from audit_corpus import same_entry_role_contradictions
+    e = {"id": "701179-0148-01",
+         "data": {"people": _people(("P01", [("P02", "parent")]),
+                                    ("P02", [("P01", "parent")]))}}
+    hits = same_entry_role_contradictions([e])
+    assert len(hits) == 1 and hits[0]["entry"] == "701179-0148-01"
+
+
+def test_a_consistent_pair_is_not_flagged():
+    """P01 parent of P03, P03 child of P01 -- the same fact stated from both
+    sides, which is how these registers normally read."""
+    from audit_corpus import same_entry_role_contradictions
+    e = {"id": "x", "data": {"people": _people(("P01", [("P03", "parent")]),
+                                               ("P03", [("P01", "child")]))}}
+    assert same_entry_role_contradictions([e]) == []
+
+
+def test_parent_and_godparent_of_the_same_child_is_caught():
+    from audit_corpus import same_entry_role_contradictions
+    e = {"id": "x", "data": {"people": _people(
+        ("P01", [("P02", "parent"), ("P02", "godparent")]), ("P02", []))}}
+    assert len(same_entry_role_contradictions([e])) == 1
+
+
+def test_null_and_self_references_are_ignored():
+    from audit_corpus import same_entry_role_contradictions
+    e = {"id": "x", "data": {"people": _people(
+        ("P01", [(None, "parent"), ("P01", "parent"), ("None", "child")]))}}
+    assert same_entry_role_contradictions([e]) == []
+
+
+def test_each_pair_is_reported_once_not_twice():
+    """Relationships are read in both directions, so the pair (a,b) and (b,a)
+    must not both fire."""
+    from audit_corpus import same_entry_role_contradictions
+    e = {"id": "x", "data": {"people": _people(("P01", [("P02", "parent")]),
+                                               ("P02", [("P01", "parent")]))}}
+    assert len(same_entry_role_contradictions([e])) == 1
