@@ -9,7 +9,13 @@ import json
 
 import pytest
 
-from assemble_corpus import _volume_of, apply_delivery_convention
+from assemble_corpus import (
+    _volume_of,
+    apply_delivery_convention,
+    discover_corpora,
+    filter_provider_only,
+    read_rows_by_volume,
+)
 
 
 # --- volume mapping: this has silently discarded paid work twice ------------ #
@@ -71,3 +77,86 @@ def test_delivery_convention_drops_partials_reversibly():
     assert [e["id"] for e in kept] == ["b"] and dropped == 1
     kept, dropped = apply_delivery_convention(entries, keep_partials=True)
     assert len(kept) == 2 and dropped == 0
+
+
+def test_discovers_new_volumes_without_hardcoded_allowlist(tmp_path):
+    source = tmp_path / "701157.segmented.json"
+    source.write_text(json.dumps({"entries": [{"id": "701157-0001-01"}]}),
+                      encoding="utf-8")
+    assert discover_corpora([tmp_path]) == {"701157": source}
+
+
+def test_rejects_conflicting_segmented_sources(tmp_path):
+    first = tmp_path / "first"
+    second = tmp_path / "second"
+    first.mkdir(); second.mkdir()
+    for directory in (first, second):
+        (directory / "701157.segmented.json").write_text(
+            json.dumps({"volume": "701157", "entries": []}), encoding="utf-8")
+    with pytest.raises(ValueError, match="duplicate segmented sources"):
+        discover_corpora([first, second])
+
+
+def test_rejects_filename_payload_volume_mismatch(tmp_path):
+    source = tmp_path / "701157.segmented.json"
+    source.write_text(json.dumps({"volume": "701179", "entries": []}),
+                      encoding="utf-8")
+    with pytest.raises(ValueError, match="segmented volume mismatch"):
+        discover_corpora([tmp_path])
+
+
+def test_provider_only_entry_is_reported_without_name_error(tmp_path):
+    accepted = tmp_path / "batch.accepted.jsonl"
+    accepted.write_text(json.dumps({
+        "custom_id": "701157-b0000",
+        "response": {"status_code": 200, "body": {
+            "choices": [{"finish_reason": "stop", "message": {"content": json.dumps({
+                "results": [{"entry": "701157-9999-01", "normalized": "x",
+                             "data": {"people": [], "events": []}}]
+            })}}]
+        }}
+    }) + "\n", encoding="utf-8")
+    rows = read_rows_by_volume(tmp_path)
+    assert set(rows["701157"]["valid"]) == {"701157-9999-01"}
+    extracted, unexpected = filter_provider_only(
+        rows["701157"], {"701157-0001-01"})
+    assert extracted == {}
+    assert unexpected == ["701157-9999-01"]
+    assert rows["701157"]["invalid"] == [
+        "provider-only entry ID: 701157-9999-01"]
+
+
+def test_rejected_requests_remain_visible_after_accepted_salvage(tmp_path):
+    (tmp_path / "batch.accepted.jsonl").write_text("", encoding="utf-8")
+    (tmp_path / "batch.validation.json").write_text(json.dumps({
+        "valid": False,
+        "rejected_custom_ids": {
+            "701157-b0038": "schema parser did not preserve requested entries",
+            "701157-b0075": "schema parser did not preserve requested entries",
+        },
+    }), encoding="utf-8")
+    rows = read_rows_by_volume(tmp_path)
+    assert rows["701157"]["invalid"] == []
+    assert len(rows["701157"]["rejected"]) == 2
+    assert all("701157-b00" in item for item in rows["701157"]["rejected"])
+
+
+def test_combines_accepted_artifacts_from_multiple_directories(tmp_path):
+    first = tmp_path / "first"; second = tmp_path / "second"
+    first.mkdir(); second.mkdir()
+    for directory, cid, entry in (
+        (first, "701157-b0000", "701157-0001-01"),
+        (second, "701179-b0000", "701179-0001-01"),
+    ):
+        (directory / "batch.accepted.jsonl").write_text(json.dumps({
+            "custom_id": cid,
+            "response": {"status_code": 200, "body": {
+                "choices": [{"finish_reason": "stop", "message": {
+                    "content": json.dumps({"results": [{
+                        "entry": entry, "normalized": "x",
+                        "data": {"people": [], "events": []}}]})}}]
+            }}
+        }) + "\n", encoding="utf-8")
+    rows = read_rows_by_volume([first, second])
+    assert set(rows["701157"]["valid"]) == {"701157-0001-01"}
+    assert set(rows["701179"]["valid"]) == {"701179-0001-01"}

@@ -75,6 +75,11 @@ def main(argv=None):
               f"{s['low_confidence_pages']} {res['low_confidence'] or ''}")
         from ssda_nlp_tools.segment import to_canonical
         res["canonical"] = to_canonical(res["entries"])   # the confirmed output schema
+        # A successful segmentation can still be incomplete because the
+        # upstream transcriber returned an error marker instead of manuscript
+        # text. Persist that evidence with the artifact so a later prompt run
+        # cannot silently present the volume as complete.
+        res["transcription_integrity"] = integrity
         payload = res
 
     if args.structural:

@@ -214,7 +214,7 @@ def qa_volume(source: Any,
 
     by_type = Counter(i["type"] for i in issues)
     return {
-        "volume": vol.get("title") or vol.get("id"),
+        "volume": vol.get("volume") or vol.get("title") or vol.get("id"),
         "entries": len(entries),
         "issues": issues,
         "issues_by_type": dict(by_type),

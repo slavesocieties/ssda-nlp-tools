@@ -127,3 +127,22 @@ def test_volume_report_counts_both_classes():
     assert rep["pages"] == 3 and rep["failed"] == 2
     assert rep["by_code"]["failed_marker"] == 1
     assert rep["by_code"]["refusal"] == 1
+
+
+def test_segmentation_artifact_persists_upstream_failures(tmp_path):
+    """A non-strict run may proceed, but its output must remain auditable."""
+    import json
+    from run_segment import main as segment_main
+
+    src = tmp_path / "pages.json"
+    out = tmp_path / "segmented.json"
+    src.write_text(json.dumps([
+        {"file": "v-0001.jpg", "transcription":
+         "Aos treze dias do mez de Maio sepultou-se o cadaver de Maria."},
+        {"file": "v-0002.jpg", "transcription":
+         "[TRANSCRIPTION FAILED: Max retries reached]"},
+    ]), encoding="utf-8")
+    assert segment_main([str(src), "--out", str(out)]) == 0
+    saved = json.loads(out.read_text(encoding="utf-8"))
+    assert saved["transcription_integrity"]["failed"] == 1
+    assert saved["transcription_integrity"]["failures"][0]["page"] == "v-0002.jpg"

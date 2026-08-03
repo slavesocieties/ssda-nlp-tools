@@ -6,6 +6,11 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from ssda_nlp_tools.qa import qa_volume
 
+
+def test_materialized_volume_label_is_preserved():
+    report = qa_volume({"volume": "701157", "entries": []})
+    assert report["volume"] == "701157"
+
 RAW = ("En diez y seis de Enero de mil setecientos ochenta y cuatro yo Don Thomas "
        "Hassett cura parroco bautice solemnemente a {kid} hijo legitimo de Smart y "
        "de Rachael esclavos de Don Juan Macqueen fueron padrinos Thomas Sterling")

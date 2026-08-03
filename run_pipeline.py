@@ -14,6 +14,8 @@ Runs everything this package does, in order, and writes all artifacts:
     edges.csv           one row per typed relationship, with both labels
     network.json        graph summary (hubs, components, relationship counts)
     review.html         self-contained page for deciding borderline merges
+    pipeline_stats.json machine-readable counts, including the full review-pair
+                        count and the number displayed in review.html
     summary.txt         human-readable rollup of all of the above
 
 With several inputs, they are first combined and people are linked ACROSS them
@@ -30,6 +32,14 @@ from ssda_nlp_tools.qa import qa_volume, format_qa
 from ssda_nlp_tools.review_html import render_review_html
 
 
+def machine_stats(link_result, displayed_review_pairs: int) -> dict:
+    """Persist full counts without serializing the potentially huge pair queue."""
+    stats = dict(link_result["stats"])
+    stats["review_pairs_displayed"] = int(displayed_review_pairs)
+    stats["review_pairs_persisted_in_full"] = False
+    return stats
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -44,7 +54,8 @@ def main(argv=None):
                     help="rows written to review.html, highest-scoring first. The "
                          "corpus review queue is ~750k pairs and rendering all of "
                          "them produced a 230 MB page no browser will open. 0 = no "
-                         "cap. The full queue is always in the JSON artifacts.")
+                         "cap. The full pair COUNT is stored in pipeline_stats.json; "
+                         "the unbounded queue itself is not persisted by default.")
     args = ap.parse_args(argv)
 
     os.makedirs(args.outdir, exist_ok=True)
@@ -78,11 +89,14 @@ def main(argv=None):
     shown = queue if not args.review_limit else sorted(
         queue, key=lambda p: -p.get("score", 0))[:args.review_limit]
     render_review_html(shown, out("review.html"), tag=args.tag)
+    with open(out("pipeline_stats.json"), "w", encoding="utf-8") as fh:
+        json.dump(machine_stats(res, len(shown)), fh, ensure_ascii=False, indent=2)
     if len(shown) < len(queue):
         # say what was dropped: a silently truncated page reads as "this is the
         # whole queue" when it is 0.7% of it
         sections.append(f"review.html: {len(shown):,} of {len(queue):,} pairs "
-                        f"(highest-scoring first; full queue in the JSON artifacts)")
+                        f"(highest-scoring first; full count in pipeline_stats.json; "
+                        f"remaining pair rows are not persisted)")
 
     with open(out("summary.txt"), "w", encoding="utf-8") as fh:
         fh.write("\n\n".join(sections))
@@ -91,9 +105,10 @@ def main(argv=None):
     print(f"\nartifacts -> {args.outdir}{os.sep}"
           f"{{qa_report.json, resolved.json, person_index.json, "
           f"network.graphml, nodes.csv, edges.csv, network.json, "
-          f"review.html, summary.txt}}")
-    print(f"next: open {out('review.html')} to decide {len(res['review_queue'])} "
-          f"borderline pairs, then run_review.py apply.")
+          f"review.html, pipeline_stats.json, summary.txt}}")
+    print(f"next: open {out('review.html')} to decide {len(shown)} displayed "
+          f"borderline pairs ({len(res['review_queue'])} total candidates), then "
+          f"run_review.py apply.")
     return 0
 
 

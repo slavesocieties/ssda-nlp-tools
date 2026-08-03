@@ -14,7 +14,10 @@ and reads no API key. For every sacramental volume it:
   4. runs one cross-volume pipeline (people linked across volumes);
   5. writes production/luna_live/CORPUS_SUMMARY.json.
 
-    python assemble_corpus.py [--live production/luna_live] [--corpus production/corpus]
+    python assemble_corpus.py [--live production/luna_live] \
+        [--accepted-dir production/luna_v3] \
+        [--accepted-dir production/new_volumes/live] \
+        [--corpus production/corpus] [--corpus OTHER_SEGMENTED_DIR]
 
 Coverage < 100% for a volume is reported, never hidden. Nothing here spends
 money or can submit paid work.
@@ -85,22 +88,70 @@ def apply_delivery_convention(entries, keep_partials: bool):
     return kept, len(entries) - len(kept)
 
 
-def read_rows_by_volume(live: Path):
+def discover_corpora(corpus_dirs):
+    """Return ``{volume: segmented_path}`` from one or more source directories.
+
+    Some newer segmentation artifacts predate the top-level ``volume`` field,
+    so the numeric filename remains the canonical fallback.  Conflicting
+    sources are rejected rather than letting directory order choose which
+    faithful transcription is delivered.
+    """
+    found = {}
+    for corpus_dir in corpus_dirs:
+        for path in sorted(corpus_dir.glob("*.segmented.json")):
+            filename_volume = path.name.removesuffix(".segmented.json")
+            if not re.fullmatch(r"\d{4,7}", filename_volume):
+                continue
+            corpus = json.loads(path.read_text(encoding="utf-8"))
+            declared = str(corpus.get("volume") or "")
+            if declared and declared != filename_volume:
+                raise ValueError(
+                    f"segmented volume mismatch: {path} declares {declared}")
+            previous = found.get(filename_volume)
+            if previous is not None and previous.resolve() != path.resolve():
+                raise ValueError(
+                    f"duplicate segmented sources for volume {filename_volume}: "
+                    f"{previous} and {path}")
+            found[filename_volume] = path
+    return found
+
+
+def filter_provider_only(volume_rows, corpus_ids):
+    """Exclude provider-returned IDs absent from the deterministic source."""
+    extracted = volume_rows["valid"]
+    unexpected = sorted(set(extracted) - set(corpus_ids))
+    if unexpected:
+        volume_rows["invalid"].extend(
+            f"provider-only entry ID: {entry_id}" for entry_id in unexpected)
+    return ({entry_id: value for entry_id, value in extracted.items()
+             if entry_id in corpus_ids}, unexpected)
+
+
+def _artifact_dirs(value):
+    return [value] if isinstance(value, Path) else list(value)
+
+
+def read_rows_by_volume(live):
     """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
     # Seeded with the original five so existing callers still find their keys,
     # but ANY volume present in the data is added. The previous version could
     # only ever see the five, and skipped the rest without a word.
-    by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in VOLUMES}
+    by = {v: {"valid": {}, "invalid": [], "rejected": [], "batches": 0}
+          for v in VOLUMES}
     unmapped = []
 
     def slot(v):
-        return by.setdefault(v, {"valid": {}, "invalid": [], "batches": 0})
+        return by.setdefault(
+            v, {"valid": {}, "invalid": [], "rejected": [], "batches": 0})
     # Never assemble raw provider output.  The guarded runner writes a separate
     # accepted artifact containing only request-level responses that passed the
     # exact-ID, stop-reason, JSON, and usage checks.  This lets a large Batch
     # salvage its good requests without letting its failed neighbours leak into
     # delivery.
-    for path in sorted(live.glob("*.accepted.jsonl")):
+    accepted_paths = sorted(
+        path for directory in _artifact_dirs(live)
+        for path in directory.glob("*.accepted.jsonl"))
+    for path in accepted_paths:
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
@@ -139,6 +190,26 @@ def read_rows_by_volume(live: Path):
                     f"{row.get('custom_id')}: duplicate entries {sorted(overlap)[:3]}")
             slot(vol)["valid"].update({eid: value for eid, value in values.items()
                                       if eid not in overlap})
+    # Accepted artifacts intentionally omit rejected requests. Read the guarded
+    # validation reports as well so partial-batch failures remain visible in
+    # CORPUS_SUMMARY instead of disappearing merely because salvage succeeded.
+    validation_paths = sorted(
+        path for directory in _artifact_dirs(live)
+        for path in directory.glob("*.validation.json"))
+    for path in validation_paths:
+        report = json.loads(path.read_text(encoding="utf-8"))
+        rejected = report.get("rejected_custom_ids") or {}
+        if not isinstance(rejected, dict):
+            continue
+        for cid, reason in rejected.items():
+            vol = _volume_of(cid)
+            if vol is None:
+                if "vocabtest" not in (cid or ""):
+                    unmapped.append(cid)
+                continue
+            item = f"{cid}: {reason}"
+            if item not in slot(vol)["rejected"]:
+                slot(vol)["rejected"].append(item)
     if unmapped:
         # These are PAID responses about to be discarded. Silence here is what
         # would have thrown away 701157 and 701179 after they were billed.
@@ -148,7 +219,7 @@ def read_rows_by_volume(live: Path):
     return by
 
 
-def read_vocabtest_rows(live: Path, tag: str = "701054-vocabtest"):
+def read_vocabtest_rows(live, tag: str = "701054-vocabtest"):
     """Read one isolated prompt-experiment result without mixing it into delivery.
 
     Experiment rows deliberately share source entry IDs with the delivered
@@ -158,7 +229,9 @@ def read_vocabtest_rows(live: Path, tag: str = "701054-vocabtest"):
     provenance-bearing file for vocab_ab_report.py.
     """
     result = {"valid": {}, "invalid": [], "batches": 0}
-    for path in sorted(live.glob("*.accepted.jsonl")):
+    paths = sorted(path for directory in _artifact_dirs(live)
+                   for path in directory.glob("*.accepted.jsonl"))
+    for path in paths:
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
                 continue
@@ -195,7 +268,14 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--live", type=Path, default=Path("production/luna_live"))
-    ap.add_argument("--corpus", type=Path, default=Path("production/corpus"))
+    ap.add_argument("--accepted-dir", type=Path, action="append",
+                    help="directory containing guarded *.accepted.jsonl and "
+                         "*.validation.json artifacts; repeat to combine runs "
+                         "(default: --live directory)")
+    ap.add_argument("--corpus", type=Path, action="append", dest="corpus_dirs",
+                    help="directory containing *.segmented.json sources; repeat "
+                         "for additional corpus directories (default: "
+                         "production/corpus)")
     ap.add_argument("--keep-partials", action="store_true",
                     help="keep page-truncated (partial) records in the delivered "
                          "output. Default DROPS them per Daniel's 2026-07-22 "
@@ -213,6 +293,13 @@ def main(argv=None):
                     "QA, identity, and graph refresh stages")
     args = ap.parse_args(argv)
 
+    corpus_dirs = args.corpus_dirs or [Path("production/corpus")]
+    corpus_paths = discover_corpora(corpus_dirs)
+    if not corpus_paths:
+        raise SystemExit(
+            "REFUSING: no numeric *.segmented.json corpus sources found in "
+            + ", ".join(str(path) for path in corpus_dirs))
+
     import materialize_luna_results as M
     import run_pipeline
 
@@ -223,20 +310,34 @@ def main(argv=None):
         print(f"withdrawal list: {len(withdrawn_ids)} record(s) held out "
               f"({args.withdrawn})")
 
-    by = read_rows_by_volume(args.live)
-    vocabtest = read_vocabtest_rows(args.live)
+    accepted_dirs = args.accepted_dir or [args.live]
+    by = read_rows_by_volume(accepted_dirs)
+    vocabtest = read_vocabtest_rows(accepted_dirs)
+    provider_volumes = {
+        vol for vol, rows in by.items()
+        if rows["valid"] or rows["invalid"] or rows["batches"]
+    }
+    missing_sources = sorted(provider_volumes - set(corpus_paths))
+    if missing_sources:
+        raise ValueError(
+            "accepted provider output has no supplied segmented source for "
+            f"volume(s) {missing_sources}; add their directory with --corpus")
     outdir = args.live / "assembled"
     outdir.mkdir(parents=True, exist_ok=True)
     summary = {"volumes": {}, "totals": {}}
     materialized_files = []
     tot_corpus = tot_mat = tot_missing = tot_invalid = 0
 
-    for vol in VOLUMES:
-        corpus_path = args.corpus / f"{vol}.segmented.json"
-        if not corpus_path.exists():
-            continue
+    for vol, corpus_path in sorted(corpus_paths.items()):
         corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
-        extracted = by[vol]["valid"]
+        # Older/newer segmentation tools did not always persist a top-level
+        # volume. The filename was validated by discover_corpora(), so inject
+        # it here to prevent materialized outputs with ``volume: ""``.
+        if not corpus.get("volume"):
+            corpus["volume"] = vol
+        volume_rows = by.setdefault(
+            vol, {"valid": {}, "invalid": [], "rejected": [], "batches": 0})
+        extracted = volume_rows["valid"]
         # A provider may return an identifier that is syntactically valid for
         # its request but not present in the current deterministic source (for
         # example after an upstream segmentation revision).  It must never be
@@ -244,19 +345,15 @@ def main(argv=None):
         # summary.  Missing source IDs are intentionally left untouched below
         # so materialize() reports them as incomplete coverage.
         corpus_ids = {str(entry.get("id")) for entry in corpus.get("entries", [])}
-        unexpected_ids = sorted(set(extracted) - corpus_ids)
-        if unexpected_ids:
-            slot(vol)["invalid"].extend(
-                f"provider-only entry ID: {entry_id}" for entry_id in unexpected_ids)
-            extracted = {entry_id: value for entry_id, value in extracted.items()
-                         if entry_id in corpus_ids}
+        extracted, unexpected_ids = filter_provider_only(volume_rows, corpus_ids)
         if not extracted:
             corpus_records = len(corpus.get("entries", []))
             summary["volumes"][vol] = {"state": "no provider output yet",
                                        "corpus_records": corpus_records,
                                        "materialized_records": 0,
                                        "missing_records": corpus_records,
-                                       "invalid_batches": 0}
+                                       "invalid_batches": len(volume_rows["invalid"]),
+                                       "rejected_requests": len(volume_rows["rejected"])}
             tot_corpus += corpus_records
             tot_missing += corpus_records
             continue
@@ -298,7 +395,7 @@ def main(argv=None):
         if not args.skip_pipeline:
             run_pipeline.main([str(mat_path), "--tag", vol, "--outdir", str(pipe_dir)])
         complete = cov["missing_records"] == 0
-        state = ("COMPLETE" if not by[vol]["invalid"]
+        state = ("COMPLETE" if not (by[vol]["invalid"] or by[vol]["rejected"])
                  else "COMPLETE_WITH_REPAIRED_ANOMALIES") if complete else "PARTIAL"
         summary["volumes"][vol] = {
             "state": state,
@@ -307,6 +404,7 @@ def main(argv=None):
             "partials_dropped": dropped_partials,
             "missing_records": cov["missing_records"],
             "invalid_batches": len(by[vol]["invalid"]),
+            "rejected_requests": len(by[vol]["rejected"]),
             "provider_only_ids": unexpected_ids,
             "pipeline": None if args.skip_pipeline else str(pipe_dir)}
         tot_corpus += cov["corpus_records"]; tot_mat += cov["materialized_records"]
@@ -314,7 +412,8 @@ def main(argv=None):
         print(f"{vol}: {cov['materialized_records']} delivered "
               f"(dropped {dropped_partials} partials) of {cov['corpus_records']} corpus "
               f"({state}; missing {cov['missing_records']}, "
-              f"invalid batches {len(by[vol]['invalid'])})")
+              f"invalid batches {len(by[vol]['invalid'])}, "
+              f"historical rejected requests {len(by[vol]['rejected'])})")
 
     # cross-volume linkage (people linked ACROSS volumes) once >1 volume present
     if len(materialized_files) > 1 and not args.skip_pipeline:
@@ -327,7 +426,11 @@ def main(argv=None):
     # intentionally excluded from delivered volume assembly above because its
     # entry IDs overlap the baseline 701054 extraction.
     if vocabtest["valid"] or vocabtest["invalid"]:
-        source_path = args.corpus / "701054.segmented.json"
+        source_path = corpus_paths.get("701054")
+        if source_path is None:
+            raise ValueError(
+                "701054 vocabtest output exists but no 701054 segmented source "
+                "was supplied via --corpus")
         source = json.loads(source_path.read_text(encoding="utf-8"))
         source_ids = {str(entry.get("id")) for entry in source.get("entries", [])}
         unexpected = sorted(set(vocabtest["valid"]) - source_ids)
@@ -349,9 +452,11 @@ def main(argv=None):
             experiment["materialized_path"] = str(experiment_path)
         summary["vocabtest"] = experiment
 
+    total_rejected = sum(len(rows["rejected"]) for rows in by.values())
     summary["totals"] = {"corpus_records": tot_corpus, "materialized_records": tot_mat,
                          "withdrawn_records": len(withdrawn_ids),
                          "missing_records": tot_missing, "invalid_batches": tot_invalid,
+                         "rejected_requests": total_rejected,
                          "volumes_with_output": len(materialized_files)}
     (args.live / "CORPUS_SUMMARY.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

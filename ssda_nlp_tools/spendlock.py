@@ -48,8 +48,16 @@ def exclusive(ledger_path, timeout: float = 30.0, poll: float = 0.05):
     while fd is None:
         try:
             fd = os.open(str(lock), os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-        except FileExistsError:
+        except (FileExistsError, PermissionError) as exc:
+            # On Windows, a concurrently created lock can surface as EACCES
+            # rather than EEXIST while the owning process still has the file
+            # open. The owner may also unlink it before our existence check, so
+            # retry until the normal deadline. At the deadline, an absent lock
+            # means this was a genuine filesystem permission failure and the
+            # original exception is more accurate than LedgerBusy.
             if time.monotonic() >= deadline:
+                if isinstance(exc, PermissionError) and not lock.exists():
+                    raise
                 holder = ""
                 try:
                     holder = f" (held by pid {lock.read_text(encoding='utf-8').strip()})"

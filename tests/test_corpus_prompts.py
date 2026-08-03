@@ -108,3 +108,22 @@ def test_partial_entries_are_tagged_not_dropped(tmp_path):
     seg = json.load(open(os.path.join(corpus, "239746.segmented.json"), encoding="utf-8"))
     n_nonempty = sum(1 for e in seg["entries"] if e.get("text", "").strip())
     assert vol["entries"] == n_nonempty
+
+
+def test_language_and_record_type_reach_the_paid_batch_instruction(tmp_path):
+    """A Portuguese burial volume must never be mislabeled Spanish baptism."""
+    corpus = _mini_corpus(tmp_path)
+    out = str(tmp_path / "pt_burial")
+    assert _run(["--corpus", corpus, "--limit", "1", "--outdir", out,
+                 "--language", "Portuguese", "--record-type", "burial"]) == 0
+    path = os.path.join(out, next(f for f in os.listdir(out)
+                                 if f.endswith(".batches.jsonl")))
+    with open(path, encoding="utf-8") as fh:
+        next(fh)
+        row = json.loads(next(fh))
+    payload = json.loads(row["tail_message"]["content"])
+    assert "Portuguese burial entries" in payload["instruction"]
+    assert "Spanish baptism entries" not in payload["instruction"]
+    manifest = json.load(open(os.path.join(out, "manifest.json"), encoding="utf-8"))
+    assert manifest["language"] == "Portuguese"
+    assert manifest["record_type"] == "burial"

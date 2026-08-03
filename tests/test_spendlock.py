@@ -25,16 +25,20 @@ def test_lock_is_mutually_exclusive():
     the lock is a file rather than anything cleverer."""
     import tempfile
     led = Path(tempfile.mkdtemp()) / "l.json"
-    inside, overlaps = [], []
+    inside, overlaps, errors = [], [], []
     def worker():
-        with exclusive(led, timeout=10):
-            inside.append(1)
-            if len(inside) > 1:
-                overlaps.append(1)
-            inside.pop()
+        try:
+            with exclusive(led, timeout=10):
+                inside.append(1)
+                if len(inside) > 1:
+                    overlaps.append(1)
+                inside.pop()
+        except Exception as exc:
+            errors.append(exc)
     ts = [threading.Thread(target=worker) for _ in range(8)]
     [t.start() for t in ts]; [t.join() for t in ts]
     assert overlaps == []
+    assert errors == []
 
 
 def test_lock_is_released_even_when_the_body_raises():
