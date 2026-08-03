@@ -53,7 +53,7 @@ REFUSAL = re.compile(
 # the act happened, so a record containing one and no event is a miss.
 SACRAMENT = re.compile(
     r"\b(muri[oó]|falleci[oó]|fall?eceu|sepult|enterr|cad[aá]ver|cadaver"
-    r"|baut[ií]z|batiz|casad[oa] y velad|despos|contrajo matrimonio"
+    r"|baut[ií][csz]|batiz|casad[oa] y velad|despos|contrajo matrimonio"
     r"|recebe?r[aã]o em matrim)\b", re.I)
 
 MIN_CHARS = 400          # below this an event-less record is margin annotation
