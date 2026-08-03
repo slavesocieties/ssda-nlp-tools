@@ -466,6 +466,54 @@ def _exclusive_sides(mention: dict) -> Dict[str, int]:
     return out
 
 
+# How far to look for an ancestry path before giving up. Descent chains in a
+# sacramental register are shallow -- parent, grandparent, occasionally a third
+# generation -- so 4 covers the real ones, and an unbounded search over a graph
+# this size would dominate the merge loop.
+_ANCESTRY_DEPTH = 4
+
+
+def _would_close_ancestry_cycle(uf, i: int, j: int,
+                                cluster_parents: Dict[int, set],
+                                depth: int = _ANCESTRY_DEPTH) -> bool:
+    """Would merging these two clusters make somebody their own ancestor?
+
+    If a descent path already runs from one cluster to the other, merging the
+    endpoints closes that path into a loop. Nobody is their own grandmother, so
+    a merge that produces one is wrong however well the names match.
+
+    This is what the attribute guard structurally cannot see. Ramona Bernal is
+    recorded as the PARENT of Rosalía Bernal on folio 0017 and as her CHILD on
+    folio 0195. Both women are parda, both from Trinidad, two mentions each,
+    and no attribute conflicts anywhere -- the contradiction lives entirely in
+    the relationship direction. 178 folios apart, the likely reading is two
+    different mother/daughter pairs sharing a surname, collapsed on name
+    similarity, which is exactly the failure Daniel's ruling is aimed at.
+
+    Searches both directions because either one closes a loop.
+    """
+    ri, rj = uf.find(i), uf.find(j)
+    if ri == rj:
+        return False
+    for start, target in ((ri, rj), (rj, ri)):
+        seen = {start}
+        frontier = [start]
+        for _ in range(depth):
+            nxt = []
+            for node in frontier:
+                for child in cluster_parents.get(node, ()):
+                    c = uf.find(child)
+                    if c == target:
+                        return True
+                    if c not in seen:
+                        seen.add(c)
+                        nxt.append(c)
+            if not nxt:
+                break
+            frontier = nxt
+    return False
+
+
 def _clusters_attributes_compatible(uf, i: int, j: int,
                                     cluster_sides: Dict[int, Dict[str, set]]) -> bool:
     """May these clusters be joined without making an impossible person?
@@ -598,9 +646,24 @@ def _mentions_from_volume(volume: dict) -> List[dict]:
                     rt = r.get("relationship_type")
                     if rn and rt:
                         ctx.add((str(rt).lower(), rn))
+            # Local ids of this person's children/grandchildren within the
+            # entry, in BOTH directions of expression: registers write "parent
+            # of X" and "child of Y" interchangeably, so a descent edge has to
+            # be read off whichever way the scribe put it.
+            descendants = set()
+            for r in p.get("relationships", []) or []:
+                if not isinstance(r, dict):
+                    continue
+                rt = str(r.get("relationship_type") or "").lower()
+                other = str(r.get("related_person") or "")
+                if not other or other == "None":
+                    continue
+                if rt in ("child", "grandchild"):
+                    descendants.add(other)
             m = dict(p)
             m["_entry"] = eid
             m["_local_id"] = str(p.get("id"))
+            m["_descendants"] = descendants
             m["_ctx"] = ctx
             m["_unique_sacrament"] = str(p.get("id")) in unique_sacrament_pids
             # blocking signals (see _shares_context): the register this entry
@@ -737,10 +800,21 @@ def disambiguate_volume(
     # Per-cluster record of which side of each mutually-exclusive opposition the
     # cluster's members occupy. Maintained exactly like cluster_surnames.
     cluster_sides: Dict[int, Dict[str, set]] = {}
+    # Cluster-level descent edges: root -> set of roots that are its children or
+    # grandchildren. Built from the mention-level `_descendants` and rewired on
+    # every union, exactly like cluster_surnames.
+    cluster_parents: Dict[int, set] = defaultdict(set)
     for _i, _m in enumerate(mentions):
         _s = _surname_of(_m.get("name"))
         cluster_surnames[_i] = {_s} if _s else set()
         cluster_sides[_i] = {f: {v} for f, v in _exclusive_sides(_m).items()}
+    # index (entry, local id) -> mention index so descent edges resolve
+    _by_local = {(m["_entry"], m["_local_id"]): k for k, m in enumerate(mentions)}
+    for _i, _m in enumerate(mentions):
+        for _d in _m.get("_descendants") or ():
+            _k = _by_local.get((_m["_entry"], str(_d)))
+            if _k is not None and _k != _i:
+                cluster_parents[_i].add(_k)
     auto_edges: List[Tuple[int, int, float]] = []
 
     def _log(disposition: str, i: int, j: int, s: float, reasons: List[str]) -> None:
@@ -822,6 +896,20 @@ def disambiguate_volume(
                         })
                         _log("blocked-cluster-contradiction", i, j, s, reasons)
                         continue
+                    # Nobody is their own grandmother. If a descent path already
+                    # runs between these clusters, merging closes it into a loop.
+                    if _would_close_ancestry_cycle(uf, i, j, cluster_parents):
+                        _enqueue({
+                            "score": round(min(s, auto_threshold - 0.01), 3),
+                            "reasons": reasons + ["blocked: merge would make a "
+                                                  "person their own ancestor"],
+                            "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                                  "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+                            "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                                  "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+                        })
+                        _log("blocked-ancestry-cycle", i, j, s, reasons)
+                        continue
                     # tiered spelling bar: the further the surname has drifted,
                     # the more corroboration the merge needs
                     if surname_tiers:
@@ -850,6 +938,8 @@ def disambiguate_volume(
                         for f, v in src.items():
                             sides.setdefault(f, set()).update(v)
                     cluster_sides[root] = sides
+                    kids = cluster_parents.pop(ra, set()) | cluster_parents.pop(rb, set())
+                    cluster_parents[root] = kids
                     auto_edges.append((i, j, s))
                 elif s >= review_threshold:
                     _enqueue({

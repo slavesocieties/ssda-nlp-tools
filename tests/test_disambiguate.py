@@ -7,6 +7,7 @@ compete with whatever those labels teach.
 from ssda_nlp_tools.disambiguate import (_UnionFind,
                                          _clusters_attributes_compatible,
                                          attributes_contradict,
+                                         _would_close_ancestry_cycle,
                                          surname_tier_allows)
 
 
@@ -70,3 +71,61 @@ def test_compatible_clusters_still_merge():
     uf = _UnionFind(2)
     sides = {0: {"age": {0}}, 1: {"age": {0}}}
     assert _clusters_attributes_compatible(uf, 0, 1, sides)
+
+
+# --- ancestry cycles (the class the attribute guard cannot see) -------------- #
+
+def test_merging_along_a_descent_edge_is_refused():
+    """Nobody is their own parent. If a descent path already runs between two
+    clusters, merging the endpoints closes it into a loop."""
+    uf = _UnionFind(2)
+    parents = {0: {1}}                      # mention 0 is parent of mention 1
+    assert _would_close_ancestry_cycle(uf, 0, 1, parents)
+    assert _would_close_ancestry_cycle(uf, 1, 0, parents), "both directions"
+
+
+def test_unrelated_clusters_still_merge():
+    uf = _UnionFind(3)
+    assert not _would_close_ancestry_cycle(uf, 0, 2, {0: {1}})
+
+
+def test_a_grandparent_chain_is_caught():
+    """Two generations deep: 0 -> 1 -> 2. Merging 0 with 2 makes someone their
+    own grandmother."""
+    uf = _UnionFind(3)
+    assert _would_close_ancestry_cycle(uf, 0, 2, {0: {1}, 1: {2}})
+
+
+def test_the_search_is_depth_bounded():
+    """Descent chains in a register are shallow, and an unbounded search over a
+    22,000-cluster graph would dominate the merge loop."""
+    uf = _UnionFind(8)
+    chain = {i: {i + 1} for i in range(7)}
+    assert _would_close_ancestry_cycle(uf, 0, 3, chain, depth=4)
+    assert not _would_close_ancestry_cycle(uf, 0, 7, chain, depth=2)
+
+
+def test_already_merged_clusters_are_not_reported_as_cycles():
+    uf = _UnionFind(2)
+    uf.union(0, 1)
+    assert not _would_close_ancestry_cycle(uf, 0, 1, {0: {1}})
+
+
+def test_the_bernal_case():
+    """Ramona Bernal is recorded as the PARENT of Rosalia Bernal on folio 0017
+    and as her CHILD on folio 0195. Both are parda, both from Trinidad, no
+    attribute conflict anywhere -- so attributes_contradict sees nothing and
+    only the descent direction reveals it."""
+    ramona_17, rosalia_17, ramona_195, rosalia_195 = 0, 1, 2, 3
+    a = {"name": "Ramona Bernal", "phenotype": "parda", "origin": "Trinidad"}
+    b = {"name": "Rosalia Bernal", "origin": "Trinidad"}
+    assert attributes_contradict(a, b) is None, "attributes cannot see this"
+
+    uf = _UnionFind(4)
+    parents = {ramona_17: {rosalia_17}, rosalia_195: {ramona_195}}
+    uf.union(ramona_17, ramona_195)                 # the two Ramonas merge
+    root = uf.find(ramona_17)
+    parents[root] = {rosalia_17}
+    parents.setdefault(rosalia_195, set()).add(root)
+    # now merging the two Rosalias would close the loop
+    assert _would_close_ancestry_cycle(uf, rosalia_17, rosalia_195, parents)
