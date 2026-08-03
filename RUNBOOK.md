@@ -400,3 +400,38 @@ python run_gold_merge.py                                    # merge vs 59 hand l
 converge, so a disambiguate change DOES reach the delivered graph -- but only
 after `assemble_corpus.py` runs WITHOUT `--skip-pipeline`, which takes 30+ min.
 An unchanged `network.json` usually means the rebuild has not finished.
+
+## 15. Graph after the contradiction guard — what it fixed, what it did not
+
+Rebuilt 2026-08-02 (`assemble_corpus.py` without `--skip-pipeline`, ~10 min).
+
+|  | before | after |
+|---|---|---|
+| identities carrying mutually exclusive attributes | 21 | **0** |
+| max node degree | 208 | **112** |
+| people with degree > 50 | 9 | **5** |
+| distinct people | 22,702 | 22,740 |
+
+"María de la Cruz" split into separate people (112 and 58) instead of one
+82-mention node holding both free and enslaved, infant and adult.
+
+**STILL OPEN, and it is a DIFFERENT mechanism: 64 contradictory role pairs and
+26 ancestry cycles.** Nothing to do with attributes. Example:
+
+    CORPUS-4204 'Ramona Bernal'  --parent--> CORPUS-4208 'Rosalía Bernal'   [176899-0017-B-02]
+    CORPUS-4204 'Ramona Bernal'  --child-->  CORPUS-4208 'Rosalía Bernal'   [176899-0195-B-03]
+
+Both women are *parda*, both from Trinidad, two mentions each, no attribute
+conflict at all -- so the attribute guard cannot see it. Folios 17 and 195 are
+far apart, so the likeliest reading is TWO different mother/daughter pairs
+sharing the surname Bernal, collapsed by name similarity.
+
+The guard that would catch it: refuse a merge that would make a person their own
+ancestor. That needs per-cluster parent/child edges maintained through union-find
+alongside `cluster_surnames` and `cluster_sides`, which is a real change to the
+merge loop rather than another predicate. Not attempted yet, deliberately -- it
+is the obvious next piece of work on this stage and it wants doing carefully, not
+at the end of a long session.
+
+`python validate_graph.py` is the check; it exits non-zero while any invariant
+fails.
