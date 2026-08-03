@@ -71,6 +71,20 @@ def _third_party_same(x: str, y: str) -> bool:
     Estate surnames are shared by everyone attached to the estate ("hanna
     macqueen" vs "rachael macqueen" are DIFFERENT wives), so the GIVEN name must
     agree; but short forms contain long forms ("rachael" is "rachael macqueen").
+
+    THE SAME ARGUMENT RUNS THE OTHER WAY and used not to. Given names in these
+    registers are drawn from a tiny pool -- Francisco, Juan, Maria, Jose -- so
+    two people sharing one are barely evidence at all. "francisco pulgason" and
+    "francisco challi" scored 0.65 whole-name similarity and were treated as one
+    enslaver, which handed a merge two spurious corroborating signals
+    (same-named-relation and discriminative-relation).
+
+    That produced a merge Daniel labelled 0: an adult Juana attached to an 1840
+    burial in Guanabacoa, joined to an infant Juana baptised in 1878 in another
+    volume, on the strength of two different men both called Francisco.
+
+    So when BOTH names carry a surname, the surnames must be compatible. This is
+    exactly symmetric with the estate rule above; only one half of it existed.
     """
     from difflib import SequenceMatcher
     from .textmatch import phonetic_fold
@@ -80,9 +94,12 @@ def _third_party_same(x: str, y: str) -> bool:
     if set(tx) <= set(ty) or set(ty) <= set(tx):     # containment / short form
         return True
     given = SequenceMatcher(None, tx[0], ty[0]).ratio()
-    if given >= 0.75 or phonetic_fold(tx[0]) == phonetic_fold(ty[0]):
-        return name_similarity(x, y) >= 0.6
-    return False
+    if not (given >= 0.75 or phonetic_fold(tx[0]) == phonetic_fold(ty[0])):
+        return False
+    sx, sy = _surname_of(x), _surname_of(y)
+    if sx and sy and not _namesets_overlap({sx}, {sy}):
+        return False                                 # same given, different family
+    return name_similarity(x, y) >= 0.6
 
 
 def _namesets_overlap(sa: set, sb: set) -> bool:
@@ -201,12 +218,35 @@ _MUTUALLY_EXCLUSIVE: Tuple[Tuple[str, Tuple[frozenset, frozenset]], ...] = (
 )
 
 
-def attributes_contradict(a: dict, b: dict) -> Optional[str]:
-    """Two mentions that cannot be the same person, whatever else agrees.
+# Below this many years apart, a change of age band or legal status is not a
+# life event but a contradiction. Above it, people grow up and are manumitted.
+_STATUS_STABLE_YEARS = 3
 
-    Returns the contradicting field, or None. Deliberately narrow: only
-    oppositions where no reading of the register makes both true at once.
+
+def attributes_contradict(a: dict, b: dict) -> Optional[str]:
+    """Two mentions that cannot be the same person AT THE SAME TIME.
+
+    Returns the contradicting field, or None.
+
+    TIME MATTERS HERE AND THE FIRST VERSION IGNORED IT, which building Daniel's
+    synthetic corner cases exposed before he had labelled a single one. Every
+    `lifespan_edge` pair came back blocked on "age", including an infant in 1811
+    and an adult in 1825 -- who is simply the same person at fourteen.
+
+    An infant becomes an adult; an enslaved person is manumitted. Neither is a
+    contradiction across a gap, only within one. So these fields are checked
+    only when the two mentions sit within a few years of each other, and the
+    time-aware work is done by `lifespan_conflict`, which reasons about implied
+    birth years rather than about labels.
+
+    The original rule still catches what it was built for -- the 21 impossible
+    identities were single clusters holding "adult, infant" and "free, enslaved"
+    simultaneously, and those mentions are years apart in both directions, so
+    the birth-window test refuses them on better grounds.
     """
+    ya, yb = a.get("_year"), b.get("_year")
+    if ya is not None and yb is not None and abs(ya - yb) > _STATUS_STABLE_YEARS:
+        return None
     for field, (side_a, side_b) in _MUTUALLY_EXCLUSIVE:
         x, y = _val(a, field), _val(b, field)
         if x is None or y is None:
@@ -221,7 +261,11 @@ def corroborating_signals(a: dict, b: dict) -> List[str]:
     """Which independent things support these being one person."""
     out: List[str] = []
     ya, yb = a.get("_year"), b.get("_year")
-    if ya is not None and yb is not None and abs(ya - yb) <= 40:
+    # Proximity only counts when the two mentions could belong to one life. An
+    # 1840 adult and an 1878 infant are 38 years apart, which used to read as
+    # corroboration; it is the opposite.
+    if (ya is not None and yb is not None and abs(ya - yb) <= 40
+            and not lifespan_conflict(a, b)):
         out.append("date-overlap")
     if _shares_third_party(a, b):
         out.append("same-named-relation")
@@ -422,6 +466,11 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
     if field:
         return False, f"blocked-contradiction-{field}"
 
+    # Chronology, for the same reason: it is a fact about people rather than a
+    # judgement about names, so nothing later can rescue it.
+    if lifespan_conflict(a, b):
+        return False, "blocked-lifespan"
+
     if _is_recurring_clergy(a, b):
         # Daniel's one sanctioned rules-based shortcut: "obvious merges like the
         # clergy that appear in many consecutive records". A priest signing
@@ -449,6 +498,84 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
         if aff >= min_aff:
             return n >= need, label
     return False, "distant"
+
+
+# Nobody lives this long, so two mentions further apart than this are different
+# people whatever else agrees. Deliberately generous: the point is to exclude the
+# impossible, not to model mortality.
+MAX_LIFESPAN_YEARS = 100
+# Youngest plausible parent. Used only to bound a birth year from ABOVE, so a
+# generous value stays safe.
+MIN_PARENT_AGE = 14
+# "infant" in these registers means a baptism in the first months of life; the
+# slack absorbs a late baptism and a transcription slip in the year.
+_INFANT_SLACK = 3
+_CHILD_MAX_AGE = 14
+_ADULT_MIN_AGE = 15
+
+
+def birth_window(mention: dict) -> Optional[Tuple[int, int]]:
+    """Earliest and latest year this person could have been born, or None.
+
+    Derived only from things the registers state plainly:
+
+      age "infant" in year Y   -> born about Y          (Y - 3 .. Y + 1)
+      age "child"  in year Y   -> born Y - 14 .. Y
+      age "adult"  in year Y   -> born at most Y - 15
+      is a PARENT in year Y    -> born at most Y - 14
+
+    Being someone's parent is the strongest of these and needs no age field at
+    all, which matters because age is present on well under half of mentions.
+    """
+    year = mention.get("_year")
+    if year is None:
+        return None
+    lo, hi = None, None
+
+    age = _val(mention, "age")
+    if age == "infant":
+        lo, hi = year - _INFANT_SLACK, year + 1
+    elif age == "child":
+        lo, hi = year - _CHILD_MAX_AGE, year
+    elif age in ("adult", "elderly"):
+        hi = year - _ADULT_MIN_AGE
+
+    # A parent must predate the child. `_ctx` holds (role, other-name) pairs from
+    # THIS person's point of view, so a "child" edge means they are the parent.
+    if any(role == "child" for role, _ in (mention.get("_ctx") or ())):
+        cap = year - MIN_PARENT_AGE
+        hi = cap if hi is None else min(hi, cap)
+
+    if lo is None and hi is None:
+        return None
+    return (lo if lo is not None else hi - MAX_LIFESPAN_YEARS,
+            hi if hi is not None else lo + MAX_LIFESPAN_YEARS)
+
+
+def lifespan_conflict(a: dict, b: dict) -> Optional[str]:
+    """Why these two mentions cannot be one person, on chronology alone.
+
+    Daniel, 2026-08-03: "I'm seeing some nonsensical pairings like children born
+    after a same-name adult died... someone can't die twice - there likely should
+    be some larger contextual knowledge built into the algorithm somehow."
+
+    He was right, and the cause was subtler than dates being ignored. Dates ARE
+    used, but only as PROXIMITY: `date-overlap` fires whenever two mentions sit
+    within 40 years, so an adult attached to an 1840 burial and an infant
+    baptised in 1878 counted as corroborating rather than contradictory. Nearness
+    in time is not compatibility.
+
+    This derives what each mention implies about a birth year and refuses the
+    pair when those implications cannot both hold.
+    """
+    ya, yb = a.get("_year"), b.get("_year")
+    if ya is not None and yb is not None and abs(ya - yb) > MAX_LIFESPAN_YEARS:
+        return f"events {abs(ya - yb)} years apart"
+
+    wa, wb = birth_window(a), birth_window(b)
+    if wa and wb and (wa[1] < wb[0] or wb[1] < wa[0]):
+        return (f"birth year cannot be both {wa[0]}-{wa[1]} and {wb[0]}-{wb[1]}")
+    return None
 
 
 def _exclusive_sides(mention: dict) -> Dict[str, int]:

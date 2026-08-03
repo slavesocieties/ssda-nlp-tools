@@ -4,7 +4,9 @@ The rules here are the ones that are true about people rather than about names,
 so they can be enforced before Daniel's 1,000 pair labels arrive and they do not
 compete with whatever those labels teach.
 """
-from ssda_nlp_tools.disambiguate import (_UnionFind,
+from ssda_nlp_tools.disambiguate import (_UnionFind, _third_party_same,
+                                         birth_window, corroborating_signals,
+                                         lifespan_conflict,
                                          _clusters_attributes_compatible,
                                          attributes_contradict,
                                          _clusters_share_an_entry,
@@ -166,3 +168,67 @@ def test_it_does_not_fragment_a_legitimate_recurring_person():
         r = uf.find(0)
         entries[r] = set().union(*(entries.get(k, set()) for k in range(i + 1)))
     assert len(entries[uf.find(0)]) == 4
+
+
+# --- chronology: Daniel, 2026-08-03 ----------------------------------------- #
+
+def test_an_adult_in_1840_is_not_an_infant_in_1878():
+    """Daniel: "nonsensical pairings like children born after a same-name adult
+    died". The cause was that dates were used as PROXIMITY -- 38 years is inside
+    the 40-year window, so it counted as corroboration rather than as a
+    contradiction."""
+    parent_1840 = {"name": "Juana", "_year": 1840,
+                   "_ctx": {("child", "asuncion")}}
+    infant_1878 = {"name": "Juana", "_year": 1878, "age": "infant", "_ctx": set()}
+    assert lifespan_conflict(parent_1840, infant_1878)
+    assert "date-overlap" not in corroborating_signals(parent_1840, infant_1878)
+
+
+def test_an_infant_grows_into_an_adult():
+    """The same two labels 25 years apart are one ordinary life."""
+    infant = {"name": "Maria", "_year": 1850, "age": "infant", "_ctx": set()}
+    adult = {"name": "Maria", "_year": 1875, "age": "adult", "_ctx": set()}
+    assert lifespan_conflict(infant, adult) is None
+    assert attributes_contradict(infant, adult) is None, "growing up is not a contradiction"
+
+
+def test_infant_and_adult_in_the_same_year_still_contradict():
+    infant = {"name": "Maria", "_year": 1850, "age": "infant"}
+    adult = {"name": "Maria", "_year": 1851, "age": "adult"}
+    assert attributes_contradict(infant, adult) == "age"
+
+
+def test_events_more_than_a_lifetime_apart():
+    a = {"name": "Juan", "_year": 1780, "_ctx": set()}
+    b = {"name": "Juan", "_year": 1900, "_ctx": set()}
+    assert lifespan_conflict(a, b)
+
+
+def test_being_a_parent_bounds_the_birth_year_without_any_age_field():
+    m = {"name": "Ana", "_year": 1840, "_ctx": {("child", "pedro")}}
+    lo, hi = birth_window(m)
+    assert hi <= 1840 - 14
+
+
+def test_undated_mentions_are_never_refused_on_chronology():
+    """Absence of a date is not evidence of separation."""
+    a = {"name": "Juan", "_year": None, "age": "infant", "_ctx": set()}
+    b = {"name": "Juan", "_year": 1850, "age": "adult", "_ctx": set()}
+    assert lifespan_conflict(a, b) is None
+
+
+# --- third-party names ------------------------------------------------------ #
+
+def test_a_shared_given_name_does_not_make_one_enslaver():
+    """Given names come from a tiny pool. "francisco pulgason" and "francisco
+    challi" were treated as one man, handing a false merge two signals."""
+    assert not _third_party_same("francisco pulgason", "francisco challi")
+
+
+def test_the_estate_surname_rule_still_holds():
+    assert not _third_party_same("hanna macqueen", "rachael macqueen")
+
+
+def test_short_forms_still_match():
+    assert _third_party_same("rachael", "rachael macqueen")
+    assert _third_party_same("francisco", "francisco pulgason")
