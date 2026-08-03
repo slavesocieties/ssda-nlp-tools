@@ -367,3 +367,36 @@ python run_luna_production.py production/batches_v6/701054.batches.jsonl --outdi
 Run it once WITHOUT `--confirm` first. Headroom is $4.15 against the $35 cap
 before the two outstanding jobs settle, and this needs ~$1.69, so settle
 701157/701179 first or the reservation may not fit.
+
+## 14. Verification state, and the one stage that has none (2026-08-02)
+
+| stage | verified against | result |
+|---|---|---|
+| transcription | human gold, 3 vols | substitution 6.31%, median similarity 0.891 |
+| transcription integrity | measured | 1,281 failed pages, 100% precision |
+| segmentation | human gold, 3 vols | **98.2%** of human entry count |
+| **extraction** | **nothing** | no usable human gold exists |
+| normalization / vocab | self-consistency | ethnicity 100%, age 100% |
+| merge | 4 gold negatives + logic | all held; labels pending |
+| social graph | logical invariants | 21 impossible identities -> 0 |
+| corpus QA | triaged | 531 real defects of 5,226 (10.2%) |
+
+**Extraction is the gap and it cannot be closed from the repo.**
+`slavesocieties/openai` has ~86 entries with structured `data`, but ~65 sit in
+`testing/` under names like `*_driver_output` -- model output, not gold.
+Measuring our extraction against another model's measures agreement, not
+accuracy. ~21 usable records for the stage that produces every person and event.
+
+```bash
+python audit_corpus.py --stage production/repair_YYYYMMDD   # triaged defects
+python validate_graph.py                                    # graph invariants
+python run_manual_gold.py                                   # transcription vs human
+python run_seg_gold.py                                      # segmentation vs human
+python run_gold_merge.py                                    # merge vs 59 hand labels
+```
+
+**Trap: two identity-resolution paths.** `run_merge.py` -> `disambiguate.py`;
+`run_pipeline.py` -> `link.py` -> `resolve.py` -> `disambiguate.py`. They
+converge, so a disambiguate change DOES reach the delivered graph -- but only
+after `assemble_corpus.py` runs WITHOUT `--skip-pipeline`, which takes 30+ min.
+An unchanged `network.json` usually means the rebuild has not finished.
