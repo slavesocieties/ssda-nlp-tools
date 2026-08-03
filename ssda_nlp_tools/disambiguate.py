@@ -178,6 +178,45 @@ SURNAME_TIERS = (
 MIN_SIGNALS_FOR_ANY_MERGE = 2
 
 
+# Attribute values that cannot both describe one person at one moment. These are
+# NOT the same as the softer "conflict" counting below: a scribe may write
+# "morena" once and "parda" another time for the same woman, and origins are
+# recorded loosely. Being simultaneously an infant and an adult is not scribal
+# variation, it is two people.
+#
+# Found by validating the social graph. The largest hubs in the corpus are
+# exactly the identities carrying these contradictions: "María de la Cruz" holds
+# 82 mentions and 208 edges while being both free and enslaved, both infant and
+# adult. 22 of 1,042 merged identities are in that state, and because they are
+# the hubs they distort the network out of all proportion to their number.
+#
+# This is the one over-merge signal available WITHOUT Daniel's labels, because
+# it needs no judgement: no threshold, no name reasoning, just a fact about
+# people. It is a hard block rather than a score adjustment for the same reason.
+_MUTUALLY_EXCLUSIVE: Tuple[Tuple[str, Tuple[frozenset, frozenset]], ...] = (
+    ("free", (frozenset({"true", "libre", "free"}),
+              frozenset({"false", "esclavo", "esclava", "slave"}))),
+    ("age", (frozenset({"infant", "párvulo", "parvulo", "child"}),
+             frozenset({"adult", "elderly"}))),
+)
+
+
+def attributes_contradict(a: dict, b: dict) -> Optional[str]:
+    """Two mentions that cannot be the same person, whatever else agrees.
+
+    Returns the contradicting field, or None. Deliberately narrow: only
+    oppositions where no reading of the register makes both true at once.
+    """
+    for field, (side_a, side_b) in _MUTUALLY_EXCLUSIVE:
+        x, y = _val(a, field), _val(b, field)
+        if x is None or y is None:
+            continue
+        x, y = str(x).strip().lower(), str(y).strip().lower()
+        if (x in side_a and y in side_b) or (x in side_b and y in side_a):
+            return field
+    return None
+
+
 def corroborating_signals(a: dict, b: dict) -> List[str]:
     """Which independent things support these being one person."""
     out: List[str] = []
@@ -375,6 +414,14 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
     exact surname match has not drifted, and demanding extra evidence for it
     would block the ordinary same-name merges this stage exists to make.
     """
+    # Checked before everything else, including the clergy shortcut, because it
+    # is a fact about people rather than a judgement about names. Nothing later
+    # in this function can rescue a pair where one mention is an infant and the
+    # other an adult.
+    field = attributes_contradict(a, b)
+    if field:
+        return False, f"blocked-contradiction-{field}"
+
     if _is_recurring_clergy(a, b):
         # Daniel's one sanctioned rules-based shortcut: "obvious merges like the
         # clergy that appear in many consecutive records". A priest signing
@@ -402,6 +449,41 @@ def surname_tier_allows(a: dict, b: dict) -> Tuple[bool, str]:
         if aff >= min_aff:
             return n >= need, label
     return False, "distant"
+
+
+def _exclusive_sides(mention: dict) -> Dict[str, int]:
+    """Which side of each mutually-exclusive opposition this mention sits on."""
+    out: Dict[str, int] = {}
+    for field, (side_a, side_b) in _MUTUALLY_EXCLUSIVE:
+        v = _val(mention, field)
+        if v is None:
+            continue
+        v = str(v).strip().lower()
+        if v in side_a:
+            out[field] = 0
+        elif v in side_b:
+            out[field] = 1
+    return out
+
+
+def _clusters_attributes_compatible(uf, i: int, j: int,
+                                    cluster_sides: Dict[int, Dict[str, set]]) -> bool:
+    """May these clusters be joined without making an impossible person?
+
+    Cluster-to-cluster for the same reason as the surname guard, and this is
+    where it actually bites. A pairwise check blocked only 15 merges in the
+    whole corpus, because the contradiction is TRANSITIVE: an infant merges with
+    a plausible adult, that adult merges with another adult, and nobody ever
+    compares the infant to the last one. The cluster carrying "María de la Cruz"
+    reached 82 mentions and 208 edges that way while being both free and
+    enslaved, both infant and adult.
+    """
+    sa = cluster_sides.get(uf.find(i), {})
+    sb = cluster_sides.get(uf.find(j), {})
+    for field in set(sa) & set(sb):
+        if sa[field] | sb[field] == {0, 1}:
+            return False
+    return True
 
 
 def _clusters_surname_compatible(uf, i: int, j: int,
@@ -652,9 +734,13 @@ def disambiguate_volume(
 
     # surnames seen in each union-find cluster, for the transitive-chain guard
     cluster_surnames: Dict[int, set] = {}
+    # Per-cluster record of which side of each mutually-exclusive opposition the
+    # cluster's members occupy. Maintained exactly like cluster_surnames.
+    cluster_sides: Dict[int, Dict[str, set]] = {}
     for _i, _m in enumerate(mentions):
         _s = _surname_of(_m.get("name"))
         cluster_surnames[_i] = {_s} if _s else set()
+        cluster_sides[_i] = {f: {v} for f, v in _exclusive_sides(_m).items()}
     auto_edges: List[Tuple[int, int, float]] = []
 
     def _log(disposition: str, i: int, j: int, s: float, reasons: List[str]) -> None:
@@ -720,6 +806,22 @@ def disambiguate_volume(
                         _log("blocked-cluster-surname", i, j, s, reasons)
                         chain_blocked += 1
                         continue
+                    # No person is both an infant and an adult, or both free and
+                    # enslaved. Checked cluster-to-cluster because the
+                    # contradiction is transitive; see
+                    # _clusters_attributes_compatible.
+                    if not _clusters_attributes_compatible(uf, i, j, cluster_sides):
+                        _enqueue({
+                            "score": round(min(s, auto_threshold - 0.01), 3),
+                            "reasons": reasons + ["blocked: cluster holds mutually "
+                                                  "exclusive attributes"],
+                            "a": {"entry": mentions[i]["_entry"], "id": mentions[i]["_local_id"],
+                                  "name": mentions[i].get("name"), "detail": _snapshot(mentions[i])},
+                            "b": {"entry": mentions[j]["_entry"], "id": mentions[j]["_local_id"],
+                                  "name": mentions[j].get("name"), "detail": _snapshot(mentions[j])},
+                        })
+                        _log("blocked-cluster-contradiction", i, j, s, reasons)
+                        continue
                     # tiered spelling bar: the further the surname has drifted,
                     # the more corroboration the merge needs
                     if surname_tiers:
@@ -743,6 +845,11 @@ def disambiguate_volume(
                     root = uf.find(i)
                     merged = cluster_surnames.get(ra, set()) | cluster_surnames.get(rb, set())
                     cluster_surnames[root] = merged
+                    sides: Dict[str, set] = {}
+                    for src in (cluster_sides.get(ra, {}), cluster_sides.get(rb, {})):
+                        for f, v in src.items():
+                            sides.setdefault(f, set()).update(v)
+                    cluster_sides[root] = sides
                     auto_edges.append((i, j, s))
                 elif s >= review_threshold:
                     _enqueue({
