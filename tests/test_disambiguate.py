@@ -282,3 +282,20 @@ def test_nothing_is_ever_discarded():
     r = name_variants(members, "Juan")
     assert {v["name"] for v in r["variants"]} == {"Juan", "Juan N.", "Juan Perez"}
     assert sum(v["count"] for v in r["variants"]) == 32
+
+
+def test_the_lifespan_ab_switch_actually_reaches_the_guard():
+    """A control run that silently keeps the guard on reports "no difference",
+    which is the most misleading result available. The first version of
+    --no-lifespan set an argparse flag nothing consumed, and both runs came back
+    byte-identical with blocked-lifespan=1,416 in each."""
+    import ssda_nlp_tools.disambiguate as D
+    a = {"name": "Juana", "_year": 1840, "_ctx": {("child", "asuncion")}}
+    b = {"name": "Juana", "_year": 1878, "age": "infant", "_ctx": set()}
+    assert surname_tier_allows(a, b) == (False, "blocked-lifespan")
+    D.LIFESPAN_GUARD_ENABLED = False
+    try:
+        assert surname_tier_allows(a, b)[1] != "blocked-lifespan"
+    finally:
+        D.LIFESPAN_GUARD_ENABLED = True
+    assert surname_tier_allows(a, b) == (False, "blocked-lifespan")

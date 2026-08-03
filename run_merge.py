@@ -85,6 +85,11 @@ def main(argv=None):
         print(f"constraints from {args.constraints} ({kind}): "
               f"{len(constraints['must'])} must, {len(constraints['cannot'])} cannot")
 
+    if args.no_lifespan:
+        import ssda_nlp_tools.disambiguate as _D
+        _D.LIFESPAN_GUARD_ENABLED = False
+        print("chronology guard DISABLED (A/B control run)")
+
     os.makedirs(args.outdir, exist_ok=True)
     print(f"{len(paths)} volumes, {len(entries)} entries")
     t0 = time.time()
