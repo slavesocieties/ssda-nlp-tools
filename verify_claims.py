@@ -170,6 +170,46 @@ CLAIMS = {
 }
 
 
+_WORDS = {1: "one", 2: "two", 3: "three", 4: "four", 5: "five", 6: "six",
+          7: "seven", 8: "eight", 9: "nine", 10: "ten", 11: "eleven",
+          12: "twelve"}
+
+
+def _states_value(text, value):
+    """Does the DM state this figure, in any form a person would write it?
+
+    Accepts the exact number, the comma-grouped form, the spelled-out word for
+    small counts ("nine volumes"), and an explicit rounded form for large ones
+    ("7.3 million" for 7,305,667).
+
+    Without these the checker cries wolf on correct prose, and a checker that
+    cries wolf gets ignored -- which would defeat the point of having one. It
+    flagged four figures on its first run and three were prose it should have
+    accepted.
+    """
+    if value is None:
+        return False
+    if isinstance(value, float):
+        return (f"{value:.3f}" in text or f"{value:.2f}" in text
+                or str(value) in text)
+    if not isinstance(value, int):
+        return str(value) in text
+    if f"{value:,}" in text or str(value) in text:
+        return True
+    word = _WORDS.get(value)
+    if word and re.search(r"\b" + word + r"\b", text, re.I):
+        return True
+    if value >= 1_000_000:                      # "7.3 million"
+        m = f"{round(value / 1_000_000, 1)}"
+        if re.search(re.escape(m) + r"\s*million", text, re.I):
+            return True
+    if value >= 1000:                           # "62.3k" / "~62,000"
+        for form in (f"{value / 1000:.1f}k", f"{round(value, -3):,}"):
+            if form in text:
+                return True
+    return False
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -196,9 +236,7 @@ def main(argv=None):
             if not hit:
                 continue
             # the DM mentions this quantity -- does the current value appear?
-            want = f"{v[key]:,}" if isinstance(v[key], int) else str(v[key])
-            bare = str(v[key])
-            if want in text or bare in text:
+            if _states_value(text, v[key]):
                 continue
             problems.append((os.path.basename(p), key, v[key],
                              [pat for pat in pats if re.search(pat, text, re.I)]))
