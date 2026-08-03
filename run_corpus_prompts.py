@@ -31,6 +31,7 @@ import json
 import os
 
 from ssda_nlp_tools.batch_extract import build_messages, plan_batches
+from ssda_nlp_tools.volume_profile import profile_entries
 from ssda_nlp_tools.cost import DEFAULT_PRICING, count_tokens
 
 
@@ -50,6 +51,13 @@ def main(argv=None):
                          "OpenAI models only; ignored for others.")
     ap.add_argument("--training", default="training_data.json")
     ap.add_argument("--instructions", default=None)
+    ap.add_argument("--language", default=None,
+                    help="source language named in the dynamic batch instruction. "
+                         "DETECTED PER VOLUME when omitted -- the old default of "
+                         "'Spanish' silently mislabelled every Portuguese volume, "
+                         "including 701054 (Portuguese burials).")
+    ap.add_argument("--record-type", default=None,
+                    help="record type named in the dynamic batch instruction")
     ap.add_argument("--volumes", nargs="*", default=None, help="only these volume ids")
     ap.add_argument("--limit", type=int, default=None, help="max volumes (smoke test)")
     ap.add_argument("--expand", metavar="BATCHFILE",
@@ -98,6 +106,8 @@ def main(argv=None):
 
     price = DEFAULT_PRICING.get(args.model)
     manifest = {"model": args.model, "batch_size": args.batch, "shots": len(examples),
+                "language": args.language or "detected per volume",
+                "record_type": args.record_type or "detected per volume",
                 "reasoning": args.reasoning if args.model.startswith("gpt-") else None,
                 "cost_note": "output projection assumes ~900 tok/entry; reasoning "
                              "tokens bill as output and are EXTRA at reasoning>minimal "
@@ -124,12 +134,26 @@ def main(argv=None):
         if not entries:
             continue
 
+        # Detect per volume unless the caller overrode it. The old defaults
+        # ("Spanish", "baptism") were applied to every volume because nobody
+        # ever passed the flags, so 701054's Portuguese burials were staged as
+        # Spanish baptisms. Detection makes the correct value the default rather
+        # than something to remember.
+        prof = profile_entries(d.get("entries") or [])
+        language = args.language or prof["language"]
+        record_type = args.record_type or prof["record_type"]
+        print(f"  {vol}: {language} {record_type}"
+              + ("  (MIXED: %s)" % prof["type_signals"] if prof["mixed"] else "")
+              + ("  [overridden]" if (args.language or args.record_type) else ""))
+
         batches = plan_batches(entries, args.batch)
         out_path = os.path.join(args.outdir, f"{vol}.batches.jsonl")
         vol_tail_tokens = 0
         with open(out_path, "w", encoding="utf-8") as fh:
             for bi, b in enumerate(batches):
-                msgs = build_messages(b, examples, instructions)
+                msgs = build_messages(b, examples, instructions,
+                                      record_type=record_type,
+                                      language=language)
                 if prefix_tokens is None:   # identical for every batch by design
                     prefix_tokens = sum(count_tokens(m["content"]) for m in msgs[:-1])
                 if bi == 0:                 # store the shared prefix once
