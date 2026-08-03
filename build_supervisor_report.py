@@ -43,6 +43,12 @@ def delivery_accounting(summary: dict) -> dict:
         raise ValueError(
             f"delivery accounting mismatch for rejected_requests: volume sum "
             f"{rejected} != total {totals['rejected_requests']}")
+    overrides = sum(int(value.get("provider_overrides", 0))
+                    for value in volumes.values())
+    if "provider_overrides" in totals and overrides != int(totals["provider_overrides"]):
+        raise ValueError(
+            f"delivery accounting mismatch for provider_overrides: volume sum "
+            f"{overrides} != total {totals['provider_overrides']}")
     expected_delivered = (sums["corpus_records"] - sums["missing_records"]
                           - partials - withdrawals)
     if sums["materialized_records"] != expected_delivered:
@@ -50,6 +56,7 @@ def delivery_accounting(summary: dict) -> dict:
             "delivery accounting mismatch: delivered must equal source minus "
             "missing, dropped partials, and withdrawals")
     return {**sums, "partials_dropped": partials, "rejected_requests": rejected,
+            "provider_overrides": overrides,
             "withdrawn_records": withdrawals}
 
 
@@ -170,6 +177,7 @@ def render_report(summary: dict, ledger: dict, audit: dict, qa: Counter,
         f"- Missing source records: {delivery['missing_records']:,}",
         f"- Invalid provider batches represented in delivery: {delivery['invalid_batches']:,}",
         f"- Historically rejected provider requests retained in the audit trail: {delivery['rejected_requests']:,}",
+        f"- Entry results explicitly replaced by a later approved re-extraction: {delivery['provider_overrides']:,}",
         f"- Page-truncated source records retained for audit and excluded from delivery: {delivery['partials_dropped']:,}",
         f"- Withdrawn records retained in quarantine and excluded from delivery: {delivery['withdrawn_records']:,}",
         "",

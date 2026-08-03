@@ -160,3 +160,24 @@ def test_combines_accepted_artifacts_from_multiple_directories(tmp_path):
     rows = read_rows_by_volume([first, second])
     assert set(rows["701157"]["valid"]) == {"701157-0001-01"}
     assert set(rows["701179"]["valid"]) == {"701179-0001-01"}
+
+
+def test_reextraction_override_requires_explicit_volume_and_later_dir_wins(tmp_path):
+    first = tmp_path / "first"; second = tmp_path / "second"
+    first.mkdir(); second.mkdir()
+    for directory, normalized in ((first, "old"), (second, "new")):
+        (directory / "batch.accepted.jsonl").write_text(json.dumps({
+            "custom_id": "701054-b0000",
+            "response": {"status_code": 200, "body": {"choices": [{
+                "finish_reason": "stop", "message": {"content": json.dumps({
+                    "results": [{"entry": "701054-0001-01",
+                                 "normalized": normalized,
+                                 "data": {"people": [], "events": []}}]})}}]}}
+        }) + "\n", encoding="utf-8")
+    guarded = read_rows_by_volume([first, second])
+    assert guarded["701054"]["valid"]["701054-0001-01"]["normalized"] == "old"
+    assert guarded["701054"]["invalid"]
+    replaced = read_rows_by_volume([first, second], {"701054"})
+    assert replaced["701054"]["valid"]["701054-0001-01"]["normalized"] == "new"
+    assert replaced["701054"]["invalid"] == []
+    assert replaced["701054"]["overrides"] == {"701054-0001-01"}

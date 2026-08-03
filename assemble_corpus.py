@@ -131,26 +131,31 @@ def _artifact_dirs(value):
     return [value] if isinstance(value, Path) else list(value)
 
 
-def read_rows_by_volume(live):
+def read_rows_by_volume(live, replace_volumes=None):
     """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
     # Seeded with the original five so existing callers still find their keys,
     # but ANY volume present in the data is added. The previous version could
     # only ever see the five, and skipped the rest without a word.
-    by = {v: {"valid": {}, "invalid": [], "rejected": [], "batches": 0}
+    replace_volumes = set(replace_volumes or ())
+    by = {v: {"valid": {}, "invalid": [], "rejected": [], "overrides": set(),
+              "batches": 0}
           for v in VOLUMES}
     unmapped = []
 
     def slot(v):
         return by.setdefault(
-            v, {"valid": {}, "invalid": [], "rejected": [], "batches": 0})
+            v, {"valid": {}, "invalid": [], "rejected": [], "overrides": set(),
+                "batches": 0})
     # Never assemble raw provider output.  The guarded runner writes a separate
     # accepted artifact containing only request-level responses that passed the
     # exact-ID, stop-reason, JSON, and usage checks.  This lets a large Batch
     # salvage its good requests without letting its failed neighbours leak into
     # delivery.
-    accepted_paths = sorted(
-        path for directory in _artifact_dirs(live)
-        for path in directory.glob("*.accepted.jsonl"))
+    # Directory order is intentional: a later explicitly named re-extraction
+    # may replace an earlier volume, but only when the caller also supplies
+    # --replace-volume for that volume. Within each directory ordering is stable.
+    accepted_paths = [path for directory in _artifact_dirs(live)
+                      for path in sorted(directory.glob("*.accepted.jsonl"))]
     for path in accepted_paths:
         for line in path.read_text(encoding="utf-8").splitlines():
             if not line.strip():
@@ -184,6 +189,10 @@ def read_rows_by_volume(live):
                 continue
             overlap = set(by[vol]["valid"]) & set(values)
             if overlap:
+                if vol in replace_volumes:
+                    slot(vol)["overrides"].update(overlap)
+                    slot(vol)["valid"].update(values)
+                    continue
                 # A repeated provider entry might hide a conflicting result; keep
                 # the first provenance-bearing result and make the anomaly visible.
                 slot(vol)["invalid"].append(
@@ -272,6 +281,10 @@ def main(argv=None):
                     help="directory containing guarded *.accepted.jsonl and "
                          "*.validation.json artifacts; repeat to combine runs "
                          "(default: --live directory)")
+    ap.add_argument("--replace-volume", action="append", default=[],
+                    help="allow a later --accepted-dir to replace duplicate entry "
+                         "IDs for this numeric volume; repeat as needed. Without "
+                         "this explicit flag, duplicates remain invalid.")
     ap.add_argument("--corpus", type=Path, action="append", dest="corpus_dirs",
                     help="directory containing *.segmented.json sources; repeat "
                          "for additional corpus directories (default: "
@@ -293,6 +306,9 @@ def main(argv=None):
                     "QA, identity, and graph refresh stages")
     args = ap.parse_args(argv)
 
+    if any(not re.fullmatch(r"\d{4,7}", value) for value in args.replace_volume):
+        raise ValueError("--replace-volume values must be 4-7 digit volume IDs")
+
     corpus_dirs = args.corpus_dirs or [Path("production/corpus")]
     corpus_paths = discover_corpora(corpus_dirs)
     if not corpus_paths:
@@ -311,7 +327,7 @@ def main(argv=None):
               f"({args.withdrawn})")
 
     accepted_dirs = args.accepted_dir or [args.live]
-    by = read_rows_by_volume(accepted_dirs)
+    by = read_rows_by_volume(accepted_dirs, args.replace_volume)
     vocabtest = read_vocabtest_rows(accepted_dirs)
     provider_volumes = {
         vol for vol, rows in by.items()
@@ -336,7 +352,8 @@ def main(argv=None):
         if not corpus.get("volume"):
             corpus["volume"] = vol
         volume_rows = by.setdefault(
-            vol, {"valid": {}, "invalid": [], "rejected": [], "batches": 0})
+            vol, {"valid": {}, "invalid": [], "rejected": [], "overrides": set(),
+                  "batches": 0})
         extracted = volume_rows["valid"]
         # A provider may return an identifier that is syntactically valid for
         # its request but not present in the current deterministic source (for
@@ -353,7 +370,8 @@ def main(argv=None):
                                        "materialized_records": 0,
                                        "missing_records": corpus_records,
                                        "invalid_batches": len(volume_rows["invalid"]),
-                                       "rejected_requests": len(volume_rows["rejected"])}
+                                       "rejected_requests": len(volume_rows["rejected"]),
+                                       "provider_overrides": len(volume_rows["overrides"])}
             tot_corpus += corpus_records
             tot_missing += corpus_records
             continue
@@ -395,8 +413,14 @@ def main(argv=None):
         if not args.skip_pipeline:
             run_pipeline.main([str(mat_path), "--tag", vol, "--outdir", str(pipe_dir)])
         complete = cov["missing_records"] == 0
-        state = ("COMPLETE" if not (by[vol]["invalid"] or by[vol]["rejected"])
-                 else "COMPLETE_WITH_REPAIRED_ANOMALIES") if complete else "PARTIAL"
+        if not complete:
+            state = "PARTIAL"
+        elif by[vol]["invalid"] or by[vol]["rejected"]:
+            state = "COMPLETE_WITH_REPAIRED_ANOMALIES"
+        elif by[vol]["overrides"]:
+            state = "COMPLETE_WITH_REEXTRACTION"
+        else:
+            state = "COMPLETE"
         summary["volumes"][vol] = {
             "state": state,
             "corpus_records": cov["corpus_records"],
@@ -405,6 +429,7 @@ def main(argv=None):
             "missing_records": cov["missing_records"],
             "invalid_batches": len(by[vol]["invalid"]),
             "rejected_requests": len(by[vol]["rejected"]),
+            "provider_overrides": len(by[vol]["overrides"]),
             "provider_only_ids": unexpected_ids,
             "pipeline": None if args.skip_pipeline else str(pipe_dir)}
         tot_corpus += cov["corpus_records"]; tot_mat += cov["materialized_records"]
@@ -453,10 +478,12 @@ def main(argv=None):
         summary["vocabtest"] = experiment
 
     total_rejected = sum(len(rows["rejected"]) for rows in by.values())
+    total_overrides = sum(len(rows["overrides"]) for rows in by.values())
     summary["totals"] = {"corpus_records": tot_corpus, "materialized_records": tot_mat,
                          "withdrawn_records": len(withdrawn_ids),
                          "missing_records": tot_missing, "invalid_batches": tot_invalid,
                          "rejected_requests": total_rejected,
+                         "provider_overrides": total_overrides,
                          "volumes_with_output": len(materialized_files)}
     (args.live / "CORPUS_SUMMARY.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
