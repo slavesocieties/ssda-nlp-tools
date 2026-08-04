@@ -1,3 +1,4 @@
+import re
 """The claim matcher, and why it has to accept prose.
 
 verify_claims exists because I twice quoted a figure computed once and never
@@ -51,3 +52,43 @@ def test_no_stray_control_characters_in_the_source():
     import verify_claims
     src = open(verify_claims.__file__, "rb").read()
     assert bytes([8]) not in src, "literal backspace byte in source"
+
+
+# --- added 2026-08-04: the checker must not pass vacuously -------------------
+# DM_DISAMBIG_REPLY.md triggered ZERO tracked claims and the report said "every
+# tracked figure in every DM matches", which reads as verified. It contained an
+# unverified pair score at the time.
+
+def test_a_dm_stating_no_tracked_figure_is_reported_as_unchecked(tmp_path, capsys):
+    import verify_claims as V
+    d = tmp_path / "dms"
+    d.mkdir()
+    (d / "DM_NOTHING.md").write_text("Prose with no tracked quantity in it.",
+                                     encoding="utf-8")
+    V.main(["--dms", str(d), "--root", ".",
+            "--transcriptions", str(tmp_path), "--manual", str(tmp_path)])
+    out = capsys.readouterr().out
+    assert "NOT CHECKED" in out
+    assert "DM_NOTHING.md" in out
+
+
+def test_agreement_trigger_ignores_agreeing_about_something_else():
+    """'how much we agree with that model' is about extraction, not labels."""
+    import verify_claims as V
+    text = ("measuring our extraction against another model's extraction tells "
+            "us how much we agree with that model, not how accurate we are.")
+    pats = V.CLAIMS["label_agreement_pct"]
+    assert not any(re.search(p, text, re.I) for p in pats)
+
+
+def test_agreement_trigger_fires_on_a_real_agreement_claim():
+    import verify_claims as V
+    text = "Of the 24 you were certain about, we now agree on 21, or 88%:"
+    pats = V.CLAIMS["label_agreement_pct"]
+    assert any(re.search(p, text, re.I) for p in pats)
+
+
+def test_merge_claims_survive_missing_artifacts(tmp_path):
+    """A fresh clone has no merge outputs; recompute must not explode."""
+    import verify_claims as V
+    assert V._merge_claims(str(tmp_path), {}) == {}

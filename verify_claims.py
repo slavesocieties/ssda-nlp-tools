@@ -52,6 +52,50 @@ def _load_json(path, default=None):
         return default
 
 
+def _merge_claims(root, v):
+    """Merge-stage figures. Agreement is read off the DELIVERED identities, not
+    re-derived from pair scores: a pair can score 1.00 and still be refused by a
+    later guard, so a score-based agreement rate is a different (wrong) number."""
+    P = os.path.join(root, "production/luna_v3/merge")
+    ids = _load_json(os.path.join(P, "v8lifespan.identities.json"))
+    labels = (_load_json(os.path.join(root, "labels.json")) or {}).get("labels")
+    if ids and labels:
+        loc = {}
+        for k, ident in enumerate(ids):
+            for m in ident.get("mentions") or []:
+                loc[(str(m.get("entry")), str(m.get("id")))] = k
+        hard = []
+        for x in labels:
+            L = x.get("likelihood")
+            if L not in (0, 100):
+                continue
+            a = loc.get((str(x["a"]["entry"]), str(x["a"]["id"])))
+            b = loc.get((str(x["b"]["entry"]), str(x["b"]["id"])))
+            if a is not None and b is not None:
+                hard.append((L == 100) == (a == b))
+        if hard:
+            v["label_agreement"] = sum(hard)
+            v["label_agreement_of"] = len(hard)
+            v["label_agreement_pct"] = round(100 * sum(hard) / len(hard))
+        v["labels_returned"] = sum(1 for x in labels
+                                   if x.get("likelihood") is not None)
+
+    # the A/B, which is only meaningful as a pair of runs
+    treat = _load_json(os.path.join(P, "v8lifespan.stats.json"))
+    ctrl = _load_json(os.path.join(P, "v8control2.stats.json"))
+    if treat:
+        v["lifespan_blocked"] = (treat.get("merges_blocked_by_surname_tier")
+                                 or {}).get("blocked-lifespan")
+    if treat and ctrl and treat.get("mentions") == ctrl.get("mentions"):
+        v["lifespan_extra_people"] = treat.get("identities", 0) - ctrl.get("identities", 0)
+
+    syn = _load_json(os.path.join(root, "production/luna_v3/synthetic/"
+                                        "synthetic_pairs.json"))
+    if syn:
+        v["synthetic_pairs"] = len(syn.get("pairs") or [])
+    return v
+
+
 def recompute(root, transcriptions, manual):
     """Every figure below is derived here and nowhere else."""
     v = {}
@@ -96,6 +140,9 @@ def recompute(root, transcriptions, manual):
                             for p in mpaths)
     v["overlap_volumes"] = len({os.path.basename(p)[:-5] for p in mpaths}
                                & {os.path.basename(p)[:-5] for p in tpaths})
+
+    # --- merge stage ------------------------------------------------------
+    _merge_claims(root, v)
 
     # --- transcription accuracy ------------------------------------------
     g = _load_json(os.path.join(root, "production/luna_v3/manual_gold.json")) or {}
@@ -167,6 +214,23 @@ CLAIMS = {
     "pairs_scored":             [r"7\.3 million", r"7,305,667"],
     "pair_strata":              [r"\b444\b"],
     "pair_singletons":          [r"\b37\b"],
+    # --- merge stage. Added 2026-08-04 after DM_DISAMBIG_REPLY.md passed this
+    # checker while triggering ZERO claims: it quoted an agreement rate, an A/B
+    # delta and a pair score, none of which were tracked, and "no problems" read
+    # as "verified". These patterns match the TOPIC, so a DM that discusses the
+    # quantity is checked whatever number it states -- unlike the entries above,
+    # which only fire when a DM happens to contain the stale value.
+    # A trigger must require the NUMBER it is about, not just the topic word.
+    # "how much we agree with that model" (extraction vs another model) and
+    # "your 1,000 labels" (the sample sent, not the 25 returned) both fired a
+    # looser first draft. A checker that cries wolf gets ignored, which is the
+    # same failure as one that passes silently.
+    "label_agreement_pct":      [r"agree[^.]{0,80}?\b\d{1,3}\s*%",
+                                 r"\bagree on\b[^.]{0,40}?\b\d+\b"],
+    "lifespan_blocked":         [r"chronolog\w+ (?:check|guard)\b[^.]{0,60}?"
+                                 r"refus\w+\s+[\d,]+"],
+    "lifespan_extra_people":    [r"\b[\d,]+ additional distinct people\b"],
+    "synthetic_pairs":          [r"\b[\d,]+ pairs, in\b"],
 }
 
 
@@ -226,29 +290,46 @@ def main(argv=None):
 
     dms = sorted(glob.glob(os.path.join(args.dms, "DM_*.md")))
     print(f"\nCHECKING {len(dms)} DM drafts")
-    problems = []
+    problems, coverage = [], {}
     for p in dms:
         text = open(p, encoding="utf-8").read()
+        name = os.path.basename(p)
+        checked = 0
         for key, pats in CLAIMS.items():
             if key not in v or v[key] is None:
                 continue
             hit = any(re.search(pat, text, re.I) for pat in pats)
             if not hit:
                 continue
+            checked += 1
             # the DM mentions this quantity -- does the current value appear?
             if _states_value(text, v[key]):
                 continue
-            problems.append((os.path.basename(p), key, v[key],
+            problems.append((name, key, v[key],
                              [pat for pat in pats if re.search(pat, text, re.I)]))
+        coverage[name] = checked
 
-    if not problems:
-        print("   every tracked figure in every DM matches the current artifacts")
-    else:
+    # A DM that triggers no claims was NOT verified, it was skipped. Saying
+    # "every tracked figure matches" about it is true and useless, and it read
+    # as a clean bill of health for DM_DISAMBIG_REPLY.md, which at the time
+    # contained an unverified pair score.
+    unchecked = [n for n, c in coverage.items() if c == 0]
+    if problems:
         print(f"   {len(problems)} figure(s) no longer match:")
         for f, key, now, seen in problems:
             print(f"     {f}: {key} is now {now:,}; DM still says {seen}")
         print("\n   STALE is not the same as WRONG. Check whether the corpus moved")
         print("   under the claim before assuming the DM was ever incorrect.")
+    else:
+        ok = [n for n, c in coverage.items() if c]
+        print(f"   {len(ok)} DM(s) checked, every tracked figure matches")
+
+    if unchecked:
+        print(f"\n   {len(unchecked)} DM(s) NOT CHECKED -- they state no tracked "
+              f"quantity, so this tool says nothing about them:")
+        for n in unchecked:
+            print(f"     {n}")
+        print("   Verify these by hand, or add their figures to CLAIMS.")
     return 1 if problems else 0
 
 
