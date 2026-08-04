@@ -299,3 +299,28 @@ def test_the_lifespan_ab_switch_actually_reaches_the_guard():
     finally:
         D.LIFESPAN_GUARD_ENABLED = True
     assert surname_tier_allows(a, b) == (False, "blocked-lifespan")
+
+
+def test_capitalisation_alone_is_not_an_attribute_conflict():
+    """'Cleric' vs 'cleric' was reported as a conflict on 7 of the 12 largest
+    clusters, all priests. Decisions were never affected (attributes_contradict
+    normalises via _val); only the identity report diverged from the scorer."""
+    from ssda_nlp_tools.disambiguate import _merge_attributes
+    merged, conflicts = _merge_attributes([{"occupation": "Cleric"},
+                                           {"occupation": "cleric"}])
+    assert conflicts == {}
+    assert merged["occupation"] == "Cleric"      # first surface form kept
+
+
+def test_a_genuine_attribute_conflict_is_still_reported():
+    from ssda_nlp_tools.disambiguate import _merge_attributes
+    _, conflicts = _merge_attributes([{"occupation": "Cleric"},
+                                      {"occupation": "Carpenter"}])
+    assert set(v.lower() for v in conflicts["occupation"]) == {"cleric", "carpenter"}
+
+
+def test_whitespace_is_normalised_too():
+    from ssda_nlp_tools.disambiguate import _merge_attributes
+    _, conflicts = _merge_attributes([{"occupation": " Cleric "},
+                                      {"occupation": "CLERIC"}])
+    assert conflicts == {}

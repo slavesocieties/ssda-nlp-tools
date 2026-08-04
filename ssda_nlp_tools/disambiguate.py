@@ -903,9 +903,18 @@ def _merge_attributes(members: List[dict]) -> Dict[str, Any]:
             v = m.get(k)
             if v is not None and not (isinstance(v, str) and not v.strip()):
                 vals.append(v)
-        uniq = []
+        # Dedupe on the SAME normalisation the scorer uses (`_val`: strip +
+        # lowercase), not on the raw surface form. Comparing raw strings recorded
+        # "Cleric" against "cleric" as an attribute conflict on 7 of the 12
+        # largest clusters -- every one of them a priest, every conflict pure
+        # capitalisation. Decisions were never affected, because
+        # attributes_contradict goes through _val; only this report diverged.
+        # Keep the first surface form seen so the output stays readable.
+        uniq, seen = [], set()
         for v in vals:
-            if v not in uniq:
+            key = _val({"v": v}, "v")
+            if key not in seen:
+                seen.add(key)
                 uniq.append(v)
         if len(uniq) == 1:
             merged[k] = uniq[0]
