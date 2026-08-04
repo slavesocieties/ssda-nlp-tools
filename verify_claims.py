@@ -89,6 +89,11 @@ def _merge_claims(root, v):
     if treat and ctrl and treat.get("mentions") == ctrl.get("mentions"):
         v["lifespan_extra_people"] = treat.get("identities", 0) - ctrl.get("identities", 0)
 
+    tr = _load_json(os.path.join(P, "v9tradeoff2.tradeoff.json"))
+    if tr:
+        v["dropped_surname_names"] = tr.get("dropped_surname_total_names")
+        v["dropped_surname_mentions"] = tr.get("dropped_surname_total_mentions")
+
     syn = _load_json(os.path.join(root, "production/luna_v3/synthetic/"
                                         "synthetic_pairs.json"))
     if syn:
@@ -231,6 +236,8 @@ CLAIMS = {
                                  r"refus\w+\s+[\d,]+"],
     "lifespan_extra_people":    [r"\b[\d,]+ additional distinct people\b"],
     "synthetic_pairs":          [r"\b[\d,]+ pairs, in\b"],
+    "dropped_surname_names":    [r"\b[\d,]+ distinct name pairs\b"],
+    "dropped_surname_mentions": [r"distinct name pairs over [\d,]+ mentions"],
 }
 
 
