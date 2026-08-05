@@ -226,6 +226,71 @@ def _snapshot(root):
     return out
 
 
+# Calls that actually reach the network or a paid API, matched against CODE with
+# comments stripped. A docstring, or a default path like "../ssda-openai/...",
+# is not an API call -- a cruder pattern flagged run_evidence_merge.py and
+# verify_claims.py, both offline tools written the same day, and shrinking the
+# executed set is the failure mode here: an unexecuted tool is an unchecked one.
+_SIDE_EFFECTING = re.compile(
+    r"urlopen\(|urllib\.request\.(?:urlopen|Request)|requests\.(?:get|post|put)"
+    r"|\.create\(|boto3\.|client\.(?:messages|chat|completions)"
+    r"|environ(?:\.get\(|\[)\s*[\"'][A-Z_]*KEY")
+
+
+# Scripts that have NEVER imported in this repository, with the reason. An
+# acknowledged failure is not a tolerated one: a checker carrying a permanent
+# red line gets ignored, which is the cry-wolf failure that made the
+# truncation rule useless at 11 hits. Anything NOT on this list breaking is a
+# regression and fails the check.
+KNOWN_BROKEN = {
+    "transcription_json_to_training_rule_based.py":
+        "inherited from the original SSDA repo; imports `eval_entry`, which "
+        "does not exist here and never has. Nothing calls it -- the only "
+        "reference is eval_data/zekai_algorithm_review.md. Fixing it needs the "
+        "missing module, not a guess at what check_entry did.",
+}
+
+
+def _is_offline(path):
+    src = open(path, encoding="utf-8", errors="ignore").read()
+    code = "\n".join(l.split("#")[0] for l in src.splitlines())
+    return not _SIDE_EFFECTING.search(code)
+
+
+@check("every offline script imports and answers --help (EXECUTED)")
+def _all_scripts_import(root):
+    """Widened from the 12 artifact-writers to the whole repository.
+
+    `--help` is the strongest thing that is unconditionally SAFE to run: it
+    proves the module imports, that argparse is well formed, and that nothing
+    explodes at import time -- while touching no data and calling nothing.
+
+    Scripts that reach the network or a paid API are NEVER executed, whatever
+    they would do. That exclusion is deliberate and not a coverage compromise:
+    running them could spend money or hit a rate limit, and no check is worth
+    that.
+    """
+    import subprocess as sp
+    every = [f for f in sorted(glob.glob(os.path.join(root, "*.py")))
+             if os.path.basename(f) != "self_check.py"]
+    scripts = [f for f in every if _is_offline(f)]
+    skipped = len(every) - len(scripts)
+    bad, known = [], []
+    for f in scripts:
+        name = os.path.basename(f)
+        r = sp.run([sys.executable, "-X", "utf8", name, "--help"],
+                   capture_output=True, text=True, cwd=root, timeout=120)
+        if "Traceback" not in (r.stderr or ""):
+            continue
+        last = [l for l in r.stderr.strip().splitlines() if l.strip()][-1]
+        (known if name in KNOWN_BROKEN else bad).append(f"{name}: {last[:50]}")
+    note = f" ({len(known)} known-broken acknowledged)" if known else ""
+    shown = "; ".join(bad[:4]) + (f" (+{len(bad) - 4} more)" if len(bad) > 4 else "")
+    return (not bad, shown if bad else
+            f"{len(scripts)} offline scripts import cleanly{note} "
+            f"({skipped} network/paid never executed)")
+
+
 @check("the test suite passes")
 def _suite(root):
     r = subprocess.run([sys.executable, "-m", "pytest", "-q",

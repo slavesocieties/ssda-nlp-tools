@@ -130,3 +130,43 @@ def test_the_executed_tool_check_passes_a_well_behaved_tool(tmp_path):
         encoding="utf-8")
     ok, msg = self_check._tools_refuse_empty(str(root))
     assert ok is True, msg
+
+
+def test_import_check_never_executes_network_or_paid_scripts(tmp_path):
+    """The exclusion is a SAFETY rule, not a coverage compromise: executing
+    these could spend money or hit a rate limit."""
+    from self_check import _is_offline
+    root = str(tmp_path)
+    paid = tmp_path / "spender.py"
+    paid.write_text("import urllib.request\n"
+                    "urllib.request.urlopen('http://x')\n", encoding="utf-8")
+    assert _is_offline(str(paid)) is False
+
+
+def test_a_path_containing_openai_is_not_mistaken_for_an_api_call(tmp_path):
+    """A cruder pattern flagged run_evidence_merge.py and verify_claims.py --
+    both offline -- because they reference ../ssda-openai/volumes.json.
+    Shrinking the executed set is the failure mode: an unexecuted tool is an
+    unchecked one."""
+    from self_check import _is_offline
+    f = tmp_path / "offline.py"
+    f.write_text('DEFAULT = "../ssda-openai/volumes.json"\n'
+                 '# openai is only a directory name here\n', encoding="utf-8")
+    assert _is_offline(str(f)) is True
+
+
+def test_a_new_broken_script_fails_the_check(tmp_path):
+    """Only the acknowledged one is tolerated; anything else is a regression."""
+    import self_check
+    (tmp_path / "newly_broken.py").write_text(
+        "import a_module_that_does_not_exist\n", encoding="utf-8")
+    ok, msg = self_check._all_scripts_import(str(tmp_path))
+    assert ok is False and "newly_broken.py" in msg
+
+
+def test_the_known_broken_entry_carries_a_reason():
+    """An allowlist without reasons becomes a place bugs go to be forgotten."""
+    from self_check import KNOWN_BROKEN
+    assert KNOWN_BROKEN
+    for name, why in KNOWN_BROKEN.items():
+        assert len(why) > 60, f"{name} needs a real explanation"
