@@ -601,3 +601,63 @@ parent. Detect per direction, report once.
 `_merge_attributes` deduped on the raw string while the scorer normalises through
 `_val`, so "Cleric" vs "cleric" was a reported conflict on 7 of the 12 largest
 clusters. Decisions were never affected; the report diverged from the rules.
+
+## 20. Why 375062 and 29597 are worse (2026-08-05)
+
+Two different causes. One is explained, one is not, and I am labelling them that
+way rather than giving both a story.
+
+**The mechanism, corpus-wide.** In 95-100% of dangling relationships the
+referenced id is BEYOND the number of people the extractor itself listed, with a
+median gap of exactly 1: it writes N people, then refers to P(N+1). This is a
+truncation pattern, not random invention.
+
+**Exposure is relationship density, and it is monotonic:**
+
+    rels/entry   entries   w/ dangling   rate
+         0-2       1,840          2      0.1%
+         3-5         564          2      0.4%
+         6-8       1,596         12      0.8%
+        9-11       1,235         31      2.5%
+       12-14         745         21      2.8%
+        15+          814         53      6.5%
+
+**29597 is EXPLAINED by that.** It has the densest entries in the corpus, mean
+13.7 relationships against 201991's 3.4. Against the pooled rate for its own
+density it runs 1.40x -- somewhat high, not anomalous. Its defect rate is what a
+volume of that shape should produce.
+
+**375062 is NOT explained.** It runs **2.23x** what its density predicts, and it
+also has the corpus's worst `no_people_real` rate (36.2 per 1,000, versus 12.4
+for 201991) -- entries where the text plainly contains a sacrament and the
+extractor returned nobody at all.
+
+Reading those entries, the text looks damaged in a specific way ("mil ochocien
+D. Miguel Llopiz", "esta Yglesia parroge. quial de Ingreso"), which suggests
+margin text interleaved into the body. **I could not confirm it.** A mid-word-break
+density proxy across all seven volumes does NOT track the defect rate -- 201991
+scores highest on it (0.83) and has the LOWEST defect rate (1.3%) -- so the proxy
+measures ordinary hyphenation, not corruption. Treat the interleaving story as an
+unverified hypothesis.
+
+**The consequence for spending.** For 29597, re-extraction should help: the
+entries are legitimately dense and the extractor drops the tail. For 375062, the
+cause is unknown, and re-running the same extractor over the same text may well
+reproduce the same result. **Diagnose 375062 before buying a fix for it.** It is
+88 of the 244 records.
+
+## 21. The gold volumes and the delivered volumes are DISJOINT (2026-08-05)
+
+    gold (accuracy measured):  15834, 1795, 419324
+    delivered corpus:          176899, 201991, 29597, 375062, 701054,
+                               701157, 701179
+    overlap:                   NONE
+
+So "transcription substitution 6.31%, median page similarity 0.891" and
+"segmentation 98.2%" are measured on three volumes that are **not in the corpus
+we ship**. They are evidence about the pipeline, not about the delivered data,
+and every previous statement of them (including in PROJECT_STATUS §6) omitted
+that. 375062 in particular cannot be checked against gold at all, which is
+exactly why §20 above ends in "unknown" rather than a diagnosis.
+
+This does not make the numbers wrong. It bounds what they cover.

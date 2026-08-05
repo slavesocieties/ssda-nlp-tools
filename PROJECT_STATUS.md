@@ -406,6 +406,9 @@ Everything below extraction is measured:
 
     transcription   substitution 6.31%, median page similarity 0.891 (3 vols)
     segmentation    98.2% of the human entry count (3 vols)
+                    ^ those 3 gold volumes (15834, 1795, 419324) are DISJOINT
+                      from the 7 delivered. Evidence about the pipeline, not
+                      about the shipped data. See RUNBOOK section 21.
     normalization   age 100%, ethnicity 100% on Spanish volumes
     merge           21/24 (88%) against Daniel's certain labels
     graph           invariants above
