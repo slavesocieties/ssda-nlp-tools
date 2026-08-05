@@ -343,19 +343,25 @@ extraction already paid for). 8,595 events: baptism 2,815, burial 2,172, birth
    325) and Brazilian ethnonyms; ethnicity conformance fell to 61%/45% on the
    first substantially Portuguese volumes. Needs a ruling like the 71 ethnicity
    terms.
-6. **282 free repairs** (172 duplicate entries, 110 null relationships). They
-   change delivered counts, so they are staged rather than applied.
+6. **180 free repairs** (282 issues over 180 distinct records: 172 duplicate
+   entries, 110 null relationships). They change delivered counts, so they are
+   staged rather than applied.
 
 **B. Blocked on a human step or spend.**
 
 7. **API key rotation** -- outstanding across several sessions.
-8. **363 records need re-extraction** (100 no-people, 216 dangling
-   relationships, 37 malformed events, 4 dangling principals, 5 vocab
-   violations, 1 role contradiction). Source text is fine; the extractor
-   misread it. PAID.
-9. **701054 re-extraction** staged at `production/batches_v6/` (60 requests,
-   ~$2.10). Needs a fresh outdir and distinct run-id: 210 of 596 entry ids
-   collide with the existing run.
+8. **244 records need re-extraction** -- 3.6% of the corpus. (That is 363
+   ISSUES over 244 DISTINCT records; one record commonly carries several
+   dangling relationships. Earlier revisions quoted the issue count as if it
+   were records.) Source text is fine; the extractor misread it. PAID.
+   Concentrated: 375062 at 7.8% and 29597 at 7.3% supply 145 of the 244 from
+   28% of the corpus, six times 201991's 1.3%. Worth understanding before
+   buying a fix. See RUNBOOK §18.
+9. **701054 completion** -- NOT a re-extraction. 375 records were never
+   extracted once, because our segmenter dropped 54 of its 105 pages as "index
+   pages" (two-column registers transcribed as markdown tables). 61 requests
+   staged at `production/batches_v6/`, ~$2.10. One-time; the bug is fixed.
+   Needs a fresh outdir and distinct run-id: 210 of 596 entry ids collide.
 
 **C. Unblocked -- can be built now.**
 
