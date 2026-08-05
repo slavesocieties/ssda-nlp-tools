@@ -93,12 +93,30 @@ def check(nodes, edges):
                 out["missing_inverse"].append({"source": s, "target": t,
                                                "type": ty, "expected": inv})
 
-    # contradictory roles between the same two people
+    # Contradictory roles between the same two people.
+    #
+    # ONE PAIR, ONE ROW. by_pair is keyed on the ORDERED (s, t), so reporting per
+    # key counts every pair twice: A-B carrying {parent, spouse} and B-A carrying
+    # {child, spouse} are the same two people seen from both ends, and listing
+    # both inflated the count from 5 to 8. That is the same double-count that
+    # once turned an ancestry-cycle figure into a wrong "28 -> 0", so the roles
+    # from both directions are unioned onto one unordered pair here.
+    # DETECT per direction, REPORT once. Unioning the two directions first looks
+    # tidier and is catastrophically wrong: A->B "parent" plus B->A "child" is the
+    # ordinary inverse pair every real parent has, so the union makes every
+    # parent/child in the corpus contradict itself. That mistake took the count
+    # from 8 to 10,050 before this comment existed. The contradiction is always a
+    # property of ONE direction -- A->B carrying both "parent" and "spouse".
+    reported = set()
     for (s, t), types in by_pair.items():
         for a, b in CONTRADICTORY:
             if a in types and b in types:
-                out["contradictory_roles"].append({"a": s, "b": t,
-                                                   "types": sorted(types)})
+                key = tuple(sorted((s, t)))
+                if key not in reported:
+                    reported.add(key)
+                    out["contradictory_roles"].append({"a": s, "b": t,
+                                                       "types": sorted(types)})
+                break          # one row per pair, not one per contradiction
 
     # ancestry cycles (iterative DFS; the graph is large)
     colour = {}
