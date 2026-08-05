@@ -300,6 +300,129 @@ def _transcription(rng, i):
         note="tests Daniel's name-variant retention question", seed_id=i)
 
 
+# --------------------------------------------------------------------------- #
+# social networks -- Daniel, 2026-08-05
+#
+# "in most cases people will appear embedded in a social network of some
+# density. This is also critical to disambiguation, and so social networks of
+# varying size, complexity, and overlap should be included."
+#
+# The first ten families vary ONE attribute against a fixed background and give
+# each side at most a single relation, so they cannot ask the question that
+# actually decides most real merges: how much of the surrounding network is
+# shared, and how much of it CONFLICTS. These four vary size (1 to 6 associates),
+# overlap (none to complete), and role structure independently.
+#
+# The hard case is deliberate: identical names with DENSE, DISJOINT networks.
+# Every string-level signal says merge and the social evidence says two different
+# people, which is the shape a weight-of-evidence model should get right and a
+# name-similarity threshold cannot.
+# --------------------------------------------------------------------------- #
+
+_REL_ROLES = ("parent", "godparent", "spouse", "enslaver", "sibling")
+
+
+def _some_name(rng):
+    given = rng.choice(GIVEN_F + GIVEN_M)
+    return f"{given} {rng.choice(SURNAMES)}"
+
+
+def _assoc(rng, n, exclude=None):
+    """n DISTINCT named associates, each in a different role where possible.
+
+    Distinctness matters: two associates who happen to share a generated name
+    would make a network look more overlapping than it is, which is the very
+    thing these families exist to measure.
+    """
+    out, used = [], set(exclude or ())
+    guard = 0
+    while len(out) < n and guard < 200:
+        guard += 1
+        nm = _some_name(rng)
+        if nm in used:
+            continue
+        used.add(nm)
+        out.append({"type": _REL_ROLES[len(out) % len(_REL_ROLES)], "name": nm})
+    return out
+
+
+def _network_overlap(rng, i):
+    """Same name, networks of the SAME size, sharing k of them."""
+    size = rng.choice((2, 3, 4, 6))
+    share = rng.choice((0, 1, size // 2, size))
+    nm = _some_name(rng)
+    common = _assoc(rng, share)
+    seen = {r["name"] for r in common}
+    a_only = _assoc(rng, size - share, exclude=seen)
+    seen |= {r["name"] for r in a_only}
+    b_only = _assoc(rng, size - share, exclude=seen)
+    y = rng.randint(1790, 1880)
+    a = _person(rng, name=nm, year=y, relations=common + a_only)
+    b = _person(rng, name=nm, year=y + rng.randint(1, 6),
+                relations=common + b_only)
+    return _pair("network_overlap",
+                 f"Identical names. Each is embedded in {size} relationships, "
+                 f"of which {share} name the same person. Same person?",
+                 a, b, note=f"size {size}, shared {share}", seed_id=i)
+
+
+def _network_asymmetric(rng, i):
+    """One side densely embedded, the other barely -- the common real case,
+    where absence of overlap may only mean absence of evidence."""
+    nm = _some_name(rng)
+    dense = _assoc(rng, rng.choice((4, 5, 6)))
+    thin = (dense[:1] if rng.random() < 0.5
+            else _assoc(rng, 1, exclude={r["name"] for r in dense}))
+    y = rng.randint(1790, 1880)
+    a = _person(rng, name=nm, year=y, relations=dense)
+    b = _person(rng, name=nm, year=y + rng.randint(1, 8), relations=thin)
+    shared = len({r["name"] for r in dense} & {r["name"] for r in thin})
+    return _pair("network_asymmetric",
+                 f"Identical names. One appears with {len(dense)} relations, the "
+                 f"other with {len(thin)}, sharing {shared}. Same person?",
+                 a, b, note=f"dense {len(dense)} vs thin {len(thin)}, "
+                            f"shared {shared}", seed_id=i)
+
+
+def _network_conflict(rng, i):
+    """Identical names, DENSE networks, ZERO overlap. Two different people who
+    look identical to every string comparison."""
+    nm = _some_name(rng)
+    n = rng.choice((3, 4, 5))
+    y = rng.randint(1790, 1880)
+    ra = _assoc(rng, n)
+    # Drawn with the first side EXCLUDED. Two independent draws from a small
+    # name pool collide by chance, and a "zero overlap" family that quietly
+    # overlaps measures nothing -- which is what the test caught.
+    rb = _assoc(rng, n, exclude={r["name"] for r in ra})
+    a = _person(rng, name=nm, year=y, relations=ra)
+    b = _person(rng, name=nm, year=y + rng.randint(0, 4), relations=rb)
+    return _pair("network_conflict",
+                 f"Identical names and dates. Each is embedded in {n} "
+                 f"relationships and they share NONE of them. Same person?",
+                 a, b, note=f"dense {n} each, zero overlap", seed_id=i)
+
+
+def _network_role_shift(rng, i):
+    """The same associates in DIFFERENT roles -- a woman who is a godparent in
+    one record and a parent in another, which is ordinary, versus role pairs
+    that cannot both hold."""
+    nm = _some_name(rng)
+    who = _assoc(rng, 2)
+    y = rng.randint(1790, 1880)
+    ra, rb = rng.choice((("godparent", "parent"), ("parent", "child"),
+                         ("spouse", "parent"), ("godparent", "godparent")))
+    a = _person(rng, name=nm, year=y,
+                relations=[{"type": ra, "name": who[0]["name"]}, who[1]])
+    b = _person(rng, name=nm, year=y + rng.randint(1, 10),
+                relations=[{"type": rb, "name": who[0]["name"]}, who[1]])
+    return _pair("network_role_shift",
+                 f"Identical names sharing two associates, but {who[0]['name']} "
+                 f"is their {ra} in one record and their {rb} in the other. "
+                 f"Same person?",
+                 a, b, note=f"role {ra} -> {rb}", seed_id=i)
+
+
 FAMILIES = {
     "name_variant": _name_variant,
     "shared_given": _shared_given,
@@ -311,6 +434,10 @@ FAMILIES = {
     "temporal_gap": _temporal_gap,
     "placeholder_name": _placeholder_name,
     "transcription": _transcription,
+    "network_overlap": _network_overlap,
+    "network_asymmetric": _network_asymmetric,
+    "network_conflict": _network_conflict,
+    "network_role_shift": _network_role_shift,
 }
 
 
