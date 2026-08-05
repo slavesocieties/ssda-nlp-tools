@@ -101,3 +101,28 @@ def test_every_score_is_explainable():
               {"name": "Ana Solar", "_entry": "E2"}, s)
     assert r["terms"] and all(isinstance(w, float) for _, w in r["terms"])
     assert abs(r["log_odds"] - (LOG_PRIOR_ODDS + sum(w for _, w in r["terms"]))) < 1e-9
+
+
+def test_place_weights_are_monotone_in_closeness():
+    """Co-location cannot become STRONGER evidence as it gets coarser.
+
+    Fitting the levels independently produced city=+1.45 against
+    institution=+0.50 -- same city rated above same parish. It came from a
+    single positive pair, because with seven volumes and no two sharing an
+    institution a "place level" is a lookup on a VOLUME PAIR, not an independent
+    observation, and `city` names exactly one pair (201991/29597). Those two
+    registers do not even overlap in time.
+    """
+    from ssda_nlp_tools.evidence import W_PLACE
+    order = ["institution", "city", "state", "country", "none"]
+    vals = [W_PLACE[k] for k in order]
+    assert all(vals[i] >= vals[i + 1] for i in range(len(vals) - 1)), vals
+
+
+def test_no_place_level_can_carry_a_merge_by_itself():
+    """Location is corroboration, never proof. Daniel calls it critical, and it
+    is -- but 56.7% of candidate pairs already share an institution."""
+    from ssda_nlp_tools.evidence import (LOG_PRIOR_ODDS, W_PLACE,
+                                         AUTO_MERGE_LOG_ODDS, MAX_NAME_LLR)
+    best = max(W_PLACE.values())
+    assert LOG_PRIOR_ODDS + MAX_NAME_LLR + best < AUTO_MERGE_LOG_ODDS

@@ -61,23 +61,34 @@ LOG_PRIOR_ODDS = math.log(1 / 260)
 
 # Location, from the institution that produced the record. Daniel: "absolutely
 # critical ... should be considered heavily".
-# MEASURED, not chosen: LLR = ln( P(feature|same) / P(feature|different) ),
-# with P(.|different) from 60,000 sampled CANDIDATE pairs (post-blocking, which
-# are overwhelmingly non-matches) and P(.|same) from the 14 confirmed positives.
+# MEASURED where the measurement means something, CONSTRAINED where it does not.
 #
-# The first version of these was guessed, and the guesses were 4x to 9x too
-# large. Same-institution is +0.50, not the +2.00 I assigned, because 56.7% of
-# candidate pairs already share an institution -- blocking has ALREADY selected
-# for it, so it can barely discriminate. Different-country measures -0.43, not
-# -4.00: it feels decisive and is not, because 10.3% of candidates are
-# cross-country anyway.
+# LLR = ln( P(feature|same) / P(feature|different) ), with P(.|different) from
+# 60,000 sampled CANDIDATE pairs and P(.|same) from the 14 confirmed positives.
 #
-# That last one matters for how the 24 transatlantic merges get killed. NOT by a
-# large negative overruling the rest, but by there being no positive evidence to
-# reach the threshold in the first place. Relying on a big veto weight is a
-# binary gate wearing a probabilistic costume.
-W_PLACE = {"institution": 0.50, "city": 1.45, "state": 0.20,
-           "country": 0.0, "none": -0.43}
+# `institution` is the one level with real support: 56.7% of candidates and 13 of
+# 14 positives, giving +0.50. It is small because BLOCKING HAS ALREADY SELECTED
+# FOR IT -- over half of all candidate pairs already share an institution, so it
+# can barely discriminate. My first guess was +2.00.
+#
+# THE FINER LEVELS ARE NOT MEASURABLE IN THIS CORPUS AND MUST NOT BE FITTED.
+# With seven volumes and no two from the same institution, a "place level" is not
+# an independent observation, it is a lookup on a VOLUME PAIR. There are 21 such
+# pairs, and `city` corresponds to exactly ONE of them: 201991 / 29597,
+# Guanabacoa and Santo Angel. Fitting it gave +1.45 -- higher than same-parish,
+# which is backwards on its face -- from a single positive pair. Worse, those two
+# registers NEVER COEXIST (1839-1852 against 1770-1792), so the one pair driving
+# the weight is one that should be discouraged, not rewarded.
+#
+# So the levels are held MONOTONE by construction: co-location cannot become
+# stronger evidence as it gets coarser. institution >= city >= state >= country
+# >= different-country. Only `institution` and `none` are measured; the middle is
+# interpolated, and honestly labelled as such.
+W_PLACE = {"institution": 0.50,   # measured, 13/14 positives
+           "city": 0.40,          # interpolated -- see above, NOT the fitted 1.45
+           "state": 0.20,         # interpolated
+           "country": 0.0,
+           "none": -0.43}         # measured, but on ONE cross-country positive
 
 W_VOLUMES_NEVER_COEXIST = -1.5     # still a prior; not separately measurable here
 W_ATTR_AGREE = 0.25                # per agreeing hard attribute, deliberately small
