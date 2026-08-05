@@ -727,3 +727,32 @@ line item.** Roughly a fifth of it is money spent re-reading broken input.
 a narrow one finds 1. Only 2 records are in `withdrawn_records.json`. Before
 acting on that class, agree the pattern first -- the number is an artifact of the
 detector, not a property of the corpus.
+
+## 23. Silent partial under-extraction: looked for, NOT found (2026-08-05)
+
+§22 found 23 records in 375062 where clean text returned `{"people": [],
+"events": []}`. The obvious worry is the invisible version: records where the
+extractor found SOME people and missed others, which no audit catches because
+`no_people` only fires at zero.
+
+Measured with a crude proxy -- capitalised two-word name phrases in the text
+against people actually extracted -- across all 6,794 records:
+
+    volume    median names   median people   ratio
+    176899           8             6          1.33
+    201991           4             3          1.33
+    29597           12             9          1.33
+    375062           6             6          1.00
+    701054           3             3          1.00
+    701157          11             9          1.22
+    701179           4             7          0.57
+
+The ratio is stable across volumes, including the two worst (29597 at 1.33 is
+the same as the two healthiest). Records with 3x more name phrases than people
+found: **49 of 6,794, 0.7%**, spread evenly rather than concentrated.
+
+So the zero-people failure does NOT appear to have a widespread partial
+counterpart. **Weak evidence of absence, not proof**: the proxy over-counts
+places and liturgical formulae, and 701179's 0.57 shows it under-counts
+Portuguese names, so it would miss a subtle systematic shortfall. It is enough to
+say the problem is not obviously corpus-wide, and not enough to say it is absent.
