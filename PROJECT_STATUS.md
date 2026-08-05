@@ -359,14 +359,33 @@ extraction already paid for). 8,595 events: baptism 2,815, burial 2,172, birth
 
 **C. Unblocked -- can be built now.**
 
-10. **Residual graph defects**: 15 ancestry cycles, 8 contradictory role pairs,
-    6 missing inverse edges. Self-loops and dangling endpoints are 0. The
-    cycle guard is depth-bounded to 4 and reroutes some loops rather than
-    removing them.
-11. **The review queue for weak dimensions** (relationships ~0.83, fine
-    attributes) is built but has never been run.
-12. **Statistical validation of the training sample** -- the stratified draw and
-    inverse-probability weights have not been independently checked.
+10. ~~Residual graph defects~~ **DONE for the fixable part** (2026-08-05).
+    `missing_inverse` 6 -> 2 by materialising SELF-INVERSE types (sibling,
+    spouse, witness), where the reverse is definitional rather than inferred.
+    Rebuilt graph at `corpus_final_pipeline_v2/` (32,943 people, 53,844 edges);
+    self-loops and dangling endpoints remain 0.
+
+    What is left is not a graph bug and cannot be fixed in the graph:
+    - **2 missing inverses + 1 role contradiction are ONE malformed entry**,
+      `701179-0148-01`, where Maria and Antonio da Costa are each recorded as
+      the other's parent AND godparent. Needs RE-EXTRACTION (item 8).
+    - **4 contradictory role pairs and 15 ancestry cycles are merge artifacts**,
+      not extraction errors -- `same_entry_role_contradictions` finds exactly 1
+      in 6,794 records. The cycle guard is depth-bounded to 4 and reroutes some
+      loops rather than removing them; fixing that properly needs labels.
+
+    NOT promoted over `corpus_final_pipeline/`: the delivered graph is a
+    hand-off artifact and replacing it is a call for a human to make.
+11. ~~The review queue for weak dimensions~~ **BUILT AND RUN** (2026-08-05).
+    It had never been built -- the four review modules are all identity/pair
+    review and the only queue produced was for ethnicity TERMS.
+    `run_relationship_review.py` -> 331 rows, all shown: 216 dangling
+    relationships, 110 null, 4 dangling principals, 1 role contradiction.
+12. ~~Statistical validation of the training sample~~ **DONE** (2026-08-05).
+    `validate_training_sample.py`: reservoir uniform (chi-square 477.6 vs a
+    4-sigma bound of 625.4, by simulation), water-fill spread 1, and
+    sum(weights) = 7,305,667 against a population of 7,305,667 -- 0.000% error,
+    which also proves all 444 strata drew at least once. 37 drew exactly once.
 
 ### The honest ceiling
 
