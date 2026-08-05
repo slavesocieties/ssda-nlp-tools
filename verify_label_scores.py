@@ -65,6 +65,17 @@ def merged_lookup(path):
 
 
 def score(idx, pair):
+    # A label file whose a/b are PEOPLE rather than pointers (synthetic_labels
+    # .json is exactly that shape) used to raise KeyError from deep inside the
+    # scoring loop. Say what is wrong instead.
+    for side in ("a", "b"):
+        if not isinstance(pair.get(side), dict) or "entry" not in pair[side]:
+            raise SystemExit(
+                "this labels file stores PEOPLE, not pointers -- expected "
+                '{\"a\": {\"entry\": ..., \"id\": ...}}. '
+                "verify_label_scores.py reads the real-corpus labels "
+                "(labels.json); synthetic_labels.json is a different shape and "
+                "has no corpus mentions to resolve against.")
     a = idx.get((str(pair["a"]["entry"]), str(pair["a"]["id"])))
     b = idx.get((str(pair["b"]["entry"]), str(pair["b"]["id"])))
     if a is None or b is None:
@@ -146,6 +157,13 @@ def main(argv=None):
             print(f"  {'':44s}              {'; '.join(reasons[:3])}")
 
     hard = [r for r in rows if r[0] in (0, 100)]
+    if not hard:
+        # Every label graded 25/50/75, which is exactly what the synthetic set
+        # came back as. An agreement percentage is UNDEFINED here, not zero, and
+        # dividing by len(hard) raised ZeroDivisionError.
+        print("\n  No 0/100 labels: every one is graded uncertain. Agreement is "
+              "undefined\n  for a binary outcome, so none is reported.")
+        return 0
     ok = sum(1 for L, m in hard if (L == 100) == m)
     print(f"\n  AGREEMENT on the {len(hard)} pairs he was certain about: "
           f"{ok}/{len(hard)} ({100 * ok / len(hard):.0f}%)")

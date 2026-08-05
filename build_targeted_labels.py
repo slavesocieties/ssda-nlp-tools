@@ -55,6 +55,23 @@ from ssda_nlp_tools import evidence as E
 from ssda_nlp_tools.textmatch import name_similarity, phonetic_key
 from ssda_nlp_tools.volume_geo import load as load_geo
 
+
+def require_corpus(entries, assembled):
+    """Refuse to proceed on an empty corpus.
+
+    Found by the review pass, and it had already done damage: pointed at an
+    empty directory these tools produced empty output, reported success, and
+    OVERWROTE a real artifact with it. Running the check destroyed e1 and
+    v9tradeoff. An empty input is always a mistake -- a wrong --assembled path,
+    an unfinished rebuild -- and never a result worth writing.
+    """
+    if not entries:
+        raise SystemExit(
+            f"no entries under {assembled!r}. Refusing to write empty output "
+            f"over existing artifacts -- check the --assembled path.")
+    return entries
+
+
 MAX_BLOCK = 400          # skip the huge clergy blocks; clergy are settled
 
 
@@ -184,6 +201,7 @@ def main(argv=None):
     entries = []
     for p in sorted(glob.glob(os.path.join(args.assembled, "*.materialized.json"))):
         entries.extend(json.load(open(p, encoding="utf-8"))["entries"])
+    require_corpus(entries, args.assembled)
     M = D._mentions_from_volume({"id": "corpus", "entries": entries})
     stats = E.NameStats(M, is_clergy=E._clergy)
     geo = load_geo()

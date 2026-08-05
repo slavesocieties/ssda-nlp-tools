@@ -43,6 +43,23 @@ import os
 import ssda_nlp_tools.disambiguate as D
 
 
+def require_corpus(entries, assembled):
+    """Refuse to proceed on an empty corpus.
+
+    Found by the review pass, and it had already done damage: pointed at an
+    empty directory these tools produced empty output, reported success, and
+    OVERWROTE a real artifact with it. Running the check destroyed e1 and
+    v9tradeoff. An empty input is always a mistake -- a wrong --assembled path,
+    an unfinished rebuild -- and never a result worth writing.
+    """
+    if not entries:
+        raise SystemExit(
+            f"no entries under {assembled!r}. Refusing to write empty output "
+            f"over existing artifacts -- check the --assembled path.")
+    return entries
+
+
+
 def token_prefix(a, b):
     """True when one name is the other plus extra trailing surname tokens --
     the dropped-maternal-surname shape."""
@@ -66,6 +83,7 @@ def main(argv=None):
     entries = []
     for p in sorted(glob.glob(os.path.join(args.assembled, "*.materialized.json"))):
         entries.extend(json.load(open(p, encoding="utf-8"))["entries"])
+    require_corpus(entries, args.assembled)
     print(f"{len(entries):,} entries")
 
     log = []
