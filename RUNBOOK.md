@@ -504,3 +504,100 @@ sibling edges.
 different fixes: **same-entry role contradictions are EXTRACTION defects and
 there is exactly 1 in 6,794 records** (701179-0148-01, mutual parenthood). Every
 other role contradiction in the graph is a merge artifact. Do not conflate them.
+
+## 18. Why re-extraction keeps appearing on the list (2026-08-05)
+
+The question that prompted this section: *why are we doing this again and again?*
+Checked rather than assumed, and the answer is that two unlike things had been
+filed under one heading.
+
+**We are NOT re-paying for the same records.** Zero records carrying a repair
+provenance marker are still defective. There is no loop, and nothing has been
+extracted twice.
+
+**"363 records" was wrong, and I had been repeating it.** 363 is the ISSUE count.
+It resolves to **244 distinct records**, 3.6% of the corpus, because one record
+commonly carries several dangling relationships (1.5 issues each). The free-repair
+figure has the same shape: 282 issues, **180 distinct records**. Quote records
+when the unit of work is a record.
+
+**The count grows because the CORPUS grows.** The issue rate has been flat-to-
+improving: 301 issues on 5,226 records (5.8%) at 5 volumes, 363 on 6,794 (5.3%)
+at 7. Every new volume brings its own share of records the extractor misread.
+That is a property of a ~96% accurate extractor, not a regression, and it will
+keep happening for as long as volumes keep arriving.
+
+**It is heavily concentrated, which is worth knowing BEFORE paying:**
+
+    volume    records   need re-x    rate
+    375062      1,132          88    7.8%
+    29597         780          57    7.3%
+    176899      1,085          34    3.1%
+    701179        696          23    3.3%
+    701157        872          13    1.5%
+    201991      2,019          27    1.3%
+    701054        210           2    1.0%
+    ALL         6,794         244    3.6%
+
+29597 and 375062 are 145 of the 244 between them, from 28% of the corpus. Two
+volumes are six times worse than 201991. Find out why before buying a fix.
+
+**701054 IS NOT IN THIS CATEGORY AT ALL.** It is not a re-extraction. Those 375
+records were never extracted once, because OUR segmenter skipped 54 of its 105
+pages: the registers are physically two-column, Gemini transcribes that as a
+markdown table, and any page full of pipe characters was classified as an index
+page and dropped (see §11, §12). We delivered 221 of 596. The staged 61 requests
+finish a volume we under-delivered through our own bug, which is now fixed. It is
+a one-time completion and it will not recur.
+
+So the standing list should read:
+
+    244 records   extraction misread the text          recurring, ~3.6%/volume
+    375 records   we never sent them (segmenter bug)   one-time, bug fixed
+    180 records   repairable for free                  no spend at all
+
+## 19. Today's changes (2026-08-05)
+
+Commands added; all offline, $0, no key.
+
+```bash
+# A/B two merge runs, and REFUSE the comparison if it is not valid
+python compare_merge_runs.py v8control2 v8lifespan
+
+# re-score Daniel's labels against the delivered run (control runs first)
+python verify_label_scores.py
+
+# per-rule cost of the merge bar, corpus-wide
+python analyze_surname_tradeoff.py --tag v9tradeoff2
+
+# the relationship review queue (the weakest extracted field)
+python run_relationship_review.py --limit 500
+
+# is the training sample actually a fair stratified draw?
+python validate_training_sample.py
+```
+
+**Rebuild traps, both of which cost time today.**
+`assemble_corpus.py` defaults to `--live production/luna_live` -- the OLD 5-volume,
+5,226-record corpus. For v3 use the invocation at §16, or, to regenerate only the
+graph, `run_pipeline.py production/luna_v3/assembled/*.materialized.json --outdir
+<fresh dir>`. And `corpus_final_pipeline/` PREDATES the current merge guards
+(32,628 nodes vs 32,943), so any before/after diff against it is confounded --
+verify with `validate_graph.py` on the new graph, never by delta.
+
+**Results.** Chronology guard: 1,416 blocks, but 1,305 were already refused by the
+surname tiers; 111 pairs and **33 people** are attributable to it alone.
+Merge vs Daniel's certain labels: **21/24 (88%)**. Graph `missing_inverse` 6 -> 2
+after completing SELF-INVERSE types only (sibling/spouse/witness -- parent/child
+would mean inferring a direction). Training sample sound: weights reconstruct
+7,305,667 pairs to 0.000% error. Security audit clean: no credential material in
+the tree or in 140 commits.
+
+**Two counting bugs fixed in the tools that report counts.**
+`validate_graph.contradictory_roles` was keyed on the ORDERED pair and read 8 for
+5 distinct pairs. The tidier fix -- unioning both directions before testing --
+takes it to **10,050**, because A->B "parent" plus B->A "child" is every real
+parent. Detect per direction, report once.
+`_merge_attributes` deduped on the raw string while the scorer normalises through
+`_val`, so "Cleric" vs "cleric" was a reported conflict on 7 of the 12 largest
+clusters. Decisions were never affected; the report diverged from the rules.
