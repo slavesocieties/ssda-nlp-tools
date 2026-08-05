@@ -324,3 +324,39 @@ def test_whitespace_is_normalised_too():
     _, conflicts = _merge_attributes([{"occupation": " Cleric "},
                                       {"occupation": "CLERIC"}])
     assert conflicts == {}
+
+
+# --- Daniel 2026-08-05: only paternal surnames are definitive ----------------
+
+def test_a_dropped_maternal_surname_no_longer_reads_as_a_different_family():
+    """Spanish names run paternal then maternal, so the LAST token is the
+    maternal surname when both are present. Comparing it made "Juan Gonzalez"
+    and "Juan Gonzalez Torre" different families and refused 534 name pairs."""
+    from ssda_nlp_tools.disambiguate import surname_affinity
+    assert surname_affinity("Juan González", "Juan González Torre") == 1.0
+    assert surname_affinity("José Domingo Sánchez",
+                            "José Domingo Sánchez y Fleites") == 1.0
+
+
+def test_genuinely_different_families_still_disagree():
+    from ssda_nlp_tools.disambiguate import surname_affinity
+    assert surname_affinity("Juan González", "Juan Corrales") < 0.7
+
+
+def test_an_ethnonym_is_neither_auto_merged_nor_auto_refused():
+    """Daniel: ethnonyms behave like surnames in many contexts, but these
+    'should not be merged or discarded automatically. Further context is
+    required.' So the surname bar must stop REFUSING them, while the
+    corroboration requirement still decides."""
+    from ssda_nlp_tools.disambiguate import surname_affinity, surname_tier_allows
+    assert surname_affinity("María de la Concepción",
+                            "María de la Concepción Lucumí") == 1.0
+    a = {"name": "María de la Concepción", "_entry": "E1", "_year": 1850}
+    b = {"name": "María de la Concepción Lucumí", "_entry": "E2", "_year": 1852}
+    allowed, tier = surname_tier_allows(a, b)
+    assert not allowed, "no context, so it must not merge on the name alone"
+
+
+def test_prefix_rule_does_not_fire_on_equal_length_names():
+    from ssda_nlp_tools.disambiguate import surname_affinity
+    assert surname_affinity("Ana Pérez Soto", "Ana Pérez Vega") < 1.0

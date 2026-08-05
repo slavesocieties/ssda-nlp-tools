@@ -110,6 +110,60 @@ def _namesets_overlap(sa: set, sb: set) -> bool:
     return False
 
 
+def _surname_forms(name: Optional[str]) -> Tuple[Optional[str], tuple]:
+    """(last-token surname, full token tuple).
+
+    The tuple is kept because a set of surnames cannot express Daniel's
+    "only paternal surnames are definitive" ruling: dropping the maternal
+    surname leaves a token PREFIX, and prefixhood needs order. Storing only the
+    last token made a cluster of "Juan Gonzalez Torre" carry {torre} against
+    {gonzalez}, so the transitive-chain guard refused the merge -- which is where
+    5,267 of the 5,359 dropped-surname comparisons died, NOT in the surname tier.
+    """
+    return _surname_of(name), tuple(name_tokens(name))
+
+
+def _cluster_names_compatible(sa: set, sb: set) -> bool:
+    """sa/sb are sets of (surname, token-tuple) pairs, one per cluster member.
+
+    Compatible when some member of each side agrees, either because the
+    surnames match phonetically (the original rule, Llopiz/Llopis) or because
+    one full name is a token prefix of the other (the maternal surname the
+    scribe omitted).
+
+    KNOWN GAP, and it is half of Daniel's ruling. "Only paternal surnames are
+    definitive" has two consequences. This implements the first -- a dropped
+    maternal surname must not read as a different family -- and does NOT
+    implement the second: "Ana Perez Soto" and "Ana Vega Soto" share only the
+    MATERNAL surname `soto`, are different families under the ruling, and are
+    still judged compatible here because the comparison is on the last token.
+    That behaviour predates this change; the change neither fixes nor worsens it.
+
+    Closing it needs the paternal surname identified, which needs a given-name
+    lexicon: the first surname of "Ana Perez Soto" is Perez, but of "Jose
+    Domingo Sanchez" it is Sanchez, because "Jose Domingo" is one compound given
+    name. There is no positional rule that gets both right, so this is left open
+    rather than guessed at.
+    """
+    # Accept a bare surname string as well as a (surname, tokens) pair. Callers
+    # that predate the ruling -- and the tests that pin the transitive-chain
+    # guard -- pass plain strings, and a hard unpack turns that into a
+    # ValueError deep inside the merge loop rather than a clear failure.
+    def _pair(x):
+        return x if isinstance(x, tuple) and len(x) == 2 and (
+            x[1] is None or isinstance(x[1], tuple)) else (x, tuple(name_tokens(x)))
+
+    for s_a, t_a in (_pair(x) for x in sa):
+        for s_b, t_b in (_pair(y) for y in sb):
+            if s_a and s_b and _third_party_same(s_a, s_b):
+                return True
+            if t_a and t_b and len(t_a) != len(t_b):
+                short, long_ = (t_a, t_b) if len(t_a) < len(t_b) else (t_b, t_a)
+                if long_[:len(short)] == short:
+                    return True
+    return False
+
+
 def _entry_year(events) -> Optional[int]:
     """Earliest 4-digit year across an entry's events, or None."""
     years = []
@@ -351,6 +405,25 @@ def surname_affinity(a_name: Optional[str], b_name: Optional[str]) -> float:
     these registers (z/s, ll/y, b/v, silent h, doubled letters) cost nothing,
     and only genuine vowel or consonant divergence does.
     """
+    # Daniel, 2026-08-05: "Treat only paternal surnames as definitive."
+    #
+    # Spanish names carry paternal THEN maternal, so `_surname_of` -- the last
+    # token -- returns the MATERNAL one whenever both are present, and the
+    # paternal one when only it survives. That made "Juan Gonzalez" and "Juan
+    # Gonzalez Torre" read as different families (gonzalez vs torre) and refused
+    # 534 name pairs over 1,982 mentions, none of which merged.
+    #
+    # Rather than guess which token is the paternal surname -- which needs a
+    # given-name lexicon and gets "Maria de la Concepcion" wrong -- use the fact
+    # that dropping the maternal surname leaves a token PREFIX. If one name's
+    # tokens are a prefix of the other's, everything they both state agrees, and
+    # the extra tokens are the maternal surname the scribe omitted.
+    ta, tb = name_tokens(a_name), name_tokens(b_name)
+    if ta and tb and len(ta) != len(tb):
+        short, long_ = (ta, tb) if len(ta) < len(tb) else (tb, ta)
+        if long_[:len(short)] == short:
+            return 1.0
+
     sa, sb = _surname_of(a_name), _surname_of(b_name)
     if not sa or not sb:
         return 1.0                        # no surname to disagree about
@@ -708,7 +781,7 @@ def _clusters_surname_compatible(uf, i: int, j: int,
     sb = cluster_surnames.get(uf.find(j), set())
     if not sa or not sb:
         return True
-    return _namesets_overlap(sa, sb)
+    return _cluster_names_compatible(sa, sb)
 
 
 def pair_score(a: dict, b: dict, a_rel_ctx=None, b_rel_ctx=None) -> Tuple[float, List[str]]:
@@ -1036,8 +1109,13 @@ def disambiguate_volume(
     # record are two people, however alike they look.
     cluster_entries: Dict[int, set] = {}
     for _i, _m in enumerate(mentions):
-        _s = _surname_of(_m.get("name"))
-        cluster_surnames[_i] = {_s} if _s else set()
+        _s, _t = _surname_forms(_m.get("name"))
+        # Condition on the SURNAME, not the tokens. A single-token name ("Smart")
+        # has no surname, and the guard's "no surname on one side -> nothing to
+        # disagree about" early return depends on that side being EMPTY. Keying
+        # on `_s or _t` made it non-empty and silently blocked the bare-name
+        # merges that shared context is supposed to carry.
+        cluster_surnames[_i] = {(_s, _t)} if _s else set()
         cluster_sides[_i] = {f: {v} for f, v in _exclusive_sides(_m).items()}
         cluster_entries[_i] = {_m["_entry"]}
     # index (entry, local id) -> mention index so descent edges resolve
