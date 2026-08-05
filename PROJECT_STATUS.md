@@ -355,8 +355,14 @@ extraction already paid for). 8,595 events: baptism 2,815, burial 2,172, birth
    dangling relationships. Earlier revisions quoted the issue count as if it
    were records.) Source text is fine; the extractor misread it. PAID.
    Concentrated: 375062 at 7.8% and 29597 at 7.3% supply 145 of the 244 from
-   28% of the corpus, six times 201991's 1.3%. Worth understanding before
-   buying a fix. See RUNBOOK §18.
+   28% of the corpus, six times 201991's 1.3%. See RUNBOOK §18, §20, §22.
+   **29597 is explained** (densest entries in the corpus; re-extraction should
+   help). **375062 is diagnosed and is NOT one purchase**: ~18 of its 88 have a
+   broken normalisation as INPUT -- empty, or model commentary instead of text --
+   so re-extracting them re-reads the same broken input and cannot fix anything.
+   Those need re-normalisation or re-transcription. Another ~23 returned
+   {"people": [], "events": []} on clean, well-formed baptism text, where a
+   retry is reasonable.
 9. **701054 completion** -- NOT a re-extraction. 375 records were never
    extracted once, because our segmenter dropped 54 of its 105 pages as "index
    pages" (two-column registers transcribed as markdown tables). 61 requests

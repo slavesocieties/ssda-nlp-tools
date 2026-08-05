@@ -661,3 +661,69 @@ that. 375062 in particular cannot be checked against gold at all, which is
 exactly why §20 above ends in "unknown" rather than a diagnosis.
 
 This does not make the numbers wrong. It bounds what they cover.
+
+## 22. 375062 diagnosed — the failure is ABOVE extraction (2026-08-05)
+
+§20 left this volume as "worse than density predicts, cause unknown". Here is the
+cause, from a within-volume comparison (which controls for everything that is a
+property of the volume itself).
+
+**It is not localised.** Defect rate by folio block runs 3.9%-12.5% across the
+whole volume, with no hotspot. Not physical damage to a page range.
+
+**All 41 `no_people_real` entries returned `{"people": [], "events": []}`** — a
+well-formed, completely empty answer. Not a parse failure and not a missing
+response. The extractor answered "nothing here" for baptism records. They split
+cleanly in two:
+
+**(a) 18 of 41 — the input was already broken.** The `normalized` field is empty
+or is model COMMENTARY instead of a normalisation:
+
+    375062-0006-A-03  faithful 1881 -> normalized 194
+      "El texto está gravemente duplicado y truncado; contiene referencias
+       incompatibles a varios registros ... No es posible establ[ecer]"
+    375062-0013-A-03  faithful 1800 -> normalized 0
+    375062-0031-B-04  faithful  760 -> normalized 0
+
+The faithful text for these is itself damaged ("mil ochocien D. Miguel Llopiz",
+"esta Yglesia parroge. quial de Ingreso"), and the normaliser is telling us so in
+Spanish. 44% of the no-people set is truncated this way, against **1%** of the
+volume's healthy entries.
+
+**(b) 23 of 41 — the text is fine and extraction returned nothing anyway.**
+
+    375062-0019-B-03  "En diez y ocho de noviembre de mil ochocientos setenta y
+                       siete años, yo, presbítero Don Miguel Llopiz ... bauticé
+                       solemnemente y ..."   -> {"people": [], "events": []}
+
+Clean, well-formed, priest named, sacrament stated. Nothing about the input
+explains the empty answer.
+
+**375062 is enriched 3x on every normalisation failure.** It is 17% of corpus
+records and:
+
+    empty normalized   54% of the corpus total
+    short normalized   51%
+    model commentary   56%
+
+**WHAT THIS MEANS FOR THE 88 RECORDS.** They are not one purchase.
+
+    ~18  input is broken           RE-EXTRACTION CANNOT FIX THIS. The extractor
+                                   would be re-reading the same empty or
+                                   commentary-filled normalisation. Needs
+                                   re-normalisation, and for the genuinely
+                                   damaged ones, re-transcription.
+    ~23  empty answer on good text A retry is reasonable; the model returned
+                                   nothing on input that plainly supports an
+                                   extraction.
+    ~38  dangling relationships    The corpus-wide density pattern (§20).
+    ~9   malformed events
+
+So the honest recommendation for §18 item 8: **do not buy the whole 88 as one
+line item.** Roughly a fifth of it is money spent re-reading broken input.
+
+**A caution on the commentary count.** How many records carry model commentary in
+`normalized` depends entirely on the regex: a broad pattern finds 9 corpus-wide,
+a narrow one finds 1. Only 2 records are in `withdrawn_records.json`. Before
+acting on that class, agree the pattern first -- the number is an artifact of the
+detector, not a property of the corpus.
