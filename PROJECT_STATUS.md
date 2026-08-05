@@ -311,24 +311,79 @@ reservations on network/5xx, release only definitive unbilled 4xx.
 
 ---
 
-## 6. The one thing blocking "complete" (updated 2026-07-30)
+## 6. What is left for this to be complete (updated 2026-08-05)
 
-Not building. **Labelled data.**
+Verified against artifacts on the date above, not carried forward from the
+previous revision. Every figure here is reproducible: `audit_corpus.py`,
+`validate_graph.py`, `verify_claims.py`, `verify_label_scores.py`.
 
-The five-volume corpus is delivered and conformant (5,228 records, ethnicity
-100%, age 100%, $24.53 of a $35 cap). Merging has been rebuilt to Daniel's rule
-and is as good as rules get — the residual common-name clusters survive because
-they genuinely satisfy every criterion he named, which is his own argument for a
-statistical model rather than an objection to one.
+**Where the corpus actually is.** 6,794 records across 7 volumes (the previous
+revision said 5,228 / 5 -- 701157 and 701179 were assembled on 2026-08-03 from
+extraction already paid for). 8,595 events: baptism 2,815, burial 2,172, birth
+2,026, marriage 1,582. Graph: 32,628 people, 53,800 edges.
 
-So the critical path is a single artifact: **`labels.json`**, 2,000 pairs on the
-0/25/50/75/100 scale. Everything else is either done or waiting behind it.
+### What "complete" still requires
 
-Secondary, and independent of it:
-- **Burial gold** — 12 candidates awaiting correction. Burials are 2,169 events,
-  the commonest type in the corpus, and Daniel's gold set contains none, so
-  burial accuracy has never been measured at all.
-- **701157 + 701179** — submitted as 158 requests for 1,570 source entries.
-  A conservative $6.32 reservation is held against the shared $35 cap; validate
-  provider results before assembly.
-- **API key rotation** — outstanding across several sessions.
+**A. Blocked on Daniel. Nothing here can be moved by building.**
+
+1. **The 300 synthetic pairs** (`synthetic_pairs.html`, sent 2026-08-05). This is
+   still the critical path. Merge agreement against his 25 real labels is
+   21/24 (88%) on the pairs he was certain about -- a smoke test with a real
+   signal, not a benchmark.
+2. **The double-surname ruling.** 534 distinct name pairs over 1,982 mentions
+   (5.0% of the corpus), of which we merge ZERO. 75% is clergy and looks
+   unambiguous; the lay quarter is a different question because the trailing
+   token is often an ethnonym (Lucumi, Congo), not a surname.
+3. **The corroboration bar.** An exact surname match still needs 2 signals; 144
+   of 231 exact-surname pairs in the sample are refused for want of one. This is
+   his own ruling doing most of the work of the merge bar.
+4. **Burial gold.** 12 candidates await his correction. Burials are 2,172 events,
+   25% of the corpus, and **burial accuracy has never been measured at all.**
+5. **Portuguese vocabulary.** 966 Portuguese titles (Reverendo 441, Coadjutor
+   325) and Brazilian ethnonyms; ethnicity conformance fell to 61%/45% on the
+   first substantially Portuguese volumes. Needs a ruling like the 71 ethnicity
+   terms.
+6. **282 free repairs** (172 duplicate entries, 110 null relationships). They
+   change delivered counts, so they are staged rather than applied.
+
+**B. Blocked on a human step or spend.**
+
+7. **API key rotation** -- outstanding across several sessions.
+8. **363 records need re-extraction** (100 no-people, 216 dangling
+   relationships, 37 malformed events, 4 dangling principals, 5 vocab
+   violations, 1 role contradiction). Source text is fine; the extractor
+   misread it. PAID.
+9. **701054 re-extraction** staged at `production/batches_v6/` (60 requests,
+   ~$2.10). Needs a fresh outdir and distinct run-id: 210 of 596 entry ids
+   collide with the existing run.
+
+**C. Unblocked -- can be built now.**
+
+10. **Residual graph defects**: 15 ancestry cycles, 8 contradictory role pairs,
+    6 missing inverse edges. Self-loops and dangling endpoints are 0. The
+    cycle guard is depth-bounded to 4 and reroutes some loops rather than
+    removing them.
+11. **The review queue for weak dimensions** (relationships ~0.83, fine
+    attributes) is built but has never been run.
+12. **Statistical validation of the training sample** -- the stratified draw and
+    inverse-probability weights have not been independently checked.
+
+### The honest ceiling
+
+**Extraction is the only stage with no human ground truth**, and it sits
+upstream of everything downstream. `slavesocieties/openai` has ~86 entries with
+structured data, but ~65 are model output in `testing/`; only ~21 are usable.
+Measuring our extraction against another model's extraction measures agreement,
+not accuracy. Burials are the sharpest case: a quarter of all events, never
+measured once.
+
+Everything below extraction is measured:
+
+    transcription   substitution 6.31%, median page similarity 0.891 (3 vols)
+    segmentation    98.2% of the human entry count (3 vols)
+    normalization   age 100%, ethnicity 100% on Spanish volumes
+    merge           21/24 (88%) against Daniel's certain labels
+    graph           invariants above
+
+So "complete" is not a build target. It is: extraction measured against human
+truth, burials included, and the merge bar set by labels instead of by argument.
