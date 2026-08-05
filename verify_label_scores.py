@@ -95,6 +95,8 @@ def main(argv=None):
 
     # ---- CONTROL, before any verdict -------------------------------------
     print("\nCONTROL (a degenerate harness fails here, not silently later)")
+    # capped at 300: this is the CONTROL sample, not a reported result.
+    # Nothing is withheld from any verdict below.
     hi = [x for x in pairs if x.get("score", 0) >= 0.90][:300]
     hi_now = [s for s, _ in (score(idx, x) for x in hi) if s is not None]
     pos = [x for x in labelled if x["likelihood"] == 100]

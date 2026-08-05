@@ -296,6 +296,12 @@ def cmd_judge(args):
                 {"type": "image", "source": {"type": "base64",
                                              "media_type": "image/jpeg",
                                              "data": base64.b64encode(img).decode()}},
+                # CAPPED at 6,000 chars per side before the judge ever sees the
+                # text. A page longer than that is judged on its opening alone,
+                # so a divergence in the tail is invisible to this comparison --
+                # and this is the screen that missed Luna confabulating a whole
+                # folio. Declared here because a capped comparison that reports
+                # a clean winner reads as a complete one.
                 {"type": "text", "text": JUDGE_PROMPT
                  + f"\n\n--- TRANSCRIPTION A ---\n{d['a'][:6000]}"
                    f"\n\n--- TRANSCRIPTION B ---\n{d['b'][:6000]}"},
