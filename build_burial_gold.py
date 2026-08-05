@@ -151,6 +151,11 @@ def main(argv=None):
     # different scribe, different formulae, and in 701054's case a different
     # language. For a gold set, covering both hands matters more than mirroring
     # the corpus mix.
+    if not vols:
+        # Empty corpus. Crashed with "integer modulo by zero" from inside the
+        # quota split, which says nothing about the actual problem.
+        raise SystemExit(f"no volumes under {args.assembled!r} -- nothing to "
+                         f"build a gold set from.")
     quota = {v: args.n // len(vols) for v in vols}
     for v in vols[:args.n % len(vols)]:
         quota[v] += 1

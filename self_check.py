@@ -174,6 +174,58 @@ def _artifacts_intact(root):
             else "every merge run records a non-zero mention count")
 
 
+@check("artifact-writing tools refuse an empty corpus (EXECUTED, not inspected)")
+def _tools_refuse_empty(root):
+    """THE GAP THIS FILE HAD. Every other check here examines FINDINGS -- the
+    numbers, the artifacts, the tests. None examined the TOOLS, which is why the
+    empty-corpus bug went unnoticed: four scripts wrote `mentions: 0` over real
+    results, exited zero, and nothing in this file looked.
+
+    So this one RUNS them. Each artifact-writing tool is invoked against an empty
+    directory in a subprocess, and must write nothing and fail with a message
+    rather than a traceback. A grep for `require_corpus` would pass a tool whose
+    guard is unreachable; executing it cannot be fooled that way.
+    """
+    import subprocess as sp
+    import tempfile
+
+    tools = sorted(
+        os.path.basename(f) for f in glob.glob(os.path.join(root, "*.py"))
+        if "--assembled" in open(f, encoding="utf-8", errors="ignore").read()
+        and re.search(r"json\.dump|open\([^)]*[\"']w[\"']",
+                      open(f, encoding="utf-8", errors="ignore").read()))
+    if not tools:
+        return None, "no artifact-writing tools found"
+
+    empty = tempfile.mkdtemp()
+    bad = []
+    for t in tools:
+        before = _snapshot(root)
+        r = sp.run([sys.executable, "-X", "utf8", t, "--assembled", empty],
+                   capture_output=True, text=True, cwd=root, timeout=120)
+        wrote = _snapshot(root) - before
+        if wrote:
+            bad.append(f"{t} WROTE {len(wrote)} file(s) on empty input")
+        elif "Traceback" in (r.stderr or ""):
+            last = [l for l in r.stderr.strip().splitlines() if l.strip()][-1]
+            bad.append(f"{t} crashed: {last[:48]}")
+    return (not bad, "; ".join(bad) if bad
+            else f"all {len(tools)} tools refuse empty input cleanly")
+
+
+def _snapshot(root):
+    """Mtimes of everything under production/, to detect any write."""
+    out = set()
+    for dp, _, fs in os.walk(os.path.join(root, "production")):
+        for f in fs:
+            p = os.path.join(dp, f)
+            try:
+                out.add((p, os.path.getmtime(p)))
+            except OSError:
+                pass
+    return out
+
+
 @check("the test suite passes")
 def _suite(root):
     r = subprocess.run([sys.executable, "-m", "pytest", "-q",

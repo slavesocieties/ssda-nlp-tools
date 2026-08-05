@@ -95,3 +95,38 @@ def test_self_check_passes_on_healthy_artifacts(tmp_path):
     json.dump({"mentions": 39697, "identities": 33099}, open(d / "good.stats.json", "w"))
     ok, _ = self_check._artifacts_intact(str(tmp_path))
     assert ok is True
+
+
+def test_the_executed_tool_check_can_actually_fail(tmp_path, monkeypatch):
+    """A check that cannot fail is not a check -- the lesson from the mutation
+    test that 'passed' twice against unmodified code. Plant a tool that writes
+    on empty input and confirm self_check catches it."""
+    import self_check
+    root = tmp_path
+    (root / "production").mkdir()
+    bad = root / "bad_tool.py"
+    bad.write_text(
+        "import argparse, json, os\n"
+        "ap = argparse.ArgumentParser(); ap.add_argument('--assembled')\n"
+        "a = ap.parse_args()\n"
+        "os.makedirs('production', exist_ok=True)\n"
+        "json.dump({'mentions': 0}, open('production/out.json','w'))\n",
+        encoding="utf-8")
+    ok, msg = self_check._tools_refuse_empty(str(root))
+    assert ok is False, msg
+    assert "bad_tool.py" in msg and "WROTE" in msg
+
+
+def test_the_executed_tool_check_passes_a_well_behaved_tool(tmp_path):
+    import self_check
+    root = tmp_path
+    (root / "production").mkdir()
+    (root / "good_tool.py").write_text(
+        "import argparse, json, sys\n"
+        "ap = argparse.ArgumentParser(); ap.add_argument('--assembled')\n"
+        "a = ap.parse_args()\n"
+        "raise SystemExit('no entries -- refusing to write')\n"
+        "json.dump({}, open('x','w'))\n",
+        encoding="utf-8")
+    ok, msg = self_check._tools_refuse_empty(str(root))
+    assert ok is True, msg

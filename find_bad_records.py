@@ -115,6 +115,10 @@ def main(argv=None):
     # classes double-counts it and overstates the damage.
     both = {r["id"] for r in refusal} & {r["id"] for r in no_event}
     distinct = len({r["id"] for r in refusal} | {r["id"] for r in no_event})
+    if not total:
+        # Empty corpus. This crashed on the percentage, which reads as a maths
+        # bug rather than "you pointed me at nothing".
+        raise SystemExit(f"no records under {args.assembled!r} -- nothing to check.")
     print(f"\naffected {distinct} DISTINCT records of {total:,} "
           f"({100*distinct/total:.3f}%)")
     if both:
