@@ -61,16 +61,29 @@ LOG_PRIOR_ODDS = math.log(1 / 260)
 
 # Location, from the institution that produced the record. Daniel: "absolutely
 # critical ... should be considered heavily".
-W_PLACE = {"institution": 2.0, "city": 1.2, "state": 0.4,
-           "country": 0.0, "none": -4.0}
-# "none" is strongly negative: a Cuban parish and a Brazilian one 6,600km apart
-# produced 24 merges in the current corpus, all of them generic names.
+# MEASURED, not chosen: LLR = ln( P(feature|same) / P(feature|different) ),
+# with P(.|different) from 60,000 sampled CANDIDATE pairs (post-blocking, which
+# are overwhelmingly non-matches) and P(.|same) from the 14 confirmed positives.
+#
+# The first version of these was guessed, and the guesses were 4x to 9x too
+# large. Same-institution is +0.50, not the +2.00 I assigned, because 56.7% of
+# candidate pairs already share an institution -- blocking has ALREADY selected
+# for it, so it can barely discriminate. Different-country measures -0.43, not
+# -4.00: it feels decisive and is not, because 10.3% of candidates are
+# cross-country anyway.
+#
+# That last one matters for how the 24 transatlantic merges get killed. NOT by a
+# large negative overruling the rest, but by there being no positive evidence to
+# reach the threshold in the first place. Relying on a big veto weight is a
+# binary gate wearing a probabilistic costume.
+W_PLACE = {"institution": 0.50, "city": 1.45, "state": 0.20,
+           "country": 0.0, "none": -0.43}
 
-W_VOLUMES_NEVER_COEXIST = -1.5     # the registers do not overlap in time
+W_VOLUMES_NEVER_COEXIST = -1.5     # still a prior; not separately measurable here
 W_ATTR_AGREE = 0.25                # per agreeing hard attribute, deliberately small
 W_ATTR_CONFLICT = -2.5             # per conflicting one
-W_YEAR_CLOSE = 0.5                 # <= 20 years apart
-W_YEAR_FAR = -0.8                  # > 40 years apart, still possible
+W_YEAR_CLOSE = 0.27                # measured; 70.9% of candidates already qualify
+W_YEAR_FAR = -0.32                 # measured
 W_CLERGY_BOTH = 2.5                # Daniel: merge clergy aggressively
 
 AUTO_MERGE_LOG_ODDS = 3.0          # ~95% posterior
@@ -89,14 +102,24 @@ MAX_LLR_PER_ASSOCIATE = 7.0
 #     LOG_PRIOR_ODDS + MAX_NAME_LLR  <  AUTO_MERGE_LOG_ODDS      -> < 8.56
 # and for a matching name to stay a live candidate rather than be dismissed:
 #     LOG_PRIOR_ODDS + MAX_NAME_LLR  >= REVIEW_LOG_ODDS          -> >= 5.56
-# so anything in [5.56, 8.56) satisfies him; 7.0 sits in the middle.
+# so anything in [5.56, 8.56) satisfies him.
+#
+# 7.0 WAS STILL TOO HIGH, and the corpus A/B is what found it. The constraint has
+# to bind on the name PLUS every circumstantial term that can accompany it for
+# free, not on the name by itself:
+#     prior -5.56 + name 7.00 + same-city 1.45 + close-date 0.27 = +3.16 -> MERGED
+# on no relationship evidence whatsoever. So the cap is set from the stronger
+# requirement that name + ALL non-discriminative evidence stays below the bar,
+# which leaves the threshold to be crossed only by a shared associate (+3.06
+# measured) or an unusually rare name. That is Daniel's "same-named relation"
+# arriving as arithmetic rather than as a gate.
 #
 # The first version used 9.0, taken from the raw -ln(p) of an unseen name, and
 # that auto-merged on the name by itself -- exactly the thing he ruled out. It is
 # also why the scorer's mean probability on the synthetic set was 0.97 against
 # his mean grade of 0.57: every synthetic name is absent from the corpus, hits
 # the rarity floor, and collected maximum evidence for being unknown.
-MAX_NAME_LLR = 7.0
+MAX_NAME_LLR = 5.5
 
 
 class NameStats:

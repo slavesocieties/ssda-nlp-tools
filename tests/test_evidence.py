@@ -4,7 +4,8 @@ import math
 import pytest
 
 from ssda_nlp_tools.evidence import (AUTO_MERGE_LOG_ODDS, LOG_PRIOR_ODDS,
-                                     MAX_NAME_LLR, NameStats, network_llr, score)
+                                     MAX_NAME_LLR, REVIEW_LOG_ODDS, NameStats,
+                                     network_llr, score)
 
 
 def _stats(names):
@@ -22,9 +23,27 @@ def test_a_name_alone_can_never_auto_merge():
     assert r["decision"] != "merge"
 
 
-def test_a_matching_name_still_stays_a_candidate():
-    """It must not be dismissed either, or nothing would ever reach review."""
-    assert LOG_PRIOR_ODDS + MAX_NAME_LLR >= 0.0
+def test_a_bare_name_match_is_dropped_rather_than_queued():
+    """A DELIBERATE TRADE, recorded because it was not free.
+
+    Two constraints came into conflict once the circumstantial weights were
+    measured rather than guessed:
+
+      (a) name + ALL non-discriminative evidence must not auto-merge
+      (b) a matching name should stay a live candidate for review
+
+    Satisfying (a) with the measured weights (same-city +1.45, close-date +0.27)
+    forces MAX_NAME_LLR down to 5.5, which puts a bare name match at -0.06 --
+    a hair BELOW the review line, so (b) is given up.
+
+    That is the right way round. Daniel's ruling is about merging, not about
+    reviewing; and queueing every bare name match in a corpus this full of
+    Marias is precisely the 10%+ review rate he called unacceptable. The cost is
+    real: a genuine match evidenced by nothing but a name will be dropped
+    silently rather than shown to a human.
+    """
+    assert LOG_PRIOR_ODDS + MAX_NAME_LLR < REVIEW_LOG_ODDS
+    assert LOG_PRIOR_ODDS + MAX_NAME_LLR > -1.0, "and only just below"
 
 
 def test_rare_names_carry_more_evidence_than_common_ones():
