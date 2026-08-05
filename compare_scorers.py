@@ -124,7 +124,13 @@ def main(argv=None):
         print(f"   {tag:16s} " + ", ".join(
             f"{str(i['canonical_name'])[:20]}({i['n_mentions']})" for i in top))
 
-    print("\n4. REVIEW RATE   (Daniel: \".1% is acceptable, 10% is not\")")
+    # UNITS. An earlier version printed review-pairs-per-mention under a heading
+    # quoting Daniel's ".1% acceptable, 10% not". Those are different
+    # quantities: 16.0 pairs per mention is not 16%, it is 1600%, and putting
+    # them side by side invites exactly the wrong comparison in either
+    # direction. His threshold is about how much HUMAN WORK a corpus creates,
+    # which is a count of people to adjudicate, not of pair comparisons.
+    print("\n4. REVIEW LOAD")
     for tag in (args.old, args.new):
         s = runs[tag]["stats"]
         rv, au = s.get("review_pairs"), s.get("auto_merges")
@@ -132,8 +138,12 @@ def main(argv=None):
             print(f"   {tag:16s} not recorded")
             continue
         ment = s.get("mentions") or 1
-        print(f"   {tag:16s} {rv:,} review pairs, {au:,} auto "
-              f"({rv / ment:.1f} review items per mention)")
+        print(f"   {tag:16s} {rv:,} review pairs, {au:,} auto-merges"
+              f"   ({rv / ment:.1f} pairs queued per mention)")
+    print("   NOTE: these are PAIR comparisons, not a percentage, and are NOT")
+    print("   comparable to Daniel's \".1% acceptable, 10% is not\". Answering")
+    print("   him needs the share of PEOPLE requiring adjudication, which no run")
+    print("   currently records -- a pair count cannot be converted into it.")
     return 0
 
 

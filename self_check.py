@@ -149,6 +149,31 @@ def _trap_tests(root):
                          else f"all {len(want)} trap suites present")
 
 
+@check("no merge artifact is empty or truncated")
+def _artifacts_intact(root):
+    """The class of defect the 2026-08-05 review found, and this file MISSED.
+
+    Four tools accepted an empty corpus, wrote `mentions: 0`, and overwrote real
+    results with it. self_check's A/B rule then SKIPPED the corrupted run, because
+    it only compares runs of equal mention count and nothing else had zero. A
+    checker that ignores a destroyed artifact is worse than no checker: the run
+    is still listed, still loadable, and still wrong.
+    """
+    import glob as _g
+    bad = []
+    for p in sorted(_g.glob(os.path.join(root, "production/luna_v3/merge/*.stats.json"))):
+        try:
+            d = json.load(open(p, encoding="utf-8"))
+        except Exception as e:
+            bad.append(f"{os.path.basename(p)} unreadable ({type(e).__name__})")
+            continue
+        if not d.get("mentions"):
+            bad.append(f"{os.path.basename(p)} has mentions={d.get('mentions')!r}")
+    return (not bad,
+            "empty/corrupt: " + "; ".join(bad) if bad
+            else "every merge run records a non-zero mention count")
+
+
 @check("the test suite passes")
 def _suite(root):
     r = subprocess.run([sys.executable, "-m", "pytest", "-q",
