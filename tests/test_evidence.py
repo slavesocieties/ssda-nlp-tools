@@ -126,3 +126,36 @@ def test_no_place_level_can_carry_a_merge_by_itself():
                                          AUTO_MERGE_LOG_ODDS, MAX_NAME_LLR)
     best = max(W_PLACE.values())
     assert LOG_PRIOR_ODDS + MAX_NAME_LLR + best < AUTO_MERGE_LOG_ODDS
+
+
+def test_the_name_cap_is_derived_from_the_CURRENT_weights_not_a_stale_one():
+    """The cap must bind against name PLUS everything non-discriminative a pair
+    collects for free -- and that quantity moves when any weight changes.
+
+    It has now been wrong in both directions. 9.0 let a name merge alone. Then
+    5.5, correct when circumstantial evidence could reach +1.72, was left in
+    place after the place weights went monotone and the real figure fell to
+    +0.77 -- throttling the strongest term against a constraint that no longer
+    bound, and flattening 98.8% of the corpus to one name weight.
+    """
+    from ssda_nlp_tools.evidence import (AUTO_MERGE_LOG_ODDS, LOG_PRIOR_ODDS,
+                                         MAX_NAME_LLR, W_PLACE, W_YEAR_CLOSE)
+    free = max(W_PLACE.values()) + W_YEAR_CLOSE
+    ceiling = AUTO_MERGE_LOG_ODDS - LOG_PRIOR_ODDS - free
+    assert MAX_NAME_LLR < ceiling, (
+        f"name {MAX_NAME_LLR} + circumstantial {free:.2f} auto-merges; "
+        f"cap must stay under {ceiling:.2f}")
+    # NO LOWER BOUND, and that is the finding. Raising the cap to its arithmetic
+    # ceiling (7.5, against a limit of 7.79) took transatlantic contamination
+    # from 56 mentions to 1,169 -- a 21x regression -- because a rare name then
+    # survives a different continent: -5.56 + 7.5 - 0.43 = +1.51. The cap and the
+    # location weight are COUPLED, and different-country is only -0.43, measured
+    # from 14 positives. So the unused headroom is the price of a geographic term
+    # too weakly estimated to hold a stronger name back, not waste to reclaim.
+
+
+def test_name_plus_all_free_evidence_still_cannot_auto_merge():
+    from ssda_nlp_tools.evidence import (AUTO_MERGE_LOG_ODDS, LOG_PRIOR_ODDS,
+                                         MAX_NAME_LLR, W_PLACE, W_YEAR_CLOSE)
+    best = LOG_PRIOR_ODDS + MAX_NAME_LLR + max(W_PLACE.values()) + W_YEAR_CLOSE
+    assert best < AUTO_MERGE_LOG_ODDS

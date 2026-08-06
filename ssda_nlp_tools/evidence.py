@@ -130,6 +130,27 @@ MAX_LLR_PER_ASSOCIATE = 7.0
 # also why the scorer's mean probability on the synthetic set was 0.97 against
 # his mean grade of 0.57: every synthetic name is absent from the corpus, hits
 # the rarity floor, and collected maximum evidence for being unknown.
+# 5.5 LOOKS TOO LOW ON THE ARITHMETIC AND IS NOT. Re-deriving against the
+# CURRENT weights says the cap could go to 7.79: circumstantial evidence now
+# tops out at +0.77 (best place 0.50 + close date 0.27), not the +1.72 that
+# justified 5.5. And the cost of 5.5 is real -- only 1.2% of the corpus's 39,696
+# mentions keep a distinct name weight; 98.8% are flattened to one value,
+# including every one of the 29,609 same-name same-parish pairs whose rarity
+# genuinely spans 6.03 to 10.43 nats.
+#
+# I RAISED IT TO 7.5 AND THE CORPUS REJECTED IT. Transatlantic contamination
+# went from 56 mentions to 1,169, a 21x regression, because THE CAP AND THE
+# LOCATION WEIGHT ARE COUPLED:
+#     cap 5.5: rare name + different continent = -0.49  -> dropped
+#     cap 7.5: rare name + different continent = +1.51  -> survives to review
+# different-country is only -0.43, and that is MEASURED, from 14 positives. A
+# stronger name term needs a stronger geographic veto to hold it back, and there
+# is no evidence available to strengthen that veto with.
+#
+# So the discarded 2.29 nats are not waste, they are the price of a location
+# term too weakly estimated to do its job. Raising this cap is blocked on better
+# geographic evidence, not on arithmetic. Reverted to 5.5, which the corpus
+# prefers on every measure that matters.
 MAX_NAME_LLR = 5.5
 
 
