@@ -11,15 +11,40 @@ import json
 import os
 import re
 from utility import *
+from ssda_nlp_tools.grandparent_side import label_examples
 # from schema import schema
 
 ##CONSTANTS
-RECIPROCAL_RELS = {"parent": "child", "child": "parent", 
+RECIPROCAL_RELS = {"parent": "child", "child": "parent",
                     "grandparent": "grandchild", "grandchild": "grandparent",
-                    "enslaver": "slave", "slave": "enslaver", 
+                    # Daniel, 2026-08-10: "Maternal/paternal grandparents should
+                    # be labeled differently when extracted." Both sides
+                    # reciprocate to a PLAIN grandchild -- the side names which
+                    # of the child's parents the line runs through, so only the
+                    # descendant's view of the edge carries it.
+                    "maternal grandparent": "grandchild",
+                    "paternal grandparent": "grandchild",
+                    "enslaver": "slave", "slave": "enslaver",
                     "indenturer": "indentured servant", "indentured servant": "indenturer",
                     "spouse": "spouse",
                     "godparent": "godchild", "godchild": "godparent"}
+GRANDPARENT_TERMS = ("grandparent", "maternal grandparent", "paternal grandparent")
+
+
+def reciprocates(rel, back):
+    """Is `back` an acceptable reciprocal of `rel`?
+
+    Exact, except that three grandparent terms collapse to one grandchild on the
+    way back, so a grandchild edge is answered by any of them. Without this the
+    correct pair (sided grandparent / plain grandchild) reads as a type mismatch
+    and both edges get dropped.
+    """
+    want = RECIPROCAL_RELS.get(rel)
+    if want is None:
+        return False
+    if want == "grandparent":
+        return back in GRANDPARENT_TERMS
+    return back == want
 NULLABLE_PEOPLE_PROPS = ['rank', 'origin', 'ethnicity', 'age', 'legitimate', 'occupation', 'phenotype', 'free']
 PEOPLE_PROPS = NULLABLE_PEOPLE_PROPS + ['id', 'name', 'titles', 'relationships']
 EVENT_PROPS = ['type', 'principals', 'date']
@@ -56,8 +81,24 @@ People rules:
 5. Use "relationships" as a list of objects with only:
    {"related_person": "Pxx", "relationship_type": "..."}.
 6. Allowed relationship_type values are:
-   parent, child, grandparent, grandchild, enslaver, slave,
-   indenturer, indentured servant, spouse, godparent, godchild.
+   parent, child, maternal grandparent, paternal grandparent, grandparent,
+   grandchild, enslaver, slave, indenturer, indentured servant, spouse,
+   godparent, godchild.
+6a. GRANDPARENTS CARRY THE SIDE OF THE FAMILY. The registers almost always say
+   which side, in one of these forms:
+     "Abuelos paternos: A y B; maternos: C y D"
+     "abuelos paternos A y B, y maternos C y D"
+     "nieto paterno de A y de B y materno de C y de D"
+     "Abuela materna: A"
+   Everyone named under paterno/paternos is a "paternal grandparent"; everyone
+   named under materno/maternos is a "maternal grandparent". A side word applies
+   to every name after it until the next side word or the end of the sentence.
+   Use the bare "grandparent" ONLY when the record names a grandparent without
+   saying which side. Do not guess a side from a shared surname.
+6b. The reciprocal of all three grandparent terms is the plain "grandchild".
+   The side describes which of the child's parents the line runs through, so it
+   belongs to the grandchild's view of the relationship; never write "maternal
+   grandchild" or "paternal grandchild".
 7. Relationships should be reciprocal when clearly stated or logically required.
    Example: if child has parent P02, P02 should have child relationship to the child.
 8. Do not invent unnamed people. For "padre no conocido" / "father unknown", do not create a person.
@@ -149,7 +190,10 @@ EXTRACTION_RESPONSE_FORMAT = {
                                         "relationship_type": {
                                             "type": "string",
                                             "enum": [
-                                                "parent", "child", "grandparent", "grandchild",
+                                                "parent", "child",
+                                                "maternal grandparent",
+                                                "paternal grandparent",
+                                                "grandparent", "grandchild",
                                                 "enslaver", "slave", "indenturer", "indentured servant",
                                                 "spouse", "godparent", "godchild"
                                             ],
@@ -279,6 +323,12 @@ def extract_data_from_volume(volume_record_path, instructions_path, training_dat
     data, volume_metadata = parse_volume_record(volume_record_path)
 
     examples = generate_training_data(training_data_path, keywords, match_mode=match_mode, max_shots=max_shots)
+    # Six of the fifteen gold examples carry grandparent edges and every one of
+    # their source texts states the side, but the gold labels them all plainly.
+    # Shown as-is they would teach the model to discard exactly the distinction
+    # rules 6a/6b ask for. training_data.json is vendored verbatim from
+    # slavesocieties/openai, so the relabel happens here, in memory.
+    examples = label_examples(examples)
     instructions = collect_instructions(instructions_path, volume_metadata, "extraction")
     
     for x, entry in enumerate(data["entries"]):
@@ -770,7 +820,7 @@ def fix_relationships(data, id, path):
                 log_failure(id, path, "relationships", 
                             f"Non-reciprocal relationship for {p1} and {p2}: None and {rel}", data)
                 add_relation(p2, p1, RECIPROCAL_RELS[rel])
-            elif relationships[p2][p1] ==  RECIPROCAL_RELS[rel]:
+            elif reciprocates(rel, relationships[p2][p1]):
                 ##Valid reciprocal relationship
                 pass
             elif relationships[p2][p1] !=  rel or (not is_principal(p1) and not is_principal(p2)):

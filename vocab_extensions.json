@@ -315,5 +315,66 @@
       "Benguela, Rebolo, Nago/Nagô, Jeje/Gêge, Hausa/Hauçá, Calabar, Cabunda,",
       "Ganguela, Camunda, Songo, Muxicongo, Curiboca, Cafuzo"
     ]
+  },
+  "relationship_type": {
+    "_why": [
+      "Daniel Genkins, 2026-08-10, on the merge scorer being unable to tell one",
+      "record naming the maternal pair and another naming the paternal pair from",
+      "a genuine four-grandparent contradiction: 'This is a question that",
+      "can/should be resolved upstream. Maternal/paternal grandparents should be",
+      "labeled differently when extracted.'",
+      "",
+      "The side is already in the transcription -- 1,400 of the 1,431 delivered",
+      "entries carrying a grandparent edge (97.8%) state it as 'abuelos paternos",
+      "... maternos ...' or 'nieto paterno de ... y materno de ...'. Only the",
+      "schema was discarding it. See ssda_nlp_tools/grandparent_side.py.",
+      "",
+      "The plain 'grandparent' term stays in vocab.json and stays legal: a record",
+      "that genuinely does not say which side needs somewhere honest to go, and",
+      "the whole delivered corpus predates this change.",
+      "",
+      "GRANDCHILD IS NOT SIDED. The side says which of the CHILD's parents the",
+      "line runs through, so it belongs to the descendant's view. Both sided",
+      "terms reciprocate to a plain 'grandchild'.",
+      "",
+      "Spanish and Portuguese share the adjectives; only the noun differs",
+      "(abuelo/avo), and both genders resolve through the variants below."
+    ],
+    "new_terms": [
+      {
+        "english": "maternal grandparent",
+        "spanish": "abuelo materno",
+        "portuguese": "avô materno"
+      },
+      {
+        "english": "paternal grandparent",
+        "spanish": "abuelo paterno",
+        "portuguese": "avô paterno"
+      }
+    ],
+    "variants": {
+      "maternal grandparent": [
+        "abuela materna",
+        "abuelos maternos",
+        "abuelas maternas",
+        "avó materna",
+        "avós maternos",
+        "nieto materno",
+        "nieta materna"
+      ],
+      "paternal grandparent": [
+        "abuela paterna",
+        "abuelos paternos",
+        "abuelas paternas",
+        "avó paterna",
+        "avós paternos",
+        "nieto paterno",
+        "nieta paterna"
+      ]
+    },
+    "variant_notes": {
+      "_gender_and_number": "vocab.py's morphology rules fold gender and number on a SINGLE token ('criollos' -> Creole), not across a two-word phrase, so 'abuela materna' would not reach 'abuelo materno' on its own. The surface forms are therefore enumerated.",
+      "_nieto": "'nieto paterno de Jose y de Belen Sequeira' names the grandparents from the grandchild's side using the grandchild noun. It resolves to the grandparent term because the extracted edge it licenses is the grandchild's edge TO the grandparent."
+    }
   }
 }

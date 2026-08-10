@@ -139,6 +139,12 @@ _ROLE_INVERSE = {"parent": "child", "child": "parent",
                  "godparent": "godchild", "godchild": "godparent",
                  "grandparent": "grandchild", "grandchild": "grandparent",
                  "enslaver": "slave", "slave": "enslaver"}
+# Grandparents carry the family side from 2026-08-10 (Daniel). This check asks
+# whether two people hold incompatible roles toward each other, which the side
+# has no bearing on, so it is folded away before the comparison rather than
+# doubling every rule above.
+_UNSIDE = {"maternal grandparent": "grandparent",
+           "paternal grandparent": "grandparent"}
 
 
 def same_entry_role_contradictions(entries):
@@ -169,6 +175,7 @@ def same_entry_role_contradictions(entries):
                     continue
                 b = str(r.get("related_person") or "")
                 t = str(r.get("relationship_type") or "").lower()
+                t = _UNSIDE.get(t, t)
                 if not b or b == "None" or a == b or not t:
                     continue
                 rel[(a, b)].add(t)

@@ -46,12 +46,23 @@ INVERSES = {
     "parent": "child", "child": "parent",
     "godparent": "godchild", "godchild": "godparent",
     "grandparent": "grandchild", "grandchild": "grandparent",
+    # Daniel, 2026-08-10: grandparents carry the family side. All three sided
+    # terms invert to a plain "grandchild" -- the side names which of the
+    # child's parents the line runs through, so only the descendant's view of
+    # the edge carries it.
+    "maternal grandparent": "grandchild",
+    "paternal grandparent": "grandchild",
     "enslaver": "slave", "slave": "enslaver",
     "spouse": "spouse", "sibling": "sibling",
     "patron": "client", "client": "patron",
     "witness": "witness",
 }
-ANCESTRY = ("parent", "grandparent")
+# Which types satisfy a given inverse requirement. Only grandchild is
+# many-to-one, so a "grandchild" edge is answered by any grandparent term and a
+# sided record does not read as a graph defect.
+GRANDPARENT_TERMS = ("grandparent", "maternal grandparent", "paternal grandparent")
+SATISFIES = {"grandparent": set(GRANDPARENT_TERMS)}
+ANCESTRY = ("parent",) + GRANDPARENT_TERMS
 # Two people cannot stand in both of these at once.
 CONTRADICTORY = [("spouse", "parent"), ("spouse", "child"),
                  ("parent", "child"), ("parent", "godparent")]
@@ -89,7 +100,7 @@ def check(nodes, edges):
     for (s, t), types in by_pair.items():
         for ty in types:
             inv = INVERSES.get(ty)
-            if inv and inv not in by_pair.get((t, s), ()):
+            if inv and not (SATISFIES.get(inv, {inv}) & set(by_pair.get((t, s), ()))):
                 out["missing_inverse"].append({"source": s, "target": t,
                                                "type": ty, "expected": inv})
 
