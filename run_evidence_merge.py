@@ -37,6 +37,7 @@ import time
 from collections import Counter, defaultdict
 
 import ssda_nlp_tools.disambiguate as D
+import ssda_nlp_tools.evidence as E
 from ssda_nlp_tools.evidence import (AUTO_MERGE_LOG_ODDS, REVIEW_LOG_ODDS,
                                      NameStats, _clergy, score)
 from ssda_nlp_tools.textmatch import phonetic_key
@@ -69,7 +70,17 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=AUTO_MERGE_LOG_ODDS)
     ap.add_argument("--review", type=float, default=REVIEW_LOG_ODDS)
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
+    ap.add_argument("--no-conflict-relations", action="store_true",
+                    help="A/B control: disable Daniel's conflicting-relationship "
+                         "penalty (different spouse/parent/enslaver).")
     args = ap.parse_args(argv)
+
+    # Print the ACTIVE weights, so a flag that is never consumed is visible in
+    # the log rather than showing up as a mysteriously zero delta.
+    if args.no_conflict_relations:
+        E.W_CONFLICT_PARENT = E.W_CONFLICT_SPOUSE = E.W_CONFLICT_ENSLAVER = 0.0
+    print(f"conflict weights: parent={E.W_CONFLICT_PARENT} "
+          f"spouse={E.W_CONFLICT_SPOUSE} enslaver={E.W_CONFLICT_ENSLAVER}")
 
     paths = sorted(glob.glob(os.path.join(args.assembled, "*.materialized.json")))
     entries = []
@@ -166,7 +177,11 @@ def main(argv=None):
            "config": {"scorer": "evidence", "auto": args.auto,
                       "review": args.review, "seconds": round(elapsed, 1),
                       "volumes": [os.path.basename(p) for p in paths],
-                      "geo": bool(geo)}}
+                      "geo": bool(geo),
+                      "conflict_relations": not args.no_conflict_relations,
+                      "w_conflict": {"parent": E.W_CONFLICT_PARENT,
+                                     "spouse": E.W_CONFLICT_SPOUSE,
+                                     "enslaver": E.W_CONFLICT_ENSLAVER}}}
     os.makedirs(args.outdir, exist_ok=True)
     base = os.path.join(args.outdir, args.tag)
     json.dump(identities, open(f"{base}.identities.json", "w", encoding="utf-8"),

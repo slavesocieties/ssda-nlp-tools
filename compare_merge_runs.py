@@ -47,7 +47,16 @@ def load(outdir, tag):
 
 
 def blocks(stats):
-    return stats.get("merges_blocked_by_surname_tier") or {}
+    """Per-reason counts, whichever stage produced them.
+
+    The tier-based merger reports `merges_blocked_by_surname_tier`; the evidence
+    merger reports `dispositions`. Reading only the first made this tool declare
+    every evidence-scorer A/B invalid ("the toggle did not take effect") because
+    the field was simply absent from both runs -- a false alarm that looks
+    exactly like the real failure it is meant to catch.
+    """
+    return (stats.get("merges_blocked_by_surname_tier")
+            or stats.get("dispositions") or {})
 
 
 def main(argv=None):
@@ -56,13 +65,21 @@ def main(argv=None):
     ap.add_argument("control")
     ap.add_argument("treatment")
     ap.add_argument("--outdir", default="production/luna_v3/merge")
+    ap.add_argument("--control-outdir", help="defaults to --outdir")
+    ap.add_argument("--treatment-outdir", help="defaults to --outdir")
     ap.add_argument("--toggle", default="blocked-lifespan",
                     help="the block label the treatment is supposed to add")
+    ap.add_argument("--toggle-config",
+                    help="a config key that must DIFFER between the runs. Stronger "
+                         "than --toggle: it reads the parameter itself rather than "
+                         "inferring from a downstream count that may be unchanged "
+                         "for legitimate reasons.")
     ap.add_argument("--force", action="store_true",
                     help="print the comparison even if it is invalid")
     args = ap.parse_args(argv)
 
-    A, B = load(args.outdir, args.control), load(args.outdir, args.treatment)
+    A = load(args.control_outdir or args.outdir, args.control)
+    B = load(args.treatment_outdir or args.outdir, args.treatment)
     ca, cb = A.get("config") or {}, B.get("config") or {}
 
     problems = []
@@ -73,7 +90,16 @@ def main(argv=None):
     if ca.get("volumes") != cb.get("volumes"):
         problems.append("different volume lists between runs")
     ta, tb = blocks(A).get(args.toggle, 0), blocks(B).get(args.toggle, 0)
-    if ta == tb:
+    if args.toggle_config:
+        va, vb = ca.get(args.toggle_config), cb.get(args.toggle_config)
+        if va == vb:
+            problems.append(f"config[{args.toggle_config!r}] is {va!r} in BOTH runs "
+                            f"-- the control is not a control, the toggle did not "
+                            f"take effect")
+        else:
+            print(f"toggle confirmed: config[{args.toggle_config!r}] "
+                  f"{va!r} -> {vb!r}\n")
+    elif ta == tb:
         problems.append(f"{args.toggle} is {ta:,} in BOTH runs -- the control is "
                         f"not a control, the toggle did not take effect")
 
