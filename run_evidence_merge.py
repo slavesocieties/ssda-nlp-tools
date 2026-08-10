@@ -78,9 +78,10 @@ def main(argv=None):
     # Print the ACTIVE weights, so a flag that is never consumed is visible in
     # the log rather than showing up as a mysteriously zero delta.
     if args.no_conflict_relations:
-        E.W_CONFLICT_PARENT = E.W_CONFLICT_SPOUSE = E.W_CONFLICT_ENSLAVER = 0.0
-    print(f"conflict weights: parent={E.W_CONFLICT_PARENT} "
-          f"spouse={E.W_CONFLICT_SPOUSE} enslaver={E.W_CONFLICT_ENSLAVER}")
+        E.W_CONFLICT_DISQUALIFYING = E.W_CONFLICT_SUBSTANTIAL = 0.0
+    print(f"conflict weights: disqualifying={E.W_CONFLICT_DISQUALIFYING:.2f} "
+          f"substantial={E.W_CONFLICT_SUBSTANTIAL} "
+          f"roles={sorted(E.MAX_HOLDERS)}")
 
     paths = sorted(glob.glob(os.path.join(args.assembled, "*.materialized.json")))
     entries = []
@@ -179,9 +180,11 @@ def main(argv=None):
                       "volumes": [os.path.basename(p) for p in paths],
                       "geo": bool(geo),
                       "conflict_relations": not args.no_conflict_relations,
-                      "w_conflict": {"parent": E.W_CONFLICT_PARENT,
-                                     "spouse": E.W_CONFLICT_SPOUSE,
-                                     "enslaver": E.W_CONFLICT_ENSLAVER}}}
+                      "w_conflict": {
+                          "disqualifying": E.W_CONFLICT_DISQUALIFYING,
+                          "substantial": E.W_CONFLICT_SUBSTANTIAL,
+                          "max_holders": dict(E.MAX_HOLDERS),
+                          "enslaver_sale_years": E.ENSLAVER_SALE_YEARS}}}
     os.makedirs(args.outdir, exist_ok=True)
     base = os.path.join(args.outdir, args.tag)
     json.dump(identities, open(f"{base}.identities.json", "w", encoding="utf-8"),

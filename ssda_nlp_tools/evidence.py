@@ -101,18 +101,60 @@ W_CLERGY_BOTH = 2.5                # Daniel: merge clergy aggressively
 # CONFLICTING relationships. Daniel, 2026-08-07: two same-named people with
 # DIFFERENT spouses is "essentially disqualifying - it's not just that they have
 # no shared relationship, they have actively distinguishing individual
-# relationships." These roles admit one holder at a time, so a mismatch is
-# evidence, where previously it scored exactly 0.00 -- the same as silence.
+# relationships." Before this, a mismatch scored exactly 0.00 -- the same as
+# silence.
 #
-# These are PRIORS, chosen, not measured; they are ordered by how exclusive the
-# role actually is. They are sized to cancel a strong name match (MAX_NAME_LLR
-# 5.5) without being an absolute veto, because the underlying names are
-# extracted by an LLM and can be wrong. A veto here would be unrecoverable.
-W_CONFLICT_PARENT = -4.0           # you have one mother and one father
-W_CONFLICT_SPOUSE = -4.0           # exclusive at a time; decays, see below
-W_CONFLICT_ENSLAVER = -1.5         # people were sold; far weaker evidence
-REMARRIAGE_YEARS = 15              # beyond this, widowhood makes a new spouse ordinary
-MAX_PARENTS = 2                    # a mother and a father; see the parent case below
+# NOT ALL CLASHING RELATIONS ARE THE SAME. Daniel, 2026-08-10:
+#
+#   "Clearly different parents = automatically disqualifying; Clearly different
+#   spouses in an early modern Catholic society = essentially automatically
+#   disqualifying; different slave owners within a short span of time =
+#   essentially automatically disqualifying; different slave owner across a span
+#   of a decade+ = substantial penalty but not disqualifying."
+#
+#   "children/godchildren can't really conflict because they're not a limited
+#   set, godparents/grandparents function similarly to parents, witnesses can
+#   only increase match probability through an overlapping association."
+#
+# So a role conflicts only if it is a LIMITED SET, and the test is arithmetic:
+# more distinct holders between the two mentions than a person can have. You
+# have two parents; you have one spouse at a time; you have any number of
+# children, godchildren and witnesses, so those can never contradict.
+#
+# `former spouse` is deliberately absent. It is the register's own record of
+# widowhood and remarriage -- the one lawful way to have had two spouses -- so
+# treating it as a clash would penalise exactly the case that explains it.
+MAX_HOLDERS = {
+    "parent": 2,        # a mother and a father
+    "godparent": 2,     # Daniel: "function similarly to parents"
+    "grandparent": 4,   # two per side
+    "spouse": 1,        # exclusive, and see the note on indissolubility below
+    "enslaver": 1,      # exclusive at a moment, but transferable -- see below
+}
+
+# WHY "DISQUALIFYING" IS A SIZE AND NOT A VETO.
+#
+# Daniel's word is "automatically", which is veto language, and these very
+# nearly are vetoes. They are sized instead of hard-coded because the relation
+# names are extracted by an LLM: a hallucinated spouse would otherwise be
+# unrecoverable, and we already know duplicate and malformed extractions exist
+# in this corpus. So the weight is DERIVED from the constraint it has to satisfy
+# -- it must outweigh the strongest agreement the model can otherwise assemble,
+# including a maximally rare shared associate -- rather than picked. If any
+# other weight changes, this one follows, and a test asserts the property.
+#
+# The historical reasoning Daniel asked for, stated so it can be argued with:
+# marriage in this society is indissoluble, so two records naming different
+# living spouses cannot both be the same person; the only lawful second marriage
+# follows a death, and the registers record that separately as `former spouse`.
+# Enslavement carries no such permanence -- sale, inheritance and manumission all
+# transfer a person between owners -- so it is the one clash that time can
+# explain, and it is graded by the gap rather than flat.
+W_CONFLICT_SUBSTANTIAL = -3.0      # "substantial penalty but not disqualifying"
+ENSLAVER_SALE_YEARS = 10           # "across a span of a decade+"
+DISQUALIFY_MARGIN = 2.0
+# W_CONFLICT_DISQUALIFYING is derived below, once the weights it must outweigh
+# (MAX_NAME_LLR, MAX_LLR_PER_ASSOCIATE, REVIEW_LOG_ODDS) have been defined.
 
 AUTO_MERGE_LOG_ODDS = 3.0          # ~95% posterior
 REVIEW_LOG_ODDS = 0.0              # ~50%
@@ -169,6 +211,20 @@ MAX_LLR_PER_ASSOCIATE = 7.0
 # geographic evidence, not on arithmetic. Reverted to 5.5, which the corpus
 # prefers on every measure that matters.
 MAX_NAME_LLR = 5.5
+
+# The size a "disqualifying" conflict has to be, derived rather than chosen.
+#
+# Daniel's ruling is qualitative -- clearly different parents, or spouses, or an
+# enslaver within a short span, are "automatically" different people. Turning
+# that into a number means asking what it has to beat: the strongest agreement
+# the model can otherwise assemble for a pair. That is a maximal name match, a
+# maximally rare shared associate, same institution, close dates, and every hard
+# attribute agreeing. If a conflict outweighs all of that with room to spare,
+# Daniel's "automatically" holds without a veto's irreversibility.
+_MAX_AGREEMENT = (MAX_NAME_LLR + MAX_LLR_PER_ASSOCIATE + max(W_PLACE.values())
+                  + W_YEAR_CLOSE + 6 * W_ATTR_AGREE)
+W_CONFLICT_DISQUALIFYING = -(LOG_PRIOR_ODDS + _MAX_AGREEMENT
+                             - REVIEW_LOG_ODDS + DISQUALIFY_MARGIN)
 
 
 class NameStats:
@@ -271,64 +327,64 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
         total += w
         reasons.append(f"shared:{nm}(+{w:.1f})")
 
-    # CONFLICTING relationships, which are not the same thing as missing ones.
+    # CONFLICTING relationships, graded by how limited the role actually is.
     #
-    # Daniel, 2026-08-07: "if two people with the same name have spouses with
-    # different names, that's essentially disqualifying - it's not just that they
-    # have no shared relationship, they have actively distinguishing individual
-    # relationships."
+    # A role can only contradict if it is a LIMITED SET, and the test is
+    # arithmetic: more distinct holders between the two mentions than one person
+    # can have. See MAX_HOLDERS for the capacities and Daniel's 2026-08-10
+    # ruling behind them. Roles absent from that table -- child, godchild,
+    # witness, sibling, and the rest -- can never conflict, however little they
+    # overlap, because there is no limit for them to exceed.
     #
-    # He is right and this was scoring 0.00 -- identical to no information at
-    # all. Some roles admit only one holder at a time, so two DIFFERENT named
-    # holders is positive evidence of two people:
-    #
-    #   parent    you have one mother and one father. Different named parents in
-    #             the same role is the strongest disqualifier here.
-    #   spouse    exclusive at any moment, but remarriage after a death is
-    #             ordinary in these registers, so the penalty decays with the
-    #             gap between the two entries.
-    #   enslaver  a person can be sold. Real evidence, but far weaker.
-    #
-    # Only counted when the two names are NOT the same person under
-    # `_third_party_same`, so scribal drift on one woman's name is not read as
-    # two different mothers.
-    for role, w in (("parent", W_CONFLICT_PARENT),
-                    ("spouse", W_CONFLICT_SPOUSE),
-                    ("enslaver", W_CONFLICT_ENSLAVER)):
+    # A conflict is suppressed when the two sides name the same person under
+    # `_third_party_same`, so scribal drift is never read as a contradiction.
+    ya = a.get("_year") or a.get("year")
+    yb = b.get("_year") or b.get("year")
+    gap = abs(int(ya) - int(yb)) if (ya and yb) else None
+    for role, capacity in MAX_HOLDERS.items():
         ra, rb = na.get(role) or set(), nb.get(role) or set()
         if not ra or not rb:
             continue
         if any(_third_party_same(x, y) for x in ra for y in rb):
             continue                       # same person, differently spelled
-
-        # PARENT HAS CAPACITY TWO, AND THE DATA DOES NOT SAY WHICH IS WHICH.
-        #
-        # Treating any two different parent names as contradictory was wrong and
-        # the audit caught it: two 1742 entries for "Maria de Jesus", naming the
-        # SAME husband, were split because one recorded parent=elena and the
-        # other parent=francisco -- a mother and a father, not a contradiction.
-        # Registers routinely name only one parent, and which one is arbitrary.
-        #
-        # Two mentions of one person can therefore name up to two distinct
-        # parents between them. Only a union LARGER than two is impossible.
-        if role == "parent" and _n_distinct(ra | rb) <= MAX_PARENTS:
+        if _n_distinct(ra | rb) <= capacity:
+            # Within capacity, so not a contradiction. This is what makes a
+            # mother in one record and a father in the other legitimate: two
+            # distinct parents is exactly two, and the registers name whichever
+            # one they please.
             continue
-        pen = w
-        if role == "spouse":
-            ya, yb = a.get("_year") or a.get("year"), b.get("_year") or b.get("year")
-            if ya and yb and abs(int(ya) - int(yb)) > REMARRIAGE_YEARS:
-                pen = w / 3.0              # widowhood and remarriage, not a clash
+
+        # Enslavement is the one clash that time can explain. Daniel: different
+        # owners within a short span is "essentially automatically
+        # disqualifying"; across a decade or more it is "a substantial penalty
+        # but not disqualifying", because sale, inheritance and manumission all
+        # move a person between owners. Marriage has no equivalent -- it is
+        # indissoluble, and the lawful second marriage after a death is recorded
+        # separately as `former spouse`, which is not in MAX_HOLDERS at all.
+        if role == "enslaver" and gap is not None and gap > ENSLAVER_SALE_YEARS:
+            pen = W_CONFLICT_SUBSTANTIAL
+        else:
+            pen = W_CONFLICT_DISQUALIFYING
         total += pen
-        reasons.append(f"conflict:{role}({pen:+.1f})")
+        reasons.append(f"conflict:{role}({pen:+.2f})")
 
     if not shared:
-        # Expected overlap grows with both densities; seeing none is telling
-        # only when there was room for it.
-        density = min(len(all_a), len(all_b))
+        # Absence of overlap is only evidence among roles that COULD have
+        # overlapped meaningfully. Daniel: "witnesses can only increase match
+        # probability through an overlapping association", and children and
+        # godchildren "can't really conflict because they're not a limited set".
+        # Counting those toward a disjointness penalty punished a record for
+        # naming more people, which is backwards -- richer records were being
+        # penalised for being richer.
+        lim_a = set().union(*(na[r] for r in MAX_HOLDERS if r in na)) if any(
+            r in na for r in MAX_HOLDERS) else set()
+        lim_b = set().union(*(nb[r] for r in MAX_HOLDERS if r in nb)) if any(
+            r in nb for r in MAX_HOLDERS) else set()
+        density = min(len(lim_a), len(lim_b))
         if density >= 2:
             pen = -0.9 * min(density, 5)
             total += pen
-            reasons.append(f"disjoint-networks({len(all_a)}v{len(all_b)}){pen:.1f}")
+            reasons.append(f"disjoint-networks({len(lim_a)}v{len(lim_b)}){pen:.1f}")
     return total, reasons
 
 

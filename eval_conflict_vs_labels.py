@@ -102,14 +102,13 @@ def main(argv=None):
               "treat everything below as UNRELIABLE")
 
     def scores(on: bool):
-        keep = (E.W_CONFLICT_PARENT, E.W_CONFLICT_SPOUSE, E.W_CONFLICT_ENSLAVER)
+        keep = (E.W_CONFLICT_DISQUALIFYING, E.W_CONFLICT_SUBSTANTIAL)
         if not on:
-            E.W_CONFLICT_PARENT = E.W_CONFLICT_SPOUSE = E.W_CONFLICT_ENSLAVER = 0.0
+            E.W_CONFLICT_DISQUALIFYING = E.W_CONFLICT_SUBSTANTIAL = 0.0
         try:
             return [score(x, y, stats, geo=geo, vol_of=vol_of) for _, _, x, y in rows]
         finally:
-            (E.W_CONFLICT_PARENT, E.W_CONFLICT_SPOUSE,
-             E.W_CONFLICT_ENSLAVER) = keep
+            (E.W_CONFLICT_DISQUALIFYING, E.W_CONFLICT_SUBSTANTIAL) = keep
 
     off, on = scores(False), scores(True)
     grades = [g for _, g, _, _ in rows]
