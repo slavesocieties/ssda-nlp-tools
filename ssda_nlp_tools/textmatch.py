@@ -129,6 +129,15 @@ def name_similarity(a: Optional[str], b: Optional[str]) -> float:
     # already takes the max over signals so that "either signal can rescue a true
     # match", and an ordering artefact should not be the thing that suppresses
     # one.
+    #
+    # MEASURED COST: this doubles the SequenceMatcher work on the merge's hot
+    # loop, and the full-corpus run went 883s -> 1319s (+49%). That is the real
+    # price and it is not negligible at 750k images. The cheap alternative is to
+    # canonicalise the argument order (sort na/nb) for a single call, which is
+    # equally symmetric and free -- but it returns whichever of the two ratios
+    # the alphabet happens to select, and neither ratio is more correct than the
+    # other, so it trades a defensible rule for an arbitrary one. Revisit if the
+    # merge becomes the bottleneck; it currently is not.
     ratio = max(SequenceMatcher(None, na, nb).ratio(),
                 SequenceMatcher(None, nb, na).ratio())
 
