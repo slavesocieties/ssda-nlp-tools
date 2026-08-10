@@ -18,6 +18,11 @@ from typing import Any, Dict, List, Optional, Tuple
 from .resolve import resolve_volume
 from .textmatch import normalize_name
 
+# Relationship types that are their own inverse. Kept here rather than imported
+# from validate_graph so the builder does not depend on the validator, but the
+# two must agree -- test_network.py pins that.
+SELF_INVERSE = {"spouse": "spouse", "sibling": "sibling", "witness": "witness"}
+
 
 class _UF:
     def __init__(self): self.p = {}
@@ -78,6 +83,28 @@ def build_network(resolved: Any, **kwargs) -> Dict[str, Any]:
                 slot = edges.setdefault(key, {"weight": 0, "entries": set()})
                 slot["weight"] += 1
                 slot["entries"].add(eid)
+
+    # Complete the SELF-INVERSE relationships.
+    #
+    # The builder writes edges exactly as extracted, so a register that records
+    # "Maria Calado, sibling of Antonio Calado" and never states the converse
+    # leaves the graph traversable in one direction only. validate_graph flagged
+    # 4 such sibling edges. For a type that is its own inverse, the reverse is
+    # definitionally true rather than inferred -- if A is B's sibling then B is
+    # A's sibling -- so materialising it adds no claim the register did not make.
+    #
+    # Deliberately NOT done for parent/child and the other asymmetric pairs:
+    # those would require deciding a DIRECTION, which is an inference. The two
+    # remaining missing inverses are of that kind and both come from a single
+    # malformed entry (701179-0148-01, two people each recorded as the other's
+    # parent), which is an extraction defect to re-extract, not to paper over.
+    for (s, t, o) in list(edges):
+        if SELF_INVERSE.get(t) != t:
+            continue
+        rev = (o, t, s)
+        if rev not in edges:
+            src = edges[(s, t, o)]
+            edges[rev] = {"weight": src["weight"], "entries": set(src["entries"])}
 
     edge_list = [{"source": s, "type": t, "target": o,
                   "weight": v["weight"], "entries": sorted(v["entries"])}

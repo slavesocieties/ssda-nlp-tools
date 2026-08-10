@@ -109,3 +109,62 @@ def test_combine_volumes_keeps_entry_ids_unique():
     assert len(ids) == len(set(ids)) == 2
     assert combined["entries"][0]["chunk"] == "x"
     assert combined["entries"][1]["chunk"] == "y"
+
+
+# --- self-inverse completion -------------------------------------------------
+
+def _vol1(people):
+    """A one-entry volume in the shape build_network expects."""
+    return {"id": 9, "type": "baptism",
+            "entries": [{"id": "0001-01", "data": {"people": people,
+                                                   "events": []}}]}
+
+
+def test_a_sibling_edge_is_traversable_both_ways():
+    """4 sibling edges existed in one direction only, because the register
+    states "Maria, sibling of Antonio" and never the converse."""
+    from ssda_nlp_tools.network import build_network
+    net = build_network(_vol1([
+        {"id": "P01", "name": "Maria Calado",
+         "relationships": [{"related_person": "P02",
+                            "relationship_type": "sibling"}]},
+        {"id": "P02", "name": "Antonio Calado", "relationships": []}]))
+    pairs = {(e["source"], e["type"], e["target"]) for e in net["edges"]}
+    sib = {(s, o) for s, t, o in pairs if t == "sibling"}
+    assert len(sib) == 2, f"expected both directions, got {sib}"
+    a, b = list(sib)[0]
+    assert (b, a) in sib
+
+
+def test_asymmetric_relationships_are_NOT_invented():
+    """parent/child would require deciding a DIRECTION -- that is an inference,
+    not a definitional completion, and is deliberately left to re-extraction."""
+    from ssda_nlp_tools.network import build_network
+    net = build_network(_vol1([
+        {"id": "P01", "name": "Aurelio Vega",
+         "relationships": [{"related_person": "P02",
+                            "relationship_type": "parent"}]},
+        {"id": "P02", "name": "Beatriz Solar", "relationships": []}]))
+    types = [e["type"] for e in net["edges"]]
+    assert types == ["parent"], f"invented an inverse: {types}"
+
+
+def test_an_existing_reverse_is_not_duplicated_or_reweighted():
+    from ssda_nlp_tools.network import build_network
+    net = build_network(_vol1([
+        {"id": "P01", "name": "Aurelio Vega",
+         "relationships": [{"related_person": "P02",
+                            "relationship_type": "spouse"}]},
+        {"id": "P02", "name": "Beatriz Solar",
+         "relationships": [{"related_person": "P01",
+                            "relationship_type": "spouse"}]}]))
+    sp = [e for e in net["edges"] if e["type"] == "spouse"]
+    assert len(sp) == 2
+    assert all(e["weight"] == 1 for e in sp), [e["weight"] for e in sp]
+
+
+def test_builder_and_validator_agree_on_which_types_are_self_inverse():
+    from ssda_nlp_tools.network import SELF_INVERSE
+    from validate_graph import INVERSES
+    for t in SELF_INVERSE:
+        assert INVERSES.get(t) == t, f"{t} disagrees between builder and validator"
