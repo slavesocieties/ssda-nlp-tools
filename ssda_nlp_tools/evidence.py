@@ -127,10 +127,40 @@ W_CLERGY_BOTH = 2.5                # Daniel: merge clergy aggressively
 MAX_HOLDERS = {
     "parent": 2,        # a mother and a father
     "godparent": 2,     # Daniel: "function similarly to parents"
-    "grandparent": 4,   # two per side
+    "grandparent": 4,   # unsided: two per side, but we are not told which
+    "maternal grandparent": 2,
+    "paternal grandparent": 2,
     "spouse": 1,        # exclusive, and see the note on indissolubility below
     "enslaver": 1,      # exclusive at a moment, but transferable -- see below
 }
+
+# GRANDPARENTS, AND WHY THEY NEEDED FIXING UPSTREAM.
+#
+# Daniel, 2026-08-10: "This is a question that can/should be resolved upstream.
+# Maternal/paternal grandparents should be labeled differently when extracted."
+#
+# Capacity 4 was safe but nearly unreachable. Because an unsided extraction does
+# not say which side a grandparent belongs to, one record naming the maternal
+# pair and another naming the paternal pair presented as four distinct
+# grandparents -- indistinguishable from agreement, so the role could contradict
+# only in the rare five-grandparent case. With the side extracted, each side
+# holds two and a grandparent clash becomes as informative as a parent clash.
+#
+# THE AGGREGATE CHECK IS WHAT MAKES THE TRANSITION SAFE. The delivered corpus is
+# entirely unsided, and re-extraction will land volume by volume, so sided and
+# unsided records will be compared against each other for a long time. Checking
+# only the per-side capacities would silently stop checking those mixed pairs
+# altogether -- a regression, not a refinement. So the three terms are ALSO
+# checked together against the old capacity of 4, and a pair is charged at most
+# once for the family.
+ROLE_FAMILY_CAPACITY = {"grandparent": 4}
+ROLE_FAMILY_MEMBERS = {
+    "grandparent": ("grandparent", "maternal grandparent", "paternal grandparent"),
+}
+# Which family a role is charged under. A role absent here is its own family.
+ROLE_FAMILY = {member: family
+               for family, members in ROLE_FAMILY_MEMBERS.items()
+               for member in members}
 
 # WHY "DISQUALIFYING" IS A SIZE AND NOT A VETO.
 #
@@ -384,11 +414,24 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
     #
     # A conflict is suppressed when the two sides name the same person under
     # `_third_party_same`, so scribal drift is never read as a contradiction.
+    #
+    # Each check is (label, roles-to-pool, capacity). Most are a single role;
+    # the sided grandparents additionally get pooled into one family check at
+    # the old capacity of 4, so a sided record compared against an unsided one
+    # is no less protected than before (see ROLE_FAMILY_MEMBERS).
     ya = a.get("_year") or a.get("year")
     yb = b.get("_year") or b.get("year")
     gap = abs(int(ya) - int(yb)) if (ya and yb) else None
-    for role, capacity in MAX_HOLDERS.items():
-        ra, rb = na.get(role) or set(), nb.get(role) or set()
+    checks = [(role, (role,), cap) for role, cap in MAX_HOLDERS.items()]
+    checks += [(fam, ROLE_FAMILY_MEMBERS[fam], cap)
+               for fam, cap in ROLE_FAMILY_CAPACITY.items()]
+    charged = set()
+    for role, members, capacity in checks:
+        family = ROLE_FAMILY.get(role, role)
+        if family in charged:
+            continue          # one penalty per family, not one per member role
+        ra = set().union(*(na.get(m) or set() for m in members))
+        rb = set().union(*(nb.get(m) or set() for m in members))
         if not ra or not rb:
             continue
         if any(_third_party_same(x, y) for x in ra for y in rb):
@@ -397,9 +440,9 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
             # Within capacity, so not a contradiction. This is what makes a
             # mother in one record and a father in the other legitimate: two
             # distinct parents is exactly two, and the registers name whichever
-            # one they please. It is also what makes grandparents safe while
-            # the extraction does not distinguish maternal from paternal --
-            # two named on one side and two on the other is exactly four.
+            # one they please. The same arithmetic on the pooled grandparent
+            # family is what keeps a maternal pair and a paternal pair -- or an
+            # unsided record against a sided one -- reading as exactly four.
             continue
 
         # A GODPARENT CLASH ONLY MEANS ANYTHING WITHIN ONE SACRAMENT.
@@ -419,6 +462,7 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
         pen = (_enslaver_penalty(gap, a, b) if role == "enslaver"
                else W_CONFLICT_DISQUALIFYING)
         total += pen
+        charged.add(family)
         reasons.append(f"conflict:{role}({pen:+.2f})")
 
     if not shared:

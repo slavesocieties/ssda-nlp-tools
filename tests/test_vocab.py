@@ -21,19 +21,30 @@ def test_relationship_types_map_to_the_closed_english_set():
     english = set(v.values("relationship_type", "English"))
     # 9 original + 12 approved by Daniel 2026-07-27 (patron/client,
     # custodian/ward, executor/testator, heir/benefactor, caregiver/dependent,
-    # former spouse, witness) = 21. These appear in the registers; the pairs are
+    # former spouse, witness) + 2 approved 2026-08-10 (maternal/paternal
+    # grandparent) = 23. These appear in the registers; the pairs are
     # directional, analogous to parent/child and enslaver/slave.
-    assert len(english) == 21, "9 original + 12 added 2026-07-27"
+    assert len(english) == 23, "9 original + 12 added 2026-07-27 + 2 added 2026-08-10"
     assert {"patron", "client", "custodian", "ward", "executor", "testator",
             "heir", "benefactor", "caregiver", "dependent", "former spouse",
             "witness"} <= english
+    # Grandparents carry the family side; the unsided term stays legal for
+    # records that do not say which side, and grandchild is never sided.
+    assert {"maternal grandparent", "paternal grandparent",
+            "grandparent"} <= english
+    assert "maternal grandchild" not in english
     for surface, want in [("padrino", "godparent"), ("madrina", "godparent"),
                           ("padrinho", "godparent"), ("afilhada", "godchild"),
                           ("esclavo", "slave"), ("escrava", "slave"),
                           ("amo", "enslaver"), ("senhor", "enslaver"),
                           ("hijo", "child"), ("filha", "child"),
                           ("madre", "parent"), ("pai", "parent"),
-                          ("esposa", "spouse"), ("nieta", "grandchild")]:
+                          ("esposa", "spouse"), ("nieta", "grandchild"),
+                          ("abuelo materno", "maternal grandparent"),
+                          ("abuela paterna", "paternal grandparent"),
+                          ("avó materna", "maternal grandparent"),
+                          ("abuelos paternos", "paternal grandparent"),
+                          ("abuela", "grandparent")]:
         got = v.canonicalize("relationship_type", surface)
         assert got == want, f"{surface} -> {got!r}, expected {want!r}"
         assert got in english

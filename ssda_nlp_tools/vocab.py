@@ -115,6 +115,16 @@ _RELATIONSHIP_MAP = {
     "parent":      ["padre", "madre", "pai", "mae"],
     "child":       ["hijo", "hija", "filho", "filha"],
     "grandparent": ["abuelo", "abuela", "avo"],
+    # Daniel, 2026-08-10: "Maternal/paternal grandparents should be labeled
+    # differently when extracted." The bare term above stays legal for records
+    # that do not say which side -- see vocab_extensions.json and
+    # grandparent_side.py. Grandchild is deliberately NOT sided: the side names
+    # which of the child's parents the line runs through, so only the
+    # descendant's view of the edge carries it.
+    "maternal grandparent": ["abuelo materno", "abuela materna",
+                             "avo materno", "avo materna"],
+    "paternal grandparent": ["abuelo paterno", "abuela paterna",
+                             "avo paterno", "avo paterna"],
     "grandchild":  ["nieto", "nieta", "neto", "neta"],
     "enslaver":    ["esclavizador", "amo", "ama", "escravizador",
                     "senhor", "senhora"],

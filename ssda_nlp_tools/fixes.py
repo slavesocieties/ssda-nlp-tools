@@ -37,7 +37,36 @@ RECIPROCAL_RELS = {
     # genuinely symmetric, like spouse
     "former spouse": "former spouse",
     "witness": "witness",
+    # Added 2026-08-10 (Daniel): "Maternal/paternal grandparents should be
+    # labeled differently when extracted." Both sided terms reciprocate to a
+    # PLAIN grandchild -- the side says which of the child's parents the line
+    # runs through, so it is a property of the descendant's view of the edge and
+    # the grandparent has no side of their own to state.
+    "maternal grandparent": "grandchild",
+    "paternal grandparent": "grandchild",
 }
+
+# ...which makes the relation asymmetric in a way nothing else here is: three
+# terms collapse to one on the way back, so "grandchild" cannot name a single
+# reciprocal. `RECIPROCAL_RELS["grandchild"]` stays the unsided term, which is
+# the right thing to ADD when a side is missing (we do not know it), and this
+# set is what an existing back-edge is CHECKED against.
+GRANDPARENT_TERMS = ("grandparent", "maternal grandparent", "paternal grandparent")
+
+
+def reciprocates(rtype: str, back: str) -> bool:
+    """Is `back` an acceptable reciprocal of `rtype`?
+
+    Exact match, except that any grandparent term answers a grandchild edge.
+    Without this, "P08 maternal grandparent P06" plus "P06 grandchild P08" --
+    the correct pair -- was read as a type mismatch and BOTH edges were dropped.
+    """
+    want = RECIPROCAL_RELS.get(rtype)
+    if want is None:
+        return False
+    if want == "grandparent":
+        return back in GRANDPARENT_TERMS
+    return back == want
 _MONTH_DAYS = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
@@ -141,7 +170,7 @@ def fix_relationships(data: Dict[str, Any]) -> Tuple[Dict[str, Any], List[str]]:
                 changes.append(f"added reciprocal {RECIPROCAL_RELS[rtype]} for {p2}->{p1}")
                 add_relation(p2, p1, RECIPROCAL_RELS[rtype])
                 rel.setdefault(p2, {})[p1] = RECIPROCAL_RELS[rtype]
-            elif back == RECIPROCAL_RELS[rtype]:
+            elif reciprocates(rtype, back):
                 continue  # already valid
             elif back != rtype or (not is_principal(p1, events) and not is_principal(p2, events)):
                 changes.append(f"dropped unfixable {p1}<->{p2} ({rtype}/{back})")

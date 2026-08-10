@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from .cost import count_tokens
 from .fixes import fix_relationships
+from .grandparent_side import label_examples
 
 BATCH_SYSTEM_PROMPT = """
 You are a historical sacramental-register normalization and extraction assistant.
@@ -145,6 +146,20 @@ PERSON fields — include only those the record supports:
   term for these — "patron" on both people loses which one held the patronage.
   Only "spouse", "former spouse" and "witness" are symmetric and take the same
   term on both sides.
+  GRANDPARENTS CARRY THE SIDE OF THE FAMILY. The registers almost always say
+  which side, in one of these forms:
+      "Abuelos paternos: A y B; maternos: C y D"
+      "abuelos paternos A y B, y maternos C y D"
+      "nieto paterno de A y de B y materno de C y de D"
+      "Abuela materna: A"        "Avós paternos: A e B"
+  Everyone named under paterno/paternos is a "paternal grandparent" and everyone
+  named under materno/maternos is a "maternal grandparent"; a side word governs
+  every name after it until the next side word or the end of the sentence. Use
+  the bare "grandparent" ONLY when the record names a grandparent without saying
+  which side — never guess a side from a shared surname. The reciprocal of all
+  three is the plain "grandchild": the side names which of the child's parents
+  the line runs through, so it belongs to the grandchild's view of the edge.
+  There is no "maternal grandchild".
 
 EVENT fields:
 - type: "baptism", "marriage", "burial", or "birth". A baptismal entry
@@ -172,6 +187,14 @@ def build_messages(entries: List[dict], examples: List[dict],
     for ins in instructions:                       # static project instructions
         text = ins["text"] if isinstance(ins, dict) else str(ins)
         msgs.append({"role": "system", "content": text})
+    # Six of the fifteen gold examples carry grandparent edges, and every one of
+    # their source texts states the side while the gold labels them all plainly.
+    # Shown as-is they would demonstrate the opposite of what the schema block
+    # above asks for, and the demonstrations win. training_data.json is vendored
+    # verbatim from slavesocieties/openai (the rule vocab.json follows), so the
+    # relabel happens here rather than in the file. It is deterministic, so the
+    # cache prefix stays byte-identical across calls.
+    examples = label_examples(examples)
     for ex in examples:                            # static few-shot demonstrations
         msgs.append({"role": "user",
                      "content": f"Example {ex.get('language', language)} "

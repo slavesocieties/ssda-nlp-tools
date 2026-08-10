@@ -22,7 +22,8 @@ import pytest
 
 from ssda_nlp_tools.evidence import (CHILD_MOBILITY, DISQUALIFY_MARGIN,
                                      ENSLAVER_TAU_YEARS, LOG_PRIOR_ODDS,
-                                     MAX_HOLDERS,
+                                     MAX_HOLDERS, ROLE_FAMILY_CAPACITY,
+                                     ROLE_FAMILY_MEMBERS,
                                      REVIEW_LOG_ODDS, W_CONFLICT_DISQUALIFYING,
                                      W_CONFLICT_SUBSTANTIAL, NameStats,
                                      _MAX_AGREEMENT, network_llr, score)
@@ -141,9 +142,10 @@ def test_an_unknown_sacrament_takes_the_lenient_reading_for_godparents():
 
 def test_grandparents_survive_maternal_versus_paternal_naming():
     """Daniel routed the real fix upstream -- "Maternal/paternal grandparents
-    should be labeled differently when extracted" -- but capacity 4 already
-    makes the common case safe: two named on one side and two on the other is
-    exactly four, not five."""
+    should be labeled differently when extracted" -- but the UNSIDED term still
+    has to behave as it did, because the whole delivered corpus predates the
+    change: two named on one side and two on the other is exactly four, not
+    five."""
     s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro", "e cinco"])
     a = _m("ana", 1800, grandparent=("a uno", "b dos"))
     b = _m("ana", 1801, grandparent=("c tres", "d cuatro"))
@@ -151,6 +153,71 @@ def test_grandparents_survive_maternal_versus_paternal_naming():
     # five distinct grandparents is impossible for anyone
     c = _m("ana", 1801, grandparent=("c tres", "d cuatro", "e cinco"))
     assert _conflicts(a, c, s)
+
+
+# --- sided grandparents (Daniel, 2026-08-10) -------------------------------
+
+def test_a_sided_grandparent_clash_is_as_informative_as_a_parent_clash():
+    """The point of the upstream fix. Unsided, "a uno + b dos" against "c tres +
+    d cuatro" is four grandparents and indistinguishable from agreement. Once
+    both records say MATERNAL, it is four maternal grandparents, which is the
+    same impossibility as three parents."""
+    s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro"])
+    a = _m("ana", 1800, **{"maternal grandparent": ("a uno", "b dos")})
+    b = _m("ana", 1801, **{"maternal grandparent": ("c tres", "d cuatro")})
+    assert _pen(a, b, s) == pytest.approx(W_CONFLICT_DISQUALIFYING, abs=5e-3)
+
+
+def test_opposite_sides_are_not_a_clash():
+    """One record naming the maternal pair and another the paternal pair is the
+    case that motivated the change: two different facts about one person, not a
+    contradiction."""
+    s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro"])
+    a = _m("ana", 1800, **{"maternal grandparent": ("a uno", "b dos")})
+    b = _m("ana", 1801, **{"paternal grandparent": ("c tres", "d cuatro")})
+    assert _conflicts(a, b, s) == []
+
+
+def test_each_side_holds_exactly_two():
+    assert MAX_HOLDERS["maternal grandparent"] == 2
+    assert MAX_HOLDERS["paternal grandparent"] == 2
+    # ...and all three terms together still hold four, which is what protects a
+    # record extracted before the change against one extracted after it.
+    assert ROLE_FAMILY_CAPACITY["grandparent"] == 4
+    assert set(ROLE_FAMILY_MEMBERS["grandparent"]) == {
+        "grandparent", "maternal grandparent", "paternal grandparent"}
+
+
+def test_a_sided_record_against_an_unsided_one_is_still_checked():
+    """Re-extraction lands volume by volume, so mixed pairs are the normal case
+    for a long time. Checking only the per-side capacities would silently stop
+    checking them -- a regression, not a refinement."""
+    s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro",
+                               "e cinco", "f seis"])
+    sided = _m("ana", 1800, **{"maternal grandparent": ("a uno", "b dos"),
+                               "paternal grandparent": ("c tres", "d cuatro")})
+    unsided = _m("ana", 1801, grandparent=("e cinco", "f seis"))
+    assert _conflicts(sided, unsided, s), "six distinct grandparents"
+    # and it is charged ONCE for the family, not once per member role
+    assert len(_conflicts(sided, unsided, s)) == 1
+    assert _pen(sided, unsided, s) == pytest.approx(W_CONFLICT_DISQUALIFYING,
+                                                    abs=5e-3)
+
+
+def test_two_sided_records_that_agree_do_not_conflict():
+    s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro"])
+    a = _m("ana", 1800, **{"maternal grandparent": ("a uno", "b dos")})
+    b = _m("ana", 1801, **{"maternal grandparent": ("a uno", "b dos"),
+                           "paternal grandparent": ("c tres", "d cuatro")})
+    assert _conflicts(a, b, s) == []
+
+
+def test_grandchild_is_never_sided():
+    """The side names which of the CHILD's parents the line runs through, so it
+    belongs to the descendant's view of the edge. A grandchild is not a limited
+    set and must never acquire a capacity."""
+    for term in ("grandchild", "maternal grandchild", "paternal grandchild"):
+        assert term not in MAX_HOLDERS
 
 
 def test_an_undated_enslaver_clash_gets_the_strict_reading():
