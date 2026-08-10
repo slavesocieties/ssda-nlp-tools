@@ -151,8 +151,37 @@ MAX_HOLDERS = {
 # transfer a person between owners -- so it is the one clash that time can
 # explain, and it is graded by the gap rather than flat.
 W_CONFLICT_SUBSTANTIAL = -3.0      # "substantial penalty but not disqualifying"
-ENSLAVER_SALE_YEARS = 10           # "across a span of a decade+"
 DISQUALIFY_MARGIN = 2.0
+
+# ENSLAVEMENT IS THE ONE CLASH THAT TIME EXPLAINS, SO IT IS GRADED CONTINUOUSLY.
+#
+# Daniel, 2026-08-10, asked for exactly this: "Continuously is likely the right
+# answer, as is the nuanced observation that a child was more likely to be
+# inherited or sold than an adult."
+#
+#     penalty(gap) = SUBSTANTIAL + (DISQUALIFYING - SUBSTANTIAL) * exp(-gap/TAU)
+#
+# At a gap of zero it is the full disqualifying weight: two owners on the same
+# day is not a transfer, it is two people. It relaxes towards "substantial but
+# not disqualifying" as the gap grows, because sale, inheritance and manumission
+# all become likelier the longer the interval. It never reaches zero, which is
+# deliberate -- a different owner is always some evidence.
+#
+# TAU is the timescale over which a transfer becomes likely. At 5 years the
+# curve gives roughly -8.5 at a 2-year gap, -4.1 at a decade, -3.2 at twenty
+# years, which is the shape Daniel described. It is a prior, not a measurement.
+#
+# CHILD_MOBILITY makes the same gap less damning for a child, because a child
+# was likelier to be inherited or sold. It multiplies the EFFECTIVE gap, so the
+# curve decays faster for them. Only ~21% of enslaver clashes have an age on
+# both sides, so this is a refinement on a minority, not a load-bearing term.
+#
+# One exp() per conflicting pair. Daniel: "if this level of nuance can be
+# captured elegantly without inordinate compute requirements at scale, I'm all
+# for it" -- this is O(1) and adds no measurable cost.
+ENSLAVER_TAU_YEARS = 5.0
+CHILD_MOBILITY = 2.0
+_CHILD_AGES = {"infant", "child"}
 # W_CONFLICT_DISQUALIFYING is derived below, once the weights it must outweigh
 # (MAX_NAME_LLR, MAX_LLR_PER_ASSOCIATE, REVIEW_LOG_ODDS) have been defined.
 
@@ -275,6 +304,23 @@ def _assoc_names(m) -> Dict[str, set]:
     return out
 
 
+def _enslaver_penalty(gap: Optional[int], a, b) -> float:
+    """How damning two different owners are, given how far apart the records sit.
+
+    See ENSLAVER_TAU_YEARS. With no dates there is no interval to appeal to, so
+    the clash gets the strict reading rather than the benefit of the doubt.
+    """
+    if gap is None:
+        return W_CONFLICT_DISQUALIFYING
+    eff = gap
+    if str(a.get("age") or "").lower() in _CHILD_AGES or \
+       str(b.get("age") or "").lower() in _CHILD_AGES:
+        eff *= CHILD_MOBILITY
+    decay = math.exp(-eff / ENSLAVER_TAU_YEARS)
+    return W_CONFLICT_SUBSTANTIAL + (W_CONFLICT_DISQUALIFYING
+                                     - W_CONFLICT_SUBSTANTIAL) * decay
+
+
 def _n_distinct(names) -> int:
     """How many DIFFERENT third parties a set of names refers to.
 
@@ -351,20 +397,27 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
             # Within capacity, so not a contradiction. This is what makes a
             # mother in one record and a father in the other legitimate: two
             # distinct parents is exactly two, and the registers name whichever
-            # one they please.
+            # one they please. It is also what makes grandparents safe while
+            # the extraction does not distinguish maternal from paternal --
+            # two named on one side and two on the other is exactly four.
             continue
 
-        # Enslavement is the one clash that time can explain. Daniel: different
-        # owners within a short span is "essentially automatically
-        # disqualifying"; across a decade or more it is "a substantial penalty
-        # but not disqualifying", because sale, inheritance and manumission all
-        # move a person between owners. Marriage has no equivalent -- it is
-        # indissoluble, and the lawful second marriage after a death is recorded
-        # separately as `former spouse`, which is not in MAX_HOLDERS at all.
-        if role == "enslaver" and gap is not None and gap > ENSLAVER_SALE_YEARS:
-            pen = W_CONFLICT_SUBSTANTIAL
-        else:
-            pen = W_CONFLICT_DISQUALIFYING
+        # A GODPARENT CLASH ONLY MEANS ANYTHING WITHIN ONE SACRAMENT.
+        #
+        # Daniel, 2026-08-10: "for the purpose of historical/doctrinal rigor:
+        # yes, godparent clashes only count within the same sacrament type."
+        # You are sponsored afresh at each sacrament, so a different godparent
+        # at a marriage than at a baptism is the norm, not a contradiction.
+        # When either entry records no sacrament at all there is nothing to
+        # match on, so the clash is not counted -- the conservative reading.
+        if role == "godparent":
+            sa = a.get("_sacraments") or set()
+            sb = b.get("_sacraments") or set()
+            if not (sa & sb):
+                continue
+
+        pen = (_enslaver_penalty(gap, a, b) if role == "enslaver"
+               else W_CONFLICT_DISQUALIFYING)
         total += pen
         reasons.append(f"conflict:{role}({pen:+.2f})")
 

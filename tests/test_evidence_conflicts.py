@@ -20,8 +20,9 @@ import math
 
 import pytest
 
-from ssda_nlp_tools.evidence import (DISQUALIFY_MARGIN, ENSLAVER_SALE_YEARS,
-                                     LOG_PRIOR_ODDS, MAX_HOLDERS,
+from ssda_nlp_tools.evidence import (CHILD_MOBILITY, DISQUALIFY_MARGIN,
+                                     ENSLAVER_TAU_YEARS, LOG_PRIOR_ODDS,
+                                     MAX_HOLDERS,
                                      REVIEW_LOG_ODDS, W_CONFLICT_DISQUALIFYING,
                                      W_CONFLICT_SUBSTANTIAL, NameStats,
                                      _MAX_AGREEMENT, network_llr, score)
@@ -84,16 +85,72 @@ def test_a_former_spouse_is_not_a_clash():
 
 # --- enslaver: the one clash time can explain ------------------------------
 
-def test_enslaver_conflict_is_graded_by_time_because_people_were_sold():
+def test_enslaver_conflict_decays_continuously_with_the_gap():
+    """Daniel, 2026-08-10: "Continuously is likely the right answer."
+
+    Same-day is a full disqualification -- two owners at once is two people --
+    and it relaxes towards "substantial but not disqualifying" as sale,
+    inheritance and manumission become likelier. It must be strictly monotone,
+    never crossing either bound.
+    """
     s = _stats(["rita"] * 40 + ["gaston enriquez", "domingos lopes"])
-    near = _pen(_m("rita", 1850, enslaver="gaston enriquez"),
-                _m("rita", 1852, enslaver="domingos lopes"), s)
-    far = _pen(_m("rita", 1800, enslaver="gaston enriquez"),
-               _m("rita", 1800 + ENSLAVER_SALE_YEARS + 5,
-                  enslaver="domingos lopes"), s)
-    assert near == pytest.approx(W_CONFLICT_DISQUALIFYING, abs=5e-3)
-    assert far == pytest.approx(W_CONFLICT_SUBSTANTIAL, abs=5e-3)
-    assert far > near, "a decade of separation must soften it, not harden it"
+    pens = [_pen(_m("rita", 1800, enslaver="gaston enriquez"),
+                 _m("rita", 1800 + g, enslaver="domingos lopes"), s)
+            for g in (0, 1, 2, 5, 10, 20, 50)]
+    assert pens[0] == pytest.approx(W_CONFLICT_DISQUALIFYING, abs=5e-3)
+    assert all(x < y for x, y in zip(pens, pens[1:])), \
+        f"must soften monotonically with the gap, got {pens}"
+    assert pens[-1] == pytest.approx(W_CONFLICT_SUBSTANTIAL, abs=1e-2)
+    # tolerance is the display precision: _pen reads the 2dp reason string
+    assert all(W_CONFLICT_DISQUALIFYING - 5e-3 <= p <= W_CONFLICT_SUBSTANTIAL + 5e-3
+               for p in pens), "never outside the two bounds"
+
+
+def test_the_same_gap_is_less_damning_for_a_child():
+    """Daniel: "a child was more likely to be inherited or sold than an adult"."""
+    s = _stats(["rita"] * 40 + ["gaston enriquez", "domingos lopes"])
+    a = dict(_m("rita", 1800, enslaver="gaston enriquez"), age="infant")
+    b = dict(_m("rita", 1805, enslaver="domingos lopes"), age="infant")
+    adult_a = dict(a, age="adult")
+    adult_b = dict(b, age="adult")
+    assert _pen(a, b, s) > _pen(adult_a, adult_b, s)
+
+
+def test_godparent_clashes_only_count_within_one_sacrament():
+    """Daniel: "godparent clashes only count within the same sacrament type."
+    You are sponsored afresh at each sacrament, so different godparents at a
+    marriage than at a baptism is the norm."""
+    s = _stats(["luiza"] * 30 + ["ana lopez", "juan lopez", "ines vega"])
+    a = _m("luiza", 1742, godparent=("ana lopez", "juan lopez"))
+    b = _m("luiza", 1743, godparent="ines vega")
+    same = dict(a, _sacraments={"baptism"}), dict(b, _sacraments={"baptism"})
+    diff = dict(a, _sacraments={"baptism"}), dict(b, _sacraments={"marriage"})
+    assert _conflicts(*same, s), "same sacrament: still a contradiction"
+    assert _conflicts(*diff, s) == [], "different sacraments: not a contradiction"
+
+
+def test_an_unknown_sacrament_takes_the_lenient_reading_for_godparents():
+    """8% of entries record no event at all; with nothing to match on we cannot
+    establish that the two sponsorships were for the same rite."""
+    s = _stats(["luiza"] * 30 + ["ana lopez", "juan lopez", "ines vega"])
+    a = _m("luiza", 1742, godparent=("ana lopez", "juan lopez"))
+    b = _m("luiza", 1743, godparent="ines vega")
+    assert _conflicts(dict(a, _sacraments=set()),
+                      dict(b, _sacraments={"baptism"}), s) == []
+
+
+def test_grandparents_survive_maternal_versus_paternal_naming():
+    """Daniel routed the real fix upstream -- "Maternal/paternal grandparents
+    should be labeled differently when extracted" -- but capacity 4 already
+    makes the common case safe: two named on one side and two on the other is
+    exactly four, not five."""
+    s = _stats(["ana"] * 30 + ["a uno", "b dos", "c tres", "d cuatro", "e cinco"])
+    a = _m("ana", 1800, grandparent=("a uno", "b dos"))
+    b = _m("ana", 1801, grandparent=("c tres", "d cuatro"))
+    assert _conflicts(a, b, s) == []
+    # five distinct grandparents is impossible for anyone
+    c = _m("ana", 1801, grandparent=("c tres", "d cuatro", "e cinco"))
+    assert _conflicts(a, c, s)
 
 
 def test_an_undated_enslaver_clash_gets_the_strict_reading():
@@ -123,13 +180,11 @@ def test_three_distinct_parents_between_them_is_impossible():
     assert _pen(a, b, s) == pytest.approx(W_CONFLICT_DISQUALIFYING, abs=5e-3)
 
 
-def test_godparents_and_grandparents_are_limited_like_parents():
+def test_godparents_and_grandparents_are_limited_sets():
+    """Daniel: they "function similarly to parents". The godparent case is
+    exercised sacrament-aware below; here only the capacities are pinned."""
     assert MAX_HOLDERS["godparent"] == 2
     assert MAX_HOLDERS["grandparent"] == 4
-    s = _stats(["luiza"] * 30 + ["ana lopez", "juan lopez", "ines vega"])
-    a = _m("luiza", 1742, godparent=("ana lopez", "juan lopez"))
-    b = _m("luiza", 1743, godparent="ines vega")
-    assert _conflicts(a, b, s)
 
 
 def test_children_godchildren_and_witnesses_can_never_conflict():

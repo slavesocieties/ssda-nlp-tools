@@ -867,6 +867,12 @@ def _mentions_from_volume(volume: dict) -> List[dict]:
             if str(ev.get("type", "")).lower() in ("baptism", "birth", "burial"):
                 for pid in ev.get("principals", []) or []:
                     unique_sacrament_pids.add(str(pid))
+        # Which sacraments this entry records. Needed because a godparent clash
+        # only means anything WITHIN one sacrament -- a person has different
+        # godparents at baptism and at confirmation, and that is not a
+        # contradiction (Daniel, 2026-08-10).
+        sacraments = {str(ev.get("type", "")).lower() for ev in events}
+        sacraments.discard("")
         for p in people:
             # context = set of (rel_type, related-person-normalized-name)
             ctx = set()
@@ -895,6 +901,7 @@ def _mentions_from_volume(volume: dict) -> List[dict]:
             m["_local_id"] = str(p.get("id"))
             m["_descendants"] = descendants
             m["_ctx"] = ctx
+            m["_sacraments"] = sacraments
             m["_unique_sacrament"] = str(p.get("id")) in unique_sacrament_pids
             # blocking signals (see _shares_context): the register this entry
             # belongs to, and the year of its earliest dated event.

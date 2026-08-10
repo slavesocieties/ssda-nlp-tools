@@ -184,7 +184,8 @@ def main(argv=None):
                           "disqualifying": E.W_CONFLICT_DISQUALIFYING,
                           "substantial": E.W_CONFLICT_SUBSTANTIAL,
                           "max_holders": dict(E.MAX_HOLDERS),
-                          "enslaver_sale_years": E.ENSLAVER_SALE_YEARS}}}
+                          "enslaver_tau_years": E.ENSLAVER_TAU_YEARS,
+                          "child_mobility": E.CHILD_MOBILITY}}}
     os.makedirs(args.outdir, exist_ok=True)
     base = os.path.join(args.outdir, args.tag)
     json.dump(identities, open(f"{base}.identities.json", "w", encoding="utf-8"),
