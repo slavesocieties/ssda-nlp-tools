@@ -76,6 +76,24 @@ MAX_BLOCK = 400          # skip the huge clergy blocks; clergy are settled
 
 
 def gather(M, stats, vol_of):
+    """Candidate same-name, same-parish, lay pairs -- minus the impossible ones.
+
+    Daniel, 2026-08-07: "There's still a ton of dead weight here: infants decades
+    apart, infants decades after people having children, etc. These are all
+    pairings that should be discarded immediately, and it's just not worth my
+    time to label them."
+
+    He was right and the cause was that this function applied the SELECTION
+    filters (same name, same parish, lay) but none of the pipeline's VETOES, so
+    pairs the merger would never even score were being sent out for hand
+    labelling. 50 of the previous 300 (17%) were chronologically impossible.
+
+    Only true impossibilities are dropped here -- chronology, and being the
+    principal of two once-in-a-lifetime sacraments. The heuristic blocking rules
+    are deliberately NOT applied: filtering the label set by what the model
+    already believes would hand back labels that only confirm it.
+    """
+    dropped = collections.Counter()
     blocks = collections.defaultdict(list)
     for i, m in enumerate(M):
         blocks[phonetic_key(m.get("name"))].append(i)
@@ -92,7 +110,19 @@ def gather(M, stats, vol_of):
                     continue
                 if E._clergy(a) or E._clergy(b):
                     continue
+                why = D.lifespan_conflict(a, b)
+                if why:
+                    dropped["lifespan-impossible"] += 1
+                    continue
+                if a.get("_unique_sacrament") and b.get("_unique_sacrament"):
+                    dropped["both-sacrament-principals"] += 1
+                    continue
                 out.append((a, b))
+    # Never truncate silently: say what was removed and on what grounds.
+    total = len(out) + sum(dropped.values())
+    print(f"candidate pairs: {total:,} gathered, {len(out):,} kept")
+    for k, v in dropped.most_common():
+        print(f"    dropped {k:28s} {v:7,} ({100*v/total:.1f}%)")
     return out
 
 
@@ -119,7 +149,16 @@ def stratum(d, cuts):
     return f"{r}|{s}|{dens}|{gp}"
 
 
-def render(rows, geo):
+def render(rows, geo, tag="targeted_same_name_same_parish",
+           title="Same name, same parish", blurb=None, store="tgt",
+           filename="targeted_labels.json"):
+    """Render the grading page.
+
+    Parameterised so a second, differently-sampled label set can reuse this page
+    instead of forking the HTML. `store` and `filename` MUST differ between sets:
+    both the localStorage key and the download name are what keep one grading
+    session from silently overwriting another's answers.
+    """
     css = """
 body{font:15px/1.55 -apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#faf9f7;color:#1a1a1a}
 header{position:sticky;top:0;background:#1a1a1a;color:#fff;padding:13px 20px;z-index:9}
@@ -139,26 +178,38 @@ button.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
  button{background:#242320;color:#eceae6;border-color:#3d3934}button.on{background:#eceae6;color:#161513}}
 """
     js = """
-const D=JSON.parse(localStorage.getItem('tgt')||'{}');
-function mk(i,v){D[i]=v;localStorage.setItem('tgt',JSON.stringify(D));
+const D=JSON.parse(localStorage.getItem('__STORE__')||'{}');
+function mk(i,v){D[i]=v;localStorage.setItem('__STORE__',JSON.stringify(D));
  document.querySelectorAll('[data-i="'+i+'"] button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));
  document.getElementById('n').textContent=Object.keys(D).length;}
-function dl(){const b=new Blob([JSON.stringify({tag:'targeted_same_name_same_parish',
+function dl(){const b=new Blob([JSON.stringify({tag:'__TAG__',
  scale:'likelihood_same_percent',labels:D},null,1)],{type:'application/json'});
  const a=document.createElement('a');a.href=URL.createObjectURL(b);
- a.download='targeted_labels.json';a.click();}
+ a.download='__FILE__';a.click();}
 window.addEventListener('DOMContentLoaded',()=>{for(const[i,v]of Object.entries(D))
  document.querySelectorAll('[data-i="'+i+'"] button').forEach(b=>b.classList.toggle('on',b.dataset.v==v));
  document.getElementById('n').textContent=Object.keys(D).length;});
 """
-    P = [f"<style>{css}</style>",
-         "<header><b>Same name, same parish</b> &nbsp;",
+    js = (js.replace("__STORE__", store).replace("__TAG__", tag)
+            .replace("__FILE__", filename))
+    if blurb is None:
+        blurb = ("Every pair below shares a name and a parish. These are the cases our "
+                 "two candidate models disagree about, and none of your earlier labels "
+                 "covers them. Same scale as before: <b>0</b> certainly different, "
+                 "<b>100</b> certainly the same.")
+    # The charset declaration is not decoration. These pages are opened as LOCAL
+    # FILES, where there is no HTTP header to carry the encoding, so a browser
+    # falls back to guessing -- and guesses windows-1252 often enough that
+    # "Maria de la Concepcion" arrives as mojibake. Every name in this corpus is
+    # Spanish or Portuguese, so a page that renders accents wrongly is a page
+    # Daniel cannot grade.
+    P = ['<meta charset="utf-8">',
+         '<meta name="viewport" content="width=device-width,initial-scale=1">',
+         f"<style>{css}</style>",
+         f"<header><b>{html.escape(title)}</b> &nbsp;",
          f"{len(rows)} pairs &nbsp;|&nbsp; done: <span id=n>0</span> ",
          "&nbsp;<button onclick=dl()>Download labels</button></header><div class=wrap>",
-         "<p>Every pair below shares a name and a parish. These are the cases our "
-         "two candidate models disagree about, and none of your earlier labels "
-         "covers them. Same scale as before: <b>0</b> certainly different, "
-         "<b>100</b> certainly the same.</p>",
+         f"<p>{blurb}</p>",
          "<p style='font-size:13px;color:#6b6459'>Associates, dates and recorded "
          "qualities are shown because you asked for them. Neither model's answer "
          "is shown, deliberately.</p>"]
