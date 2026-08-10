@@ -49,6 +49,7 @@ import collections
 import math
 from typing import Any, Dict, List, Optional, Tuple
 
+from .disambiguate import _third_party_same
 from .textmatch import name_similarity, name_tokens, normalize_name
 
 # --------------------------------------------------------------------------- #
@@ -96,6 +97,22 @@ W_ATTR_CONFLICT = -2.5             # per conflicting one
 W_YEAR_CLOSE = 0.27                # measured; 70.9% of candidates already qualify
 W_YEAR_FAR = -0.32                 # measured
 W_CLERGY_BOTH = 2.5                # Daniel: merge clergy aggressively
+
+# CONFLICTING relationships. Daniel, 2026-08-07: two same-named people with
+# DIFFERENT spouses is "essentially disqualifying - it's not just that they have
+# no shared relationship, they have actively distinguishing individual
+# relationships." These roles admit one holder at a time, so a mismatch is
+# evidence, where previously it scored exactly 0.00 -- the same as silence.
+#
+# These are PRIORS, chosen, not measured; they are ordered by how exclusive the
+# role actually is. They are sized to cancel a strong name match (MAX_NAME_LLR
+# 5.5) without being an absolute veto, because the underlying names are
+# extracted by an LLM and can be wrong. A veto here would be unrecoverable.
+W_CONFLICT_PARENT = -4.0           # you have one mother and one father
+W_CONFLICT_SPOUSE = -4.0           # exclusive at a time; decays, see below
+W_CONFLICT_ENSLAVER = -1.5         # people were sold; far weaker evidence
+REMARRIAGE_YEARS = 15              # beyond this, widowhood makes a new spouse ordinary
+MAX_PARENTS = 2                    # a mother and a father; see the parent case below
 
 AUTO_MERGE_LOG_ODDS = 3.0          # ~95% posterior
 REVIEW_LOG_ODDS = 0.0              # ~50%
@@ -202,6 +219,24 @@ def _assoc_names(m) -> Dict[str, set]:
     return out
 
 
+def _n_distinct(names) -> int:
+    """How many DIFFERENT third parties a set of names refers to.
+
+    Scribal variation means the raw set size overcounts: {"joao da silva",
+    "joam da silva"} is one man. Names are folded together transitively under
+    `_third_party_same`, the same test used to suppress a false conflict.
+    """
+    groups: List[set] = []
+    for n in sorted(names):
+        for g in groups:
+            if any(_third_party_same(n, m) for m in g):
+                g.add(n)
+                break
+        else:
+            groups.append({n})
+    return len(groups)
+
+
 def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
     """Evidence from the surrounding social network.
 
@@ -235,6 +270,56 @@ def network_llr(a, b, stats: NameStats) -> Tuple[float, List[str]]:
             w *= 0.6                         # godparent here, parent there
         total += w
         reasons.append(f"shared:{nm}(+{w:.1f})")
+
+    # CONFLICTING relationships, which are not the same thing as missing ones.
+    #
+    # Daniel, 2026-08-07: "if two people with the same name have spouses with
+    # different names, that's essentially disqualifying - it's not just that they
+    # have no shared relationship, they have actively distinguishing individual
+    # relationships."
+    #
+    # He is right and this was scoring 0.00 -- identical to no information at
+    # all. Some roles admit only one holder at a time, so two DIFFERENT named
+    # holders is positive evidence of two people:
+    #
+    #   parent    you have one mother and one father. Different named parents in
+    #             the same role is the strongest disqualifier here.
+    #   spouse    exclusive at any moment, but remarriage after a death is
+    #             ordinary in these registers, so the penalty decays with the
+    #             gap between the two entries.
+    #   enslaver  a person can be sold. Real evidence, but far weaker.
+    #
+    # Only counted when the two names are NOT the same person under
+    # `_third_party_same`, so scribal drift on one woman's name is not read as
+    # two different mothers.
+    for role, w in (("parent", W_CONFLICT_PARENT),
+                    ("spouse", W_CONFLICT_SPOUSE),
+                    ("enslaver", W_CONFLICT_ENSLAVER)):
+        ra, rb = na.get(role) or set(), nb.get(role) or set()
+        if not ra or not rb:
+            continue
+        if any(_third_party_same(x, y) for x in ra for y in rb):
+            continue                       # same person, differently spelled
+
+        # PARENT HAS CAPACITY TWO, AND THE DATA DOES NOT SAY WHICH IS WHICH.
+        #
+        # Treating any two different parent names as contradictory was wrong and
+        # the audit caught it: two 1742 entries for "Maria de Jesus", naming the
+        # SAME husband, were split because one recorded parent=elena and the
+        # other parent=francisco -- a mother and a father, not a contradiction.
+        # Registers routinely name only one parent, and which one is arbitrary.
+        #
+        # Two mentions of one person can therefore name up to two distinct
+        # parents between them. Only a union LARGER than two is impossible.
+        if role == "parent" and _n_distinct(ra | rb) <= MAX_PARENTS:
+            continue
+        pen = w
+        if role == "spouse":
+            ya, yb = a.get("_year") or a.get("year"), b.get("_year") or b.get("year")
+            if ya and yb and abs(int(ya) - int(yb)) > REMARRIAGE_YEARS:
+                pen = w / 3.0              # widowhood and remarriage, not a clash
+        total += pen
+        reasons.append(f"conflict:{role}({pen:+.1f})")
 
     if not shared:
         # Expected overlap grows with both densities; seeing none is telling
