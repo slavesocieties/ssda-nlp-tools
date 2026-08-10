@@ -32,6 +32,7 @@ no weight of evidence makes a person their own grandparent.
 import argparse
 import glob
 import json
+import random
 import os
 import time
 from collections import Counter, defaultdict
@@ -70,6 +71,9 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=AUTO_MERGE_LOG_ODDS)
     ap.add_argument("--review", type=float, default=REVIEW_LOG_ODDS)
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
+    ap.add_argument("--shuffle-seed", type=int, default=None,
+                    help="shuffle block and within-block order; any resulting "
+                         "difference is path-dependence, not evidence")
     ap.add_argument("--no-conflict-relations", action="store_true",
                     help="A/B control: disable Daniel's conflicting-relationship "
                          "penalty (different spouse/parent/enslaver).")
@@ -102,6 +106,23 @@ def main(argv=None):
     for i, m in enumerate(mentions):
         blocks[phonetic_key(m.get("name"))].append(i)
 
+    # ORDER IS A HIDDEN INPUT, so make it one that can be varied.
+    #
+    # `veto-cluster-same-entry` and `veto-ancestry-cycle` are evaluated against
+    # the cluster as built SO FAR, so whether a merge is legal depends on which
+    # merges happened before it. That makes the output a function of iteration
+    # order as well as of the pairwise scores. Shuffling the block order and the
+    # order of mentions within a block, then diffing the partitions, measures how
+    # much of the result is real and how much is an artifact of dict ordering.
+    block_items = list(blocks.items())
+    if args.shuffle_seed is not None:
+        rng = random.Random(args.shuffle_seed)
+        rng.shuffle(block_items)
+        for _, idxs in block_items:
+            rng.shuffle(idxs)
+        print(f"ORDER SHUFFLED with seed {args.shuffle_seed} -- any difference "
+              f"from an unshuffled run is path-dependence, not evidence")
+
     uf = D._UnionFind(n)
     cluster_entries = {i: {m["_entry"]} for i, m in enumerate(mentions)}
     cluster_parents = defaultdict(set)
@@ -115,7 +136,7 @@ def main(argv=None):
     reasons = Counter()
     auto = review = 0
     t0 = time.time()
-    for idxs in blocks.values():
+    for _key, idxs in block_items:
         for a in range(len(idxs)):
             for b in range(a + 1, len(idxs)):
                 i, j = idxs[a], idxs[b]
@@ -178,7 +199,7 @@ def main(argv=None):
            "config": {"scorer": "evidence", "auto": args.auto,
                       "review": args.review, "seconds": round(elapsed, 1),
                       "volumes": [os.path.basename(p) for p in paths],
-                      "geo": bool(geo),
+                      "geo": bool(geo), "shuffle_seed": args.shuffle_seed,
                       "conflict_relations": not args.no_conflict_relations,
                       "w_conflict": {
                           "disqualifying": E.W_CONFLICT_DISQUALIFYING,

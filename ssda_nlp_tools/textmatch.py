@@ -110,7 +110,27 @@ def name_similarity(a: Optional[str], b: Optional[str]) -> float:
     ta, tb = set(na.split()), set(nb.split())
     inter = ta & tb
     jaccard = len(inter) / len(ta | tb) if (ta or tb) else 0.0
-    ratio = SequenceMatcher(None, na, nb).ratio()
+
+    # SEQUENCEMATCHER IS NOT SYMMETRIC, AND THIS FUNCTION MUST BE.
+    #
+    # `ratio()` depends on argument order -- its matching-block search is greedy
+    # and not commutative. "Joana Francisca Guilhermina" against "Joanna Maria da
+    # Silva" scores 0.5417 one way and 0.2500 the other. Jaccard and the phonetic
+    # term are symmetric, so this one call made the whole scorer depend on which
+    # mention was passed first: 12.2% of scored pairs got a different log-odds
+    # depending on argument order, by up to 1.6 nats.
+    #
+    # That is not a cosmetic problem. The merge visits a pair once, in whatever
+    # order the block iteration produces, so the corpus result depended on dict
+    # ordering. Two runs differing only in iteration order disagreed on ~1,200
+    # review/below-review calls. Found by shuffling the block order deliberately.
+    #
+    # Symmetrised with max(), matching this function's existing design -- it
+    # already takes the max over signals so that "either signal can rescue a true
+    # match", and an ordering artefact should not be the thing that suppresses
+    # one.
+    ratio = max(SequenceMatcher(None, na, nb).ratio(),
+                SequenceMatcher(None, nb, na).ratio())
 
     # phonetic token overlap catches scribal spelling drift (Vives/Bibes,
     # Gonzalez/Gonzales) that surface forms miss; discounted so sound-alikes

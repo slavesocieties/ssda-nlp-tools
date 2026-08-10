@@ -319,3 +319,36 @@ def test_conflicts_are_penalties_never_vetoes():
               _m("maria", 1852, spouse="pedro gomez"), s)
     assert r["vetoed"] is None
     assert math.isfinite(r["log_odds"])
+
+
+# --- symmetry: a pair's score must not depend on argument order -------------
+
+def test_name_similarity_is_symmetric():
+    """SequenceMatcher.ratio() is order-dependent; this function must not be.
+
+    "Joana Francisca Guilhermina" against "Joanna Maria da Silva" scored 0.5417
+    one way and 0.2500 the other, which made 12.2% of scored corpus pairs take a
+    different log-odds depending on which mention was passed first.
+    """
+    from ssda_nlp_tools.textmatch import name_similarity
+    cases = [
+        ("Joana Francisca Guilhermina", "Joanna Maria da Silva"),
+        ("Mariana Eduarte y Bernal", "Marianna da Piedade Moura"),
+        ("Joana Francisca Guilhermina", "Joanna Roza da Conceicao"),
+        ("Maria", "Maria de la Concepcion"),
+        ("Juan Gonzalez", "Juan Gonzalez Torre"),
+        ("Vicente Sastre", "Vicente Satre"),
+    ]
+    for a, b in cases:
+        assert name_similarity(a, b) == name_similarity(b, a), (a, b)
+
+
+def test_the_whole_score_is_symmetric():
+    """The property that actually matters: the merge visits each pair once, in
+    whatever order block iteration produces, so an asymmetric score makes the
+    corpus result depend on dict ordering."""
+    s = _stats(["joana francisca guilhermina", "joanna maria da silva",
+                "maria"] * 8 + ["juan perez", "pedro gomez"])
+    a = _m("Joana Francisca Guilhermina", 1800, spouse="juan perez")
+    b = _m("Joanna Maria da Silva", 1805, spouse="pedro gomez")
+    assert (score(a, b, s)["log_odds"]) == (score(b, a, s)["log_odds"])
