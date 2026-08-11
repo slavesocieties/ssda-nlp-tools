@@ -13,7 +13,9 @@ import os
 import pytest
 
 from ssda_nlp_tools.fixes import RECIPROCAL_RELS, fix_relationships, reciprocates
-from ssda_nlp_tools.grandparent_side import (MATERNAL, PATERNAL, label_data,
+from ssda_nlp_tools.grandparent_side import (AMBIGUOUS, MATERNAL, NO_NAME,
+                                             NO_SIDE_CLAUSE, NOT_NAMED,
+                                             PATERNAL, classify, label_data,
                                              label_examples, side_clauses,
                                              side_of)
 
@@ -50,7 +52,8 @@ def test_the_colon_list_form():
         ["Cecilio Correa", "Isabel Serrano", "Buenviage Olivera"])
     out, stats = label_data(data, text)
     assert _sides(out) == [PATERNAL, PATERNAL, MATERNAL]
-    assert stats == {"seen": 3, "maternal": 1, "paternal": 2, "unresolved": 0}
+    assert {k: stats[k] for k in ("seen", "maternal", "paternal", "unresolved")} \
+        == {"seen": 3, "maternal": 1, "paternal": 2, "unresolved": 0}
 
 
 def test_the_comma_and_semicolon_form():
@@ -123,6 +126,34 @@ def test_a_grandparent_the_side_clauses_do_not_name_stays_unsided():
         "Abuelos maternos: Buenviage Olivera. Fueron sus padrinos Leonardo Rosa.",
         ["Leonardo Rosa"])
     assert _sides(label_data(data, text)[0]) == ["grandparent"]
+
+
+def test_the_four_ways_it_can_fail_are_told_apart():
+    """Daniel needs the register's silence separated from our own defects: the
+    first two are nobody's fault, the last is almost always an extraction error
+    (a grandparent edge pointing at the godparent), so lumping them into one
+    "unresolved" count would hide a quality signal inside a coverage number.
+    Verified on the corpus: every sampled `name_in_no_clause` case is a person
+    the same entry also records as a godparent.
+    """
+    none_ = side_clauses("Abuelos: Miguel Bazan.")
+    both = side_clauses("Abuelos paternos Juan Correa; maternos Juan Correa.")
+    one = side_clauses("Abuela materna: Buenviage Olivera.")
+    assert classify("Miguel Bazan", none_) == (None, NO_SIDE_CLAUSE)
+    assert classify("", one) == (None, NO_NAME)
+    assert classify("Juan Correa", both) == (None, AMBIGUOUS)
+    assert classify("Leonardo Rosa", one) == (None, NOT_NAMED)
+    assert classify("Buenviage Olivera", one) == (MATERNAL, None)
+
+
+def test_the_reasons_reach_the_stats():
+    data, text = _record(
+        "Abuelos maternos: Buenviage Olivera. Fueron sus padrinos Leonardo Rosa.",
+        ["Buenviage Olivera", "Leonardo Rosa"])
+    _, stats = label_data(data, text)
+    assert stats["maternal"] == 1 and stats["unresolved"] == 1
+    assert stats[NOT_NAMED] == 1
+    assert stats["unresolved_detail"] == [("Leonardo Rosa", NOT_NAMED)]
 
 
 def test_the_godparents_are_outside_every_side_clause():

@@ -24,7 +24,7 @@ from collections import Counter, defaultdict
 from difflib import SequenceMatcher
 from typing import Any, Dict, List, Optional, Tuple
 
-from .fixes import RECIPROCAL_RELS
+from .fixes import RECIPROCAL_RELS, reciprocates
 
 _WS = re.compile(r"\s+")
 
@@ -162,8 +162,10 @@ def qa_volume(source: Any,
                     rel[str(p.get("id"))][tgt] = r.get("relationship_type")
         for a, targets in rel.items():
             for b, t in targets.items():
-                expected = RECIPROCAL_RELS.get(t)
-                if expected and rel.get(b, {}).get(a) != expected:
+                # `reciprocates`, not equality: the three grandparent terms all
+                # invert to a plain "grandchild" (Daniel, 2026-08-10), so a
+                # correctly sided pair would otherwise be counted as a miss.
+                if t in RECIPROCAL_RELS and not reciprocates(t, rel.get(b, {}).get(a)):
                     recip_misses += 1
         for ev in data.get("events", []) or []:
             et = str(ev.get("type", "")).lower()

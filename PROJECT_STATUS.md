@@ -155,6 +155,21 @@ measurement can see, since a wrongly-refused merge fails silently.
   entries → 215 identities → 606-edge graph; priests O'Reilly ×39 / Hassett ×34
   correctly unified). `eval_data/pipeline_end_to_end.md`. `nodes.csv`/`edges.csv`
   are now exported beside the GraphML (701054: 330 nodes / 370 edges).
+- **Grandparents carry the family side (2026-08-10, Daniel's ruling).** He
+  routed the merge scorer's blunt `MAX_HOLDERS["grandparent"] = 4` upstream:
+  "Maternal/paternal grandparents should be labeled differently when extracted."
+  `maternal grandparent` / `paternal grandparent` added to the vocabulary and
+  both extraction prompts; `MAX_HOLDERS` is now 2 per side, with the three terms
+  also pooled at 4 so a sided record compared against an unsided one is no less
+  protected than before. **The side was already in the transcription in 97.8% of
+  grandparent-bearing entries**, so the delivered corpus was backfilled from its
+  own text for **$0** rather than re-extracted: **2,080 of 2,268 relations
+  (91.7%) sided**, in `production/sided_7vol/`. The 188 that stayed unsided are
+  broken out by reason in `<volume>.unsided.json` — 41 records that never say
+  which side, 67 with the same name on both sides, 5 unnamed, and **75 that no
+  side clause names at all, which are extraction defects** (an edge pointing at
+  the godparent) and are the useful residue. `backfill_grandparent_sides.py`,
+  `ssda_nlp_tools/grandparent_side.py`.
 - **Engineering**: 155 offline tests (<1s, no network), reproducible builds,
   spend-safety rails, provenance throughout.
 

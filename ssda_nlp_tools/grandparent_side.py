@@ -128,8 +128,22 @@ def side_clauses(text: str) -> List[Tuple[str, str]]:
     return clauses
 
 
-def side_of(name: Optional[str], clauses: List[Tuple[str, str]]) -> Optional[str]:
-    """The side whose clause names this person, or None if that is not certain.
+# Why a grandparent could not be sided. Daniel needs these told apart: the first
+# two are the register's silence and are nobody's fault, the third is a naming
+# collision the text cannot resolve, and the fourth is almost always an
+# EXTRACTION DEFECT -- an edge pointing at someone the side clauses never name,
+# usually the godparent. Lumping them into one "unresolved" count would hide a
+# quality signal inside a coverage number.
+NO_SIDE_CLAUSE = "no_side_clause"      # the text never says maternal or paternal
+NO_NAME = "no_name"                    # the related person has no usable name
+AMBIGUOUS = "name_in_both_clauses"     # e.g. both grandmothers are Maria Antonia
+NOT_NAMED = "name_in_no_clause"        # side clauses exist; this person is in none
+REASONS = (NO_SIDE_CLAUSE, NO_NAME, AMBIGUOUS, NOT_NAMED)
+
+
+def classify(name: Optional[str],
+             clauses: List[Tuple[str, str]]) -> Tuple[Optional[str], Optional[str]]:
+    """(side, reason-it-failed). Exactly one of the two is None.
 
     Two passes, both requiring a UNIQUE hit:
       1. every content token of the name appears in exactly one clause. This is
@@ -139,30 +153,48 @@ def side_of(name: Optional[str], clauses: List[Tuple[str, str]]) -> Optional[str
          recovers "Abuela materna Manuela criolla", where extraction supplies a
          surname the clause does not.
     """
+    if not clauses:
+        return None, NO_SIDE_CLAUSE
     toks = _content_tokens(name)
-    if not toks or not clauses:
-        return None
+    if not toks:
+        return None, NO_NAME
 
     for required in (toks, toks[:1]):
         hits = {side for side, clause in clauses
                 if all(re.search(r"\b" + re.escape(t) + r"\b", clause)
                        for t in required)}
         if len(hits) == 1:
-            return hits.pop()
+            return hits.pop(), None
         if hits:
-            return None                 # named on both sides: refuse to choose
-    return None
+            return None, AMBIGUOUS      # named on both sides: refuse to choose
+    return None, NOT_NAMED
 
 
-def label_data(data: Dict[str, Any], text: str) -> Tuple[Dict[str, Any], Dict[str, int]]:
+def side_of(name: Optional[str], clauses: List[Tuple[str, str]]) -> Optional[str]:
+    """The side whose clause names this person, or None if that is not certain."""
+    return classify(name, clauses)[0]
+
+
+def _blank_stats() -> Dict[str, Any]:
+    s: Dict[str, Any] = {"seen": 0, "maternal": 0, "paternal": 0, "unresolved": 0}
+    s.update({r: 0 for r in REASONS})
+    s["unresolved_detail"] = []          # [(grandparent-name, reason), ...]
+    return s
+
+
+def label_data(data: Dict[str, Any], text: str) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """Relabel a single record's grandparent edges from its own source text.
 
     Only the edge POINTING AT the grandparent is sided. The reciprocal stays a
     plain "grandchild": the side describes which of the child's parents the line
     runs through, so it belongs to the descendant's view of the relationship and
     the grandparent has no side of their own to state.
+
+    The returned stats break the failures down by `REASONS`, and carry the
+    (name, reason) pairs so an audit can name the specific records rather than
+    quoting a coverage percentage.
     """
-    stats = {"seen": 0, "maternal": 0, "paternal": 0, "unresolved": 0}
+    stats = _blank_stats()
     if not isinstance(data, dict):
         return data, stats
 
@@ -186,9 +218,12 @@ def label_data(data: Dict[str, Any], text: str) -> Tuple[Dict[str, Any], Dict[st
             if str(r.get("relationship_type", "")).lower() != UNSIDED:
                 continue
             stats["seen"] += 1
-            side = side_of(name_of.get(str(r.get("related_person"))), clauses)
+            name = name_of.get(str(r.get("related_person")))
+            side, reason = classify(name, clauses)
             if side is None:
                 stats["unresolved"] += 1
+                stats[reason] += 1
+                stats["unresolved_detail"].append((name, reason))
                 continue
             r["relationship_type"] = side
             stats["maternal" if side == MATERNAL else "paternal"] += 1
@@ -209,11 +244,11 @@ def _entry_text(entry: Dict[str, Any]) -> str:
     return ""
 
 
-def label_entry(entry: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, int]]:
+def label_entry(entry: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
     """`label_data` for a whole entry row, reading the text off the row itself."""
     data = entry.get("data")
     if not isinstance(data, dict):
-        return entry, {"seen": 0, "maternal": 0, "paternal": 0, "unresolved": 0}
+        return entry, _blank_stats()
     labelled, stats = label_data(data, _entry_text(entry))
     if labelled is data:
         return entry, stats

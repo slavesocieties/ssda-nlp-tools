@@ -28,3 +28,9 @@ CLAUDE_HANDOFF.md
 
 # Deterministic production build outputs (regenerable via run_production.py)
 production/
+
+# overnight run artifacts (watchdog heartbeat + logs)
+watchdog.heartbeat
+watchdog.log
+watchdog.disable
+keep_awake.log

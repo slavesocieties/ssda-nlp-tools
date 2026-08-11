@@ -214,6 +214,19 @@ def score_entry(gold: dict, pred: dict, name_threshold: float = 0.72) -> Dict[st
         wit_fn += len(gw - pw)
 
     # ---- relationships: directed typed edges over canonical names ----
+    #
+    # The family side of a grandparent (Daniel, 2026-08-10) is a refinement no
+    # gold set carries: `training_data.json` and the hand-transcribed sheets all
+    # predate it and label every grandparent plainly. Scored literally, a
+    # correctly sided prediction would count as a false positive AND a false
+    # negative on the same edge, reporting a large relationship-F1 regression
+    # where the extraction actually got MORE right. So the side is folded away
+    # here, which keeps this metric comparable across the change. Whether the
+    # side itself is correct is measured by test_grandparent_side.py against the
+    # register's own wording, not here.
+    _UNSIDE = {"maternal grandparent": "grandparent",
+               "paternal grandparent": "grandparent"}
+
     def rel_edges(people, canon):
         edges = set()
         for p in people:
@@ -223,6 +236,7 @@ def score_entry(gold: dict, pred: dict, name_threshold: float = 0.72) -> Dict[st
                     continue
                 obj = canon.get(str(r.get("related_person")))
                 rt = norm_value(r.get("relationship_type"))
+                rt = _UNSIDE.get(rt, rt)
                 if subj and obj and rt:
                     edges.add((subj, rt, obj))
         return edges
