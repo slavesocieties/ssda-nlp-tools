@@ -37,6 +37,7 @@ import os
 import time
 from collections import Counter, defaultdict
 
+import ssda_nlp_tools.blocking as BL
 import ssda_nlp_tools.disambiguate as D
 import ssda_nlp_tools.evidence as E
 from ssda_nlp_tools.evidence import (AUTO_MERGE_LOG_ODDS, REVIEW_LOG_ODDS,
@@ -71,6 +72,11 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=AUTO_MERGE_LOG_ODDS)
     ap.add_argument("--review", type=float, default=REVIEW_LOG_ODDS)
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
+    ap.add_argument("--blocking", choices=("legacy", "keyed"), default="legacy",
+                    help="legacy scans every same-name pair then filters; keyed "
+                         "generates candidates from blocking keys (scales)")
+    ap.add_argument("--max-block", type=int, default=BL.DEFAULT_MAX_BLOCK,
+                    help="keyed blocking: largest time-key block to enumerate")
     ap.add_argument("--shuffle-seed", type=int, default=None,
                     help="shuffle block and within-block order; any resulting "
                          "difference is path-dependence, not evidence")
@@ -133,48 +139,67 @@ def main(argv=None):
             if k is not None:
                 cluster_parents[i].add(k)
 
+    def _legacy_pairs():
+        for _key, idxs in block_items:
+            for a in range(len(idxs)):
+                for b in range(a + 1, len(idxs)):
+                    yield idxs[a], idxs[b]
+
+    def _keyed_pairs():
+        """Candidates from ssda_nlp_tools.blocking -- see --blocking.
+
+        `_shares_context` is deliberately still applied below. The keys are
+        designed to reproduce it, so leaving the check in place means any pair
+        the keys over-generate is filtered exactly as before and the two modes
+        are directly comparable. It also keeps the check honest: if a key ever
+        stops matching the filter, `blocked-context` moves and says so.
+        """
+        return BL.candidate_pairs(mentions, args.max_block, stats=block_stats)
+
+    block_stats = Counter()
+    pair_source = _keyed_pairs if args.blocking == "keyed" else _legacy_pairs
+    print(f"blocking: {args.blocking}"
+          + (f" (max_block={args.max_block:,})" if args.blocking == "keyed" else ""))
+
     reasons = Counter()
     auto = review = 0
     t0 = time.time()
-    for _key, idxs in block_items:
-        for a in range(len(idxs)):
-            for b in range(a + 1, len(idxs)):
-                i, j = idxs[a], idxs[b]
-                mi, mj = mentions[i], mentions[j]
-                if mi["_entry"] == mj["_entry"]:
-                    continue
-                if not D._shares_context(mi, mj, 60):
-                    reasons["blocked-context"] += 1
-                    continue
-                if D.lifespan_conflict(mi, mj):
-                    reasons["veto-lifespan"] += 1
-                    continue
-                r = score(mi, mj, stats, geo=geo, vol_of=vol_of)
-                if r["vetoed"]:
-                    reasons[f"veto-{r['vetoed']}"] += 1
-                    continue
-                lo = r["log_odds"]
-                if lo < args.review:
-                    reasons["below-review"] += 1
-                    continue
-                if lo < args.auto:
-                    review += 1
-                    reasons["review"] += 1
-                    continue
-                if D._clusters_share_an_entry(uf, i, j, cluster_entries):
-                    reasons["veto-cluster-same-entry"] += 1
-                    continue
-                if D._would_close_ancestry_cycle(uf, i, j, cluster_parents):
-                    reasons["veto-ancestry-cycle"] += 1
-                    continue
-                ra, rb = uf.find(i), uf.find(j)
-                uf.union(i, j)
-                root = uf.find(i)
-                cluster_entries[root] = (cluster_entries.get(ra, set())
-                                         | cluster_entries.get(rb, set()))
-                cluster_parents[root] = (cluster_parents.get(ra, set())
-                                         | cluster_parents.get(rb, set()))
-                auto += 1
+    for i, j in pair_source():
+        mi, mj = mentions[i], mentions[j]
+        if mi["_entry"] == mj["_entry"]:
+            continue
+        if not D._shares_context(mi, mj, 60):
+            reasons["blocked-context"] += 1
+            continue
+        if D.lifespan_conflict(mi, mj):
+            reasons["veto-lifespan"] += 1
+            continue
+        r = score(mi, mj, stats, geo=geo, vol_of=vol_of)
+        if r["vetoed"]:
+            reasons[f"veto-{r['vetoed']}"] += 1
+            continue
+        lo = r["log_odds"]
+        if lo < args.review:
+            reasons["below-review"] += 1
+            continue
+        if lo < args.auto:
+            review += 1
+            reasons["review"] += 1
+            continue
+        if D._clusters_share_an_entry(uf, i, j, cluster_entries):
+            reasons["veto-cluster-same-entry"] += 1
+            continue
+        if D._would_close_ancestry_cycle(uf, i, j, cluster_parents):
+            reasons["veto-ancestry-cycle"] += 1
+            continue
+        ra, rb = uf.find(i), uf.find(j)
+        uf.union(i, j)
+        root = uf.find(i)
+        cluster_entries[root] = (cluster_entries.get(ra, set())
+                                 | cluster_entries.get(rb, set()))
+        cluster_parents[root] = (cluster_parents.get(ra, set())
+                                 | cluster_parents.get(rb, set()))
+        auto += 1
     elapsed = time.time() - t0
 
     clusters = defaultdict(list)
@@ -200,6 +225,7 @@ def main(argv=None):
                       "review": args.review, "seconds": round(elapsed, 1),
                       "volumes": [os.path.basename(p) for p in paths],
                       "geo": bool(geo), "shuffle_seed": args.shuffle_seed,
+                      "blocking": args.blocking,
                       "conflict_relations": not args.no_conflict_relations,
                       "w_conflict": {
                           "disqualifying": E.W_CONFLICT_DISQUALIFYING,
