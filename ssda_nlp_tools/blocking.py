@@ -113,7 +113,11 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
     buckets: Dict[tuple, List[int]] = collections.defaultdict(list)
     for i, m in enumerate(mentions):
         p = phonetic_key(m.get("name"))
-        for k in keys_for(m, allow_time=rare.get(p, False)):
+        # set(): one mention can name the SAME person under two roles (parent
+        # and godparent, say), which yielded the same ("A", name, person) key
+        # twice and put the index in that bucket twice -- emitting its pairs
+        # twice and, worse, pairing the mention with itself.
+        for k in set(keys_for(m, allow_time=rare.get(p, False))):
             buckets[k].append(i)
 
     # UNDATED MENTIONS NEED A CROSS PRODUCT, NOT A KEY.
@@ -135,7 +139,30 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
         if p:
             by_name[p].append(i)
 
-    seen = set()
+    # DE-DUPLICATE BY PRIORITY, NOT BY A SET.
+    #
+    # A pair usually matches several keys, so the first version kept a `seen`
+    # set of every pair emitted. That is correct and ruinous: 14.7M tuples in a
+    # Python set cost more than the pairs it saves, and the end-to-end merge went
+    # from 1,319s to 33,901s despite scoring FEWER pairs. The asymptotics
+    # improved and the constant destroyed the gain.
+    #
+    # Instead each pair is owned by exactly one key type, in priority order
+    # R > A > Y, and a key only emits a pair it owns. Ownership is a direct test
+    # on the two mentions -- same register? share an associate? -- so it is O(1)
+    # and needs no memory. This mirrors the structure of `_shares_context`
+    # itself, which is the point: the keys exist to reproduce it.
+    def _same_register(x, y):
+        r = mentions[x].get("_register")
+        return bool(r) and r == mentions[y].get("_register")
+
+    def _assoc(x):
+        return {n for _, n in (mentions[x].get("_ctx") or ())}
+
+    def _shares_assoc(x, y):
+        ax = _assoc(x)
+        return bool(ax) and bool(ax & _assoc(y))
+
     for i, m in enumerate(mentions):
         if m.get("_year") is not None:
             continue
@@ -148,10 +175,16 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
         for j in block:
             if i == j:
                 continue
-            a, b = (i, j) if i < j else (j, i)
-            if (a, b) not in seen:
-                seen.add((a, b))
-                yield a, b
+            # when BOTH are undated this loop runs twice for the pair; the
+            # lower index owns it
+            if mentions[j].get("_year") is None and j < i:
+                continue
+            # This pass owns EVERY pair with an undated side, unconditionally.
+            # An earlier version skipped ones that also shared a register, while
+            # the key loops skipped anything undated -- so those pairs were
+            # emitted by nobody and 300,000 candidates vanished. Ownership has
+            # to be total as well as exclusive.
+            yield (i, j) if i < j else (j, i)
 
     for key, idxs in buckets.items():
         if len(idxs) < 2:
@@ -172,14 +205,37 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                 stats["skipped_oversized_keys"] += 1
                 stats["skipped_pairs"] += len(idxs) * (len(idxs) - 1) // 2
             continue
+        kind = key[0]
         for a in range(len(idxs)):
             for b in range(a + 1, len(idxs)):
                 i, j = idxs[a], idxs[b]
                 if i > j:
                     i, j = j, i
-                if (i, j) in seen:
+                if (mentions[i].get("_year") is None
+                        or mentions[j].get("_year") is None):
+                    continue          # the undated pass above owns these
+                # Priority R > A > Y: a key emits only pairs that no
+                # higher-priority key owns, which is what removes the need to
+                # remember every pair already emitted.
+                if kind != "R" and _same_register(i, j):
                     continue
-                seen.add((i, j))
+                if kind == "A":
+                    # A pair sharing several associates sits in several A keys.
+                    # The alphabetically first shared name owns it, so the other
+                    # keys stay silent. Without this the pair is emitted once per
+                    # shared associate -- 2.27M duplicates on this corpus.
+                    shared = _assoc(i) & _assoc(j)
+                    if not shared or key[2] != min(shared):
+                        continue
+                elif kind == "Y":
+                    if _shares_assoc(i, j):
+                        continue
+                    # Likewise two mentions can share BOTH time buckets; the
+                    # lower one owns the pair.
+                    tb = set(_time_keys(mentions[i]["_year"])) & \
+                        set(_time_keys(mentions[j]["_year"]))
+                    if not tb or key[2] != min(tb):
+                        continue
                 yield i, j
 
 

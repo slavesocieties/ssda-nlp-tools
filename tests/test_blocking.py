@@ -116,3 +116,50 @@ def test_block_size_report_agrees_with_what_is_generated():
     assert rep["largest"] >= 2
     # the report is an upper bound: it counts before cross-key de-duplication
     assert rep["pairs_upper_bound"] >= len(_pairs(ms))
+
+
+def test_a_pair_sharing_several_associates_is_still_emitted_once():
+    """Ownership is by the alphabetically first shared associate. Without that
+    the pair comes out once per shared name -- 2,269,513 duplicates on the real
+    corpus, every one of them a redundant score() call."""
+    ms = [_m("Maria", 1800, register="V1", entry="V1-1",
+             ctx=[("parent", "ana"), ("godparent", "juan"), ("witness", "zoe")]),
+          _m("Maria", 1801, register="V2", entry="V2-1",
+             ctx=[("parent", "ana"), ("godparent", "juan"), ("witness", "zoe")])]
+    got = list(B.candidate_pairs(ms))
+    assert got == [(0, 1)], f"expected one pair, got {got}"
+
+
+def test_one_person_named_under_two_roles_does_not_duplicate():
+    """A mention can name the same person as parent AND godparent. That put the
+    index into one A-key bucket twice, which emitted the pair twice and paired
+    the mention with itself."""
+    ms = [_m("Maria", 1800, register="V1", entry="V1-1",
+             ctx=[("parent", "ana"), ("godparent", "ana")]),
+          _m("Maria", 1801, register="V2", entry="V2-1",
+             ctx=[("parent", "ana")])]
+    got = list(B.candidate_pairs(ms))
+    assert got == [(0, 1)]
+    assert all(i != j for i, j in got), "a mention must never pair with itself"
+
+
+def test_an_undated_pair_that_also_shares_a_register_is_still_emitted():
+    """Ownership must be TOTAL as well as exclusive. An earlier version had the
+    undated pass skip pairs sharing a register while the key loops skipped
+    anything undated, so those pairs were emitted by nobody."""
+    ms = [_m("Maria", None, register="V1", entry="V1-1"),
+          _m("Maria", 1800, register="V1", entry="V1-2")]
+    assert list(B.candidate_pairs(ms)) == [(0, 1)]
+
+
+def test_no_pair_is_ever_emitted_twice_on_a_mixed_corpus():
+    """The invariant, exercised over every key type at once."""
+    ms = []
+    for r in ("V1", "V2"):
+        for k in range(6):
+            ms.append(_m("Maria", 1800 + k * 10, register=r, entry=f"{r}-{k}",
+                         ctx=[("parent", "ana")] if k % 2 else []))
+    ms.append(_m("Maria", None, register="V3", entry="V3-1"))
+    got = list(B.candidate_pairs(ms))
+    assert len(got) == len(set(got)), "duplicate pairs"
+    assert all(i < j for i, j in got), "pairs must be ordered and non-self"
