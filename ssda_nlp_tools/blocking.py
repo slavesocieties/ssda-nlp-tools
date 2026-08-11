@@ -152,16 +152,23 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
     # on the two mentions -- same register? share an associate? -- so it is O(1)
     # and needs no memory. This mirrors the structure of `_shares_context`
     # itself, which is the point: the keys exist to reproduce it.
-    def _same_register(x, y):
-        r = mentions[x].get("_register")
-        return bool(r) and r == mentions[y].get("_register")
+    # Precomputed once per mention rather than rebuilt per pair. The ownership
+    # tests run on every generated pair -- ~14.7M of them -- so rebuilding a set
+    # from `_ctx` inside them made the merge take 15,621s against the legacy
+    # scan's 1,319s, even though generating the pairs took 9.7s. The candidate
+    # set was right and the constant was the whole story.
+    _regs = [m.get("_register") for m in mentions]
+    _assocs = [frozenset(n for _, n in (m.get("_ctx") or ())) for m in mentions]
+    _years = [m.get("_year") for m in mentions]
+    _tkeys = [frozenset(_time_keys(y)) for y in _years]
 
-    def _assoc(x):
-        return {n for _, n in (mentions[x].get("_ctx") or ())}
+    def _same_register(x, y):
+        r = _regs[x]
+        return bool(r) and r == _regs[y]
 
     def _shares_assoc(x, y):
-        ax = _assoc(x)
-        return bool(ax) and bool(ax & _assoc(y))
+        ax = _assocs[x]
+        return bool(ax) and not ax.isdisjoint(_assocs[y])
 
     for i, m in enumerate(mentions):
         if m.get("_year") is not None:
@@ -177,7 +184,7 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                 continue
             # when BOTH are undated this loop runs twice for the pair; the
             # lower index owns it
-            if mentions[j].get("_year") is None and j < i:
+            if _years[j] is None and j < i:
                 continue
             # This pass owns EVERY pair with an undated side, unconditionally.
             # An earlier version skipped ones that also shared a register, while
@@ -211,8 +218,7 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                 i, j = idxs[a], idxs[b]
                 if i > j:
                     i, j = j, i
-                if (mentions[i].get("_year") is None
-                        or mentions[j].get("_year") is None):
+                if _years[i] is None or _years[j] is None:
                     continue          # the undated pass above owns these
                 # Priority R > A > Y: a key emits only pairs that no
                 # higher-priority key owns, which is what removes the need to
@@ -224,7 +230,7 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                     # The alphabetically first shared name owns it, so the other
                     # keys stay silent. Without this the pair is emitted once per
                     # shared associate -- 2.27M duplicates on this corpus.
-                    shared = _assoc(i) & _assoc(j)
+                    shared = _assocs[i] & _assocs[j]
                     if not shared or key[2] != min(shared):
                         continue
                 elif kind == "Y":
@@ -232,8 +238,7 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                         continue
                     # Likewise two mentions can share BOTH time buckets; the
                     # lower one owns the pair.
-                    tb = set(_time_keys(mentions[i]["_year"])) & \
-                        set(_time_keys(mentions[j]["_year"]))
+                    tb = _tkeys[i] & _tkeys[j]
                     if not tb or key[2] != min(tb):
                         continue
                 yield i, j
