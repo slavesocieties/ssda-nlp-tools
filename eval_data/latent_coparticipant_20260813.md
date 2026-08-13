@@ -212,3 +212,38 @@ Either §7d is stale — plausibly fixed by the `name_similarity` symmetry work 
 the blocking rewrite, both of which landed after it was written — or the spread
 needs more than one seed to surface. That is a live discrepancy in the handover,
 not a settled correction, and it is the cheaper of the two open questions above.
+
+### The identical-name half is stronger than I allowed
+
+I discounted the 27 identical-name false merges on the grounds that "two local
+ids means two people" is the *extractor's* separation and a namesake split in two
+would look the same. Measured rather than assumed, across every within-entry pair
+sharing a normalised name in the raw assembly:
+
+| | count | reading |
+|---|---:|---|
+| genuinely different relationships | **641 (83%)** | really two namesakes |
+| one side has no relationships | 68 (9%) | ambiguous |
+| identical relationships on both | 60 (8%) | indistinguishable; likely one person split |
+| **total same-name within-entry pairs** | **769** | |
+
+So the premise holds for about **83%** of same-name pairs. Applying that rate,
+roughly 5 of the 27 are plausibly extraction duplicates and ~22 are real, which
+puts the defensible count nearer **45 of 50** than the 23 I retreated to.
+
+State it as a range: **at least 23** (different names, premise unimpeachable),
+**probably ~45**. My caution was right in direction and overdone in size — the
+same error as the 130, in the opposite direction.
+
+### A separate defect this turned up
+
+**60 within-entry pairs share a name AND hold identical relationships**, plus 68
+where one side holds none. HANDOVER §3 records exactly **one** duplicate person
+id inside an entry (`701157-0214-01`). If even half of these 60 are one person
+emitted twice, the extractor's within-entry duplication rate is ~60×
+what is documented, and every one of them inflates a person count and seeds a
+phantom identity.
+
+Not asserted: two namesakes sharing one relationship is possible (siblings both
+"child of X", a dead child's name reused), so 60 is an **upper bound**. It is
+cheap to settle — the 60 are enumerable and readable — and nobody has looked.
