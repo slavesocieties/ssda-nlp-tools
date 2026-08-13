@@ -35,5 +35,10 @@ watchdog.log
 watchdog.disable
 keep_awake.log
 
-# Session context/handover notes -- working documents, not product.
+# Session context -- working documents, not product. Kept on disk, never pushed.
+# HANDOVER.md / NIGHT_LOG.md are one session's notes to the next.
+# verify_tonight.py hardcodes an absolute path into one session's temp scratchpad,
+# so it cannot run anywhere but the machine that wrote it.
 HANDOVER.md
+NIGHT_LOG.md
+verify_tonight.py
