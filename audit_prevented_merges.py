@@ -51,7 +51,7 @@ def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--control", required=True)
     ap.add_argument("--treatment", required=True)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--limit", type=int, default=40)
     a = ap.parse_args(argv)

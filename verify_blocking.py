@@ -28,7 +28,7 @@ from ssda_nlp_tools.volume_geo import load as load_geo
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--max-block", type=int, default=B.DEFAULT_MAX_BLOCK)
     a = ap.parse_args(argv)

@@ -24,8 +24,28 @@ import sys
 import time
 from datetime import datetime, timezone
 
-HEARTBEAT = sys.argv[1] if len(sys.argv) > 1 else "watchdog.heartbeat"
-STALE_MINUTES = float(sys.argv[2]) if len(sys.argv) > 2 else 45.0
+def _args():
+    """Refuse option-looking arguments before the execution-state lock is taken.
+
+    Same defect as `watchdog_shutdown.py`: argument 1 is a FILE PATH, so
+    `--help` became the heartbeat path and this held the machine awake for a
+    full poll instead of printing usage. `self_check.py` did that on every run.
+    """
+    argv = sys.argv[1:]
+    if argv and argv[0] in ("-h", "--help"):
+        print(__doc__)
+        raise SystemExit(0)
+    if argv and argv[0].startswith("-"):
+        raise SystemExit(
+            f"{os.path.basename(sys.argv[0])}: unknown option {argv[0]!r}. "
+            f"Argument 1 is the heartbeat file path, argument 2 the stale "
+            f"limit in minutes. Nothing was held awake.")
+    return argv
+
+
+_ARGV = _args()
+HEARTBEAT = _ARGV[0] if _ARGV else "watchdog.heartbeat"
+STALE_MINUTES = float(_ARGV[1]) if len(_ARGV) > 1 else 45.0
 LOG = "keep_awake.log"
 POLL_SECONDS = 60
 MAX_HOURS = 9.0

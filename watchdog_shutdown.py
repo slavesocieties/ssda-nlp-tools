@@ -32,8 +32,30 @@ import sys
 import time
 from datetime import datetime, timezone
 
-HEARTBEAT = sys.argv[1] if len(sys.argv) > 1 else "watchdog.heartbeat"
-STALE_MINUTES = float(sys.argv[2]) if len(sys.argv) > 2 else 45.0
+def _args():
+    """Refuse option-looking arguments before anything is armed.
+
+    Argument 1 is a FILE PATH, so `--help` used to become the heartbeat path
+    and start a real shutdown timer -- which is exactly what `self_check.py`'s
+    "--help is unconditionally safe" sweep did to every script in the repo,
+    twice a run. A watchdog that powers off the machine must not be startable
+    by a flag typed in the hope of reading its usage.
+    """
+    argv = sys.argv[1:]
+    if argv and argv[0] in ("-h", "--help"):
+        print(__doc__)
+        raise SystemExit(0)
+    if argv and argv[0].startswith("-"):
+        raise SystemExit(
+            f"{os.path.basename(sys.argv[0])}: unknown option {argv[0]!r}. "
+            f"Argument 1 is the heartbeat file path, argument 2 the stale "
+            f"limit in minutes. Nothing was armed.")
+    return argv
+
+
+_ARGV = _args()
+HEARTBEAT = _ARGV[0] if _ARGV else "watchdog.heartbeat"
+STALE_MINUTES = float(_ARGV[1]) if len(_ARGV) > 1 else 45.0
 LOG = os.path.join(os.path.dirname(os.path.abspath(HEARTBEAT)) or ".",
                    "watchdog.log")
 DISABLE = os.path.join(os.path.dirname(os.path.abspath(HEARTBEAT)) or ".",

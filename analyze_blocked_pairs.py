@@ -50,7 +50,7 @@ def load(assembled):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     a = ap.parse_args(argv)
 
     M = load(a.assembled)

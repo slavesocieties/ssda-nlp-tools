@@ -61,7 +61,7 @@ def main(argv=None):
     ap.add_argument("--pairs", default="production/luna_v3/targeted/targeted_pairs.json",
                     help="the pair file Daniel actually graded -- NOT the regenerated one")
     ap.add_argument("--labels", default="ssda_nlp_tools/targeted_labels.json")
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     a = ap.parse_args(argv)
 
@@ -80,6 +80,15 @@ def main(argv=None):
     vol_of = lambda m: str(m.get("_entry", "")).split("-")[0]
     by = {(m["_entry"], str(m["_local_id"])): m for m in M}
 
+    # De-duplication removes entries, so a label graded before it can point at
+    # an entry id that no longer exists. Duplicates were collapsed only when
+    # byte-identical, so redirecting a dropped id to its survivor is exact --
+    # same people, same local ids. Without this, promoting the de-duplicated
+    # corpus orphaned 8 of Daniel's 300 graded pairs, and a resolver that finds
+    # nothing simply returns fewer rows rather than complaining.
+    from dedupe_entries import load_redirects, resolve_entry
+    redirects = load_redirects()
+
     rows = []
     unresolved = 0
     for k, grade in sorted(labels.items(), key=lambda kv: int(kv[0])):
@@ -88,8 +97,10 @@ def main(argv=None):
             unresolved += 1
             continue
         r = pairs[i]
-        x = by.get((r["a"]["entry"], str(r["a"]["id"])))
-        y = by.get((r["b"]["entry"], str(r["b"]["id"])))
+        ea = resolve_entry(r["a"]["entry"], redirects)
+        eb = resolve_entry(r["b"]["entry"], redirects)
+        x = by.get((ea, str(r["a"]["id"])))
+        y = by.get((eb, str(r["b"]["id"])))
         if not x or not y:
             unresolved += 1
             continue

@@ -92,7 +92,7 @@ def priority(st):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--outdir", default="production/luna_v3/blocked_labels")
     ap.add_argument("--size", type=int, default=200)
     ap.add_argument("--seed", type=int, default=20260810)

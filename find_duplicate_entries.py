@@ -37,7 +37,7 @@ from ssda_nlp_tools.textmatch import normalize_name
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--show", type=int, default=10)
     a = ap.parse_args(argv)
 

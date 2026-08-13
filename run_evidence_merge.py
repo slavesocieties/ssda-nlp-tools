@@ -66,13 +66,13 @@ def require_corpus(entries, assembled):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--outdir", default="production/luna_v3/merge")
     ap.add_argument("--tag", default="e1")
     ap.add_argument("--auto", type=float, default=AUTO_MERGE_LOG_ODDS)
     ap.add_argument("--review", type=float, default=REVIEW_LOG_ODDS)
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
-    ap.add_argument("--blocking", choices=("legacy", "keyed"), default="legacy",
+    ap.add_argument("--blocking", choices=("legacy", "keyed"), default="keyed",
                     help="legacy scans every same-name pair then filters; keyed "
                          "generates candidates from blocking keys (scales)")
     ap.add_argument("--max-block", type=int, default=BL.DEFAULT_MAX_BLOCK,

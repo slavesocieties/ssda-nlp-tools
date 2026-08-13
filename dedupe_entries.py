@@ -43,6 +43,35 @@ import json
 import os
 
 
+def load_redirects(report="production/luna_v3/dedupe_report.json"):
+    """{dropped entry id -> the identical entry that survived}.
+
+    De-duplication REMOVES entries, and a label set graded before it points at
+    entry ids that no longer exist. Promoting the de-duplicated corpus without
+    this orphaned 8 of the 300 pairs Daniel graded -- silently, because a
+    resolver that finds nothing just returns fewer rows.
+
+    The redirect is exact rather than approximate: entries are collapsed only
+    when their whole payload is byte-identical, so the surviving entry contains
+    the same people with the same local ids. A label pointing at the dropped
+    copy and one pointing at the survivor are about the same person.
+    """
+    try:
+        rep = json.load(open(report, encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return {r["dropped"]: r["kept"] for r in rep.get("collapsed_entries", [])}
+
+
+def resolve_entry(entry_id, redirects):
+    """Follow a dropped entry to its surviving twin, if it was collapsed."""
+    seen = set()
+    while entry_id in redirects and entry_id not in seen:
+        seen.add(entry_id)
+        entry_id = redirects[entry_id]
+    return entry_id
+
+
 def payload_hash(entry):
     return hashlib.sha1(
         json.dumps(entry.get("data") or {}, sort_keys=True,

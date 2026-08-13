@@ -55,7 +55,7 @@ def build(assembled, volumes):
 
 def main(argv=None):
     ap = argparse.ArgumentParser()
-    ap.add_argument("--assembled", default="production/luna_v3/assembled")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--max-block", type=int, default=60)
     a = ap.parse_args(argv)

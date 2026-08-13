@@ -91,3 +91,35 @@ def test_a_clean_entry_is_untouched():
     assert dupes == [] and conflicts == []
     assert [p["id"] for p in keep] == ["P01", "P02"]
     assert json.dumps(keep, sort_keys=True) == json.dumps(people, sort_keys=True)
+
+
+# --- redirects: de-duplication must not orphan a graded label --------------
+
+def test_redirects_follow_a_dropped_entry_to_its_survivor(tmp_path):
+    """Promoting the de-duplicated corpus orphaned 8 of the 300 pairs Daniel had
+    graded, because their entry id no longer existed. A resolver that finds
+    nothing returns fewer rows rather than complaining, so this was silent."""
+    import json as _json
+    from dedupe_entries import load_redirects, resolve_entry
+    rep = tmp_path / "r.json"
+    rep.write_text(_json.dumps({"collapsed_entries": [
+        {"kept": "V-1", "dropped": "V-2"},
+        {"kept": "V-1", "dropped": "V-3"},
+    ]}), encoding="utf-8")
+    red = load_redirects(str(rep))
+    assert resolve_entry("V-2", red) == "V-1"
+    assert resolve_entry("V-3", red) == "V-1"
+    assert resolve_entry("V-1", red) == "V-1", "a surviving id maps to itself"
+    assert resolve_entry("V-9", red) == "V-9", "an unknown id is left alone"
+
+
+def test_redirects_terminate_on_a_cycle():
+    """A malformed report must not hang the resolver."""
+    from dedupe_entries import resolve_entry
+    assert resolve_entry("A", {"A": "B", "B": "A"}) in {"A", "B"}
+
+
+def test_missing_report_is_not_fatal():
+    """Tools must still run on a corpus that was never de-duplicated."""
+    from dedupe_entries import load_redirects
+    assert load_redirects("does/not/exist.json") == {}
