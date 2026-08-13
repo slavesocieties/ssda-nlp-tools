@@ -1394,3 +1394,51 @@ def format_disambiguation(result: Dict[str, Any], top: int = 12) -> str:
                          f"{r['b']['name']!r}({r['b']['entry']})  {r['reasons']}")
     lines.append("=" * 60)
     return "\n".join(lines)
+
+
+def assign_event_ids(mentions: List[dict]) -> int:
+    """Tag mentions whose entries record the SAME EVENT with a shared `_event`.
+
+    A sacramental event can reach the corpus as two entries -- the page
+    photographed twice, or a transcription re-run producing slightly different
+    text over identical extracted people. Those two entries are one event, but
+    they carry different entry ids, so `score`'s same-entry veto never fires and
+    their co-participants meet as ordinary candidates with every circumstantial
+    term agreeing. Measured on this corpus: 24% of the scorable cross-copy pairs
+    of DIFFERENT people auto-merge, and it survives de-duplication, because
+    `dedupe_entries.py` collapses byte-identical records only.
+
+    Grouping is on the extracted people payload -- name, local id, relationships
+    -- deliberately NOT on the record text, since differing text over identical
+    people is exactly the case de-duplication misses.
+
+    Mutates the mentions in place and returns the number of multi-entry events
+    found. Assigning nothing leaves behaviour identical: `score` falls back to
+    the entry id when `_event` is absent.
+    """
+    by_entry: Dict[str, List[dict]] = defaultdict(list)
+    for m in mentions:
+        if m.get("_entry"):
+            by_entry[m["_entry"]].append(m)
+
+    groups: Dict[str, List[str]] = defaultdict(list)
+    for eid, people in sorted(by_entry.items()):
+        if not people:
+            continue                      # empty payloads all hash alike
+        key = json.dumps(sorted(
+            (str(p.get("name") or ""), str(p.get("_local_id")),
+             json.dumps(p.get("relationships") or [], sort_keys=True,
+                        ensure_ascii=False))
+            for p in people), ensure_ascii=False)
+        groups[key].append(eid)
+
+    found = 0
+    for eids in groups.values():
+        if len(eids) < 2:
+            continue
+        found += 1
+        event = f"EV:{sorted(eids)[0]}"
+        for eid in eids:
+            for m in by_entry[eid]:
+                m["_event"] = event
+    return found

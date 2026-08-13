@@ -493,6 +493,25 @@ def score(a: dict, b: dict, stats: NameStats, geo=None,
     # ---- vetoes: impossibilities, not weights ----------------------------
     if a.get("_entry") and a.get("_entry") == b.get("_entry"):
         return _out(terms, veto="same-entry")
+    # Same EVENT recorded in two entries. The same-entry veto cannot fire, so
+    # co-participants -- siblings sharing parents, two witnesses to one marriage
+    # -- reach scoring with every circumstantial term agreeing, and 24% of the
+    # scorable ones auto-merge. Measured: eval_data/latent_coparticipant_20260813.md
+    #
+    # The veto is on a DIFFERENT LOCAL ID, not on the event. Across two copies
+    # of one record, local id i and i are the same person and must still merge;
+    # only i vs j is the impossibility. A blanket event veto would destroy the
+    # 170 true merges to prevent 50 false ones.
+    #
+    # SCOPE: `_event` is assigned by grouping entries on the extracted people
+    # payload, so the two copies share a local-id scheme. The other form of this
+    # defect -- one event written up independently in two registers -- has no
+    # such correspondence and needs person-level alignment, not id equality.
+    # This does not address that form.
+    ev_a, ev_b = a.get("_event"), b.get("_event")
+    if ev_a and ev_a == ev_b and \
+            str(a.get("_local_id")) != str(b.get("_local_id")):
+        return _out(terms, veto="same-event")
     if a.get("_unique_sacrament") and b.get("_unique_sacrament"):
         return _out(terms, veto="both-sacrament-principals")
 

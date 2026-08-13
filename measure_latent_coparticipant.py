@@ -56,6 +56,10 @@ def main(argv=None):
     ap.add_argument("--assembled", default="production/luna_v3/assembled")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--out", default=None)
+    ap.add_argument("--same-event-veto", action="store_true",
+                    help="apply assign_event_ids first, i.e. measure the repair "
+                         "rather than the defect. The pass criterion is BOTH "
+                         "directions: false merges to zero AND true merges kept.")
     a = ap.parse_args(argv)
 
     if "dedup" in a.assembled:
@@ -70,6 +74,13 @@ def main(argv=None):
     if not entries:
         raise SystemExit(f"no entries under {a.assembled!r}")
     M = D._mentions_from_volume({"id": "corpus", "entries": entries})
+    if a.same_event_veto:
+        n_ev = D.assign_event_ids(M)
+        print(f"same-event veto ON: {n_ev} multi-entry events tagged")
+        if not n_ev:
+            raise SystemExit(
+                "the flag tagged nothing, so a zero delta below would be the "
+                "flag doing nothing rather than the veto working")
     stats = NameStats(M, is_clergy=E._clergy)
     geo = load_geo(a.volumes)
     vol_of = lambda m: str(m.get("_entry", "")).split("-")[0]
