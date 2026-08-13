@@ -1,0 +1,36 @@
+{
+  "_why": "Label sets are keyed by POSITION with no pair identifiers, so they only mean anything against the exact file that was graded. Regenerating one silently invalidates every grade returned for it.",
+  "locked_on": "2026-08-13",
+  "entries": {
+    "production/luna_v3/blocked_labels/blocked_pairs.html": {
+      "sha256": "7f8c0ef465d455006ca68197cd8371d2b9ba35b68f8c97541c0237c411aa6ee0",
+      "bytes": 194459,
+      "note": "recall sample -- SENT TO DANIEL on Slack, awaiting grades",
+      "mtime": "2026-08-10 17:02"
+    },
+    "production/luna_v3/blocked_labels/blocked_pairs.json": {
+      "sha256": "66a504fdfbad1b103ad111304fa66f76fd9bb99dfa879138b425d6eb11fe7dd9",
+      "bytes": 71093,
+      "note": "row/weight source for the recall sample",
+      "mtime": "2026-08-10 17:02"
+    },
+    "production/luna_v3/targeted_v2/targeted_pairs.html": {
+      "sha256": "1f55f05d6f0fed43553ce1932f976394b9e3d15a585a2ff4b480ab2cb9976811",
+      "bytes": 276488,
+      "note": "same-name/same-parish set",
+      "mtime": "2026-08-10 12:27"
+    },
+    "production/luna_v3/conflict_labels/conflict_pairs.html": {
+      "sha256": "1104ae7ed9dcfb0306aa2c581c5083581e9610fea0b519119be67d6eaedb3939",
+      "bytes": 197943,
+      "note": "pairs sampled because they conflict",
+      "mtime": "2026-08-10 12:27"
+    },
+    "production/luna_v3/dedupe_report.json": {
+      "sha256": "9dfdb03dddd89b809ee88960af5f3002c1b7e131c0cc5d2fc498f574635d9dd4",
+      "bytes": 12728,
+      "note": "kept/dropped pairs -- the label redirect resolver reads this",
+      "mtime": "2026-08-10 12:48"
+    }
+  }
+}

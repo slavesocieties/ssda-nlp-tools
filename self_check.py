@@ -58,6 +58,7 @@ THE RULES
 """
 import argparse
 import glob
+import hashlib
 import json
 import os
 import re
@@ -289,6 +290,49 @@ def _all_scripts_import(root):
     return (not bad, shown if bad else
             f"{len(scripts)} offline scripts import cleanly{note} "
             f"({skipped} network/paid never executed)")
+
+
+@check("label sets handed to Daniel are byte-identical to what he was sent")
+def _delivered_labels_unchanged(root):
+    """The position-keyed label trap, mechanised.
+
+    Label sets carry NO pair identifiers -- a grade is just row N's verdict. So a
+    returned grade only means anything against the exact bytes that were graded,
+    and regenerating a set silently repoints every grade in it. This project has
+    hit that failure twice already.
+
+    It stopped being hypothetical on 2026-08-12: `blocked_pairs.html` is with
+    Daniel on Slack awaiting grades. Its 200 rows carry Horvitz-Thompson weights
+    summing to 3,013,215, and a redraw against a different corpus state produces
+    different rows with different weights -- with nothing in the returned file to
+    reveal it.
+
+    `dedupe_report.json` is locked for the same reason one level down: the label
+    redirect resolver reads its kept/dropped pairs, so regenerating it repoints
+    resolution without touching a label file at all.
+
+    Unlocking is a deliberate act: delete the entry, and say so to whoever holds
+    the graded copy.
+    """
+    lock_path = os.path.join(root, "delivered_labels.lock.json")
+    if not os.path.exists(lock_path):
+        return None, "no delivered_labels.lock.json -- nothing claimed as sent"
+    lock = json.load(open(lock_path, encoding="utf-8"))
+    drifted, missing = [], []
+    for rel, want in lock["entries"].items():
+        path = os.path.join(root, rel)
+        if not os.path.exists(path):
+            missing.append(rel)
+            continue
+        got = hashlib.sha256(open(path, "rb").read()).hexdigest()
+        if got != want["sha256"]:
+            drifted.append(f"{os.path.basename(rel)} ({want['note']})")
+    if missing:
+        return False, f"DELIVERED ARTIFACT GONE: {'; '.join(missing)}"
+    if drifted:
+        return False, ("REGENERATED SINCE DELIVERY -- any grades returned for "
+                       f"these no longer line up: {'; '.join(drifted)}")
+    return True, f"{len(lock['entries'])} delivered artifacts unchanged"
 
 
 @check("the test suite passes")
