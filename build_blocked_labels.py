@@ -193,7 +193,18 @@ def main(argv=None):
         alloc[k] += 1
 
     rows, meta = [], []
-    for k in keys:
+    # HEAVIEST STRATUM FIRST, so that grading top-down buys the most population
+    # per judgement. `keys` is sorted by stratum NAME, which scatters weight
+    # arbitrarily through the page -- and the page never shows the grader what a
+    # row is worth, so there is no way to tell from the outside.
+    #
+    # Measured on the 2026-08-10 draw, which Daniel graded top-down: the first
+    # 20 rows stand for 1,995 pairs, 0.066% of the 3,013,215 pool. The 20
+    # heaviest stand for 1,692,576 -- 56.2%, and 848x more. Seventeen rows cover
+    # half the pool. A partial grading is the NORMAL case for a busy supervisor,
+    # so the order in which rows are offered decides what a partial grading is
+    # worth.
+    for k in sorted(keys, key=lambda k: -(size[k] / alloc[k])):
         picks = rng.sample(res[k], alloc[k])
         weight = size[k] / alloc[k]       # inverse sampling probability
         for x, y in picks:
@@ -227,7 +238,14 @@ def main(argv=None):
              "two once-in-a-lifetime sacraments) are already removed, as is clergy. "
              "<b>Most of these should be obvious zeros</b> &mdash; that is the expected "
              "answer and a useful one. Same scale: <b>0</b> certainly different, "
-             "<b>100</b> certainly the same.")
+             "<b>100</b> certainly the same."
+             "<br><br><b>Rows are ordered by how much each one stands for, heaviest "
+             "first.</b> They are a weighted sample, so they are not equally "
+             "informative: the top rows each represent tens of thousands of "
+             "discarded pairs and the bottom ones represent a handful. "
+             "<b>If you only have time for some, do them from the top</b> &mdash; "
+             "the first 17 rows cover half the discarded pool, and the first 20 "
+             "cover 56% of it.")
     os.makedirs(a.outdir, exist_ok=True)
     hp = os.path.join(a.outdir, "blocked_pairs.html")
     open(hp, "w", encoding="utf-8").write(
