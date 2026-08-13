@@ -57,6 +57,7 @@ THE RULES
     plus B->A child is every real parent.
 """
 import argparse
+import collections
 import glob
 import hashlib
 import json
@@ -290,6 +291,57 @@ def _all_scripts_import(root):
     return (not bad, shown if bad else
             f"{len(scripts)} offline scripts import cleanly{note} "
             f"({skipped} network/paid never executed)")
+
+
+# Scorer categories that exist in the code but not in the delivered corpus, with
+# the reason. Same contract as KNOWN_BROKEN: acknowledged is not tolerated, and
+# anything NOT on this list going inert is a regression that fails the check.
+KNOWN_INERT = {
+    "maternal grandparent":
+        "Daniel's 2026-08-10 ruling is implemented in MAX_HOLDERS but the "
+        "delivered corpus carries no sided grandparent edges at all. "
+        "backfill_grandparent_sides.py wrote production/sided_7vol (91.7% "
+        "sided) and nothing was ever pointed at it. See "
+        "eval_data/grandparent_sides_inert_20260813.md",
+    "paternal grandparent": "as maternal grandparent -- same cause, same fix",
+}
+
+
+@check("every role the scorer can constrain exists in the corpus")
+def _no_inert_categories(root):
+    """A capacity no data can trigger, which is §9 rule 1 one level out.
+
+    `MAX_HOLDERS` gives each role the number of distinct holders one person can
+    have; a role contradicts only when that number is exceeded. If the corpus
+    never emits a role, its capacity is unreachable and the rule it encodes is
+    silently not in force -- no error, no warning, a merge result that looks
+    entirely normal, and every accuracy figure quoted since measured without it.
+
+    That is exactly what happened to the maternal/paternal grandparent split:
+    implemented in the scorer, recorded as done in HANDOVER §5, and absent from
+    every delivered volume. It was found by reading a record, not by any check.
+    This is that check.
+    """
+    import ssda_nlp_tools.evidence as _E
+    corpus = os.path.join(root, "production/luna_v3/assembled_deduped")
+    paths = sorted(glob.glob(os.path.join(corpus, "*.materialized.json")))
+    if not paths:
+        return None, "no delivered corpus in this checkout"
+    seen = collections.Counter()
+    for p in paths:
+        for e in json.load(open(p, encoding="utf-8"))["entries"]:
+            for person in (e.get("data") or {}).get("people") or []:
+                for r in (person.get("relationships") or []):
+                    if isinstance(r, dict):
+                        seen[str(r.get("relationship_type") or "").lower()] += 1
+    inert = [role for role in _E.MAX_HOLDERS if not seen.get(role)]
+    unexpected = [r for r in inert if r not in KNOWN_INERT]
+    if unexpected:
+        return False, ("ROLES THE SCORER CONSTRAINS BUT THE CORPUS NEVER EMITS, "
+                       "so their capacity cannot fire: " + ", ".join(unexpected))
+    ack = f" ({len(inert)} acknowledged inert: {', '.join(inert)})" if inert else ""
+    return True, (f"{len(_E.MAX_HOLDERS) - len(inert)} of {len(_E.MAX_HOLDERS)} "
+                  f"roles present in the corpus{ack}")
 
 
 def _mtime(path):
