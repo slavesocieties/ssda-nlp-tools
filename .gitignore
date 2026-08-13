@@ -34,3 +34,6 @@ watchdog.heartbeat
 watchdog.log
 watchdog.disable
 keep_awake.log
+
+# Session context/handover notes -- working documents, not product.
+HANDOVER.md
