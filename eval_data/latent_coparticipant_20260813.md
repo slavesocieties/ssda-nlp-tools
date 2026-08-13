@@ -284,3 +284,58 @@ corpus rather than special-casing it.
 **Blocked, deliberately.** `dedupe_report.json` is locked — the label redirect
 resolver reads its kept/dropped pairs, so regenerating it repoints Daniel's
 outstanding grades. This waits until those grades are back.
+
+---
+
+## Correction: the grouping was too loose, and the recommended fix was wrong
+
+Asked to implement "extend `dedupe_entries.py` to payload-identity", I checked
+the premise first. It does not hold.
+
+**`dedupe_entries.py` is already payload-based.** `payload_hash` hashes
+`entry["data"]` — people *and* events. The handover's "byte-identical records"
+is imprecise; nothing here ever keyed on the raw text.
+
+My grouping keyed on **people only**, which is strictly looser, and that is where
+the extra groups came from:
+
+| grouping | groups |
+|---|---:|
+| full `data` payload (what dedupe does) | **40** |
+| people only (what I used) | 62 |
+| merged by people-only but *not* by payload | **28** |
+
+Reading those 28 settles it — they hold genuinely **different events**:
+
+```
+201991-0042-B-06  burial 1841-06-19    vs  201991-0144-B-03  burial 1845-02-09
+201991-0045-B-01  burial 1841-07-29    vs  201991-0045-B-02  burial 1841-07-31
+```
+
+Burials four years apart, and two adjacent entries recording burials two days
+apart. Identical people lists arise because the extraction is **sparse** — a
+deceased person with the same name and no relationships — not because the record
+is a copy. **Collapsing them would destroy real distinct burials**, in a corpus
+where a burial entry is often the only surviving record of a person.
+
+So the fix is **not implemented, deliberately**. Loosening dedupe to people-only
+is a data-destroying change justified by a grouping error of mine.
+
+### What the corrected measurement says
+
+Re-run with the payload grouping dedupe actually uses:
+
+| | loose grouping (wrong) | **payload grouping (correct)** |
+|---|---:|---:|
+| duplicate groups | 62 | **40** |
+| same person: auto-merge | 170/198 (85.9%) | **126/143 (88.1%)** |
+| different people: auto-merge | 50/208 (24.0%) | **48/190 (25.3%)** |
+
+**The finding survives almost unchanged.** The group count was inflated by 55%;
+the false-merge rate moved by 1.3 points. The co-participant defect is real at
+the scorer level, the pipeline still catches it via `veto-cluster-same-entry`,
+and none of the conclusions move.
+
+That is worth stating plainly: a materially wrong grouping produced an
+essentially right answer, which is exactly the situation in which nobody
+re-checks the grouping.

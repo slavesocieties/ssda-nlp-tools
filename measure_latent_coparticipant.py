@@ -10,8 +10,8 @@ entries, and nothing will stop them merging."
 That has never been measured, on the stated grounds that the situation does not
 exist in these 7 volumes -- they come from 7 different institutions.
 
-IT DOES EXIST. The 59 byte-identical duplicate entries ARE one event recorded
-twice in two different entries. Every cross-copy pair between them is exactly
+IT DOES EXIST. Entries sharing an identical extracted payload ARE one event
+recorded twice in two different entries. Every cross-copy pair between them is exactly
 the configuration sec.14 warns about:
 
     - same event, same date, same parish, same associates
@@ -77,25 +77,28 @@ def main(argv=None):
     by_entry = collections.defaultdict(list)
     for m in M:
         by_entry[m["_entry"]].append(m)
+    entry_by_id = {e.get("id"): e for e in entries}
 
-    # Duplicate entries: identical people payload, different entry id. Empty
-    # payloads all hash alike, so they are excluded -- conflating them with real
-    # duplicates is the 380-vs-59 trap from HANDOVER sec.3.
-    # Grouped on the EXTRACTED PEOPLE PAYLOAD -- names, local ids, relationships
-    # -- not on the whole record. That is deliberately a different (looser) set
-    # from `dedupe_entries.py`'s 59 byte-identical records: two entries whose
-    # transcription text differs but whose extracted people are identical are
-    # the same event for this purpose. Do not quote these two counts as if they
-    # were the same quantity.
+    # Duplicate entries: identical extracted payload, different entry id.
+    # Empty payloads all hash alike and are excluded -- conflating them with
+    # real duplicates is the 380-vs-59 trap from HANDOVER sec.3.
+    # GROUPED ON THE FULL EXTRACTED PAYLOAD -- people AND events -- which is
+    # exactly what dedupe_entries.py's payload_hash does.
+    #
+    # An earlier version keyed on PEOPLE ONLY, on the theory that differing
+    # transcription text over identical people meant one event written twice.
+    # Measured, that is false: of 62 people-only groups, 28 hold genuinely
+    # DIFFERENT events -- burials four years apart, and two adjacent entries
+    # recording burials two days apart. Identical people lists arise because the
+    # extraction is sparse, not because the record is a copy. Collapsing them
+    # would destroy real distinct burials, and the "extend dedupe to payload
+    # identity" recommendation built on that grouping was wrong.
     groups = collections.defaultdict(list)
     for eid, people in sorted(by_entry.items()):
         if not people:
             continue                       # empty payloads all hash alike
-        key = json.dumps(sorted((str(p.get("name") or ""),
-                                 str(p.get("_local_id")),
-                                 json.dumps(p.get("relationships") or [],
-                                            sort_keys=True, ensure_ascii=False))
-                                for p in people), ensure_ascii=False)
+        e = entry_by_id.get(eid) or {}
+        key = json.dumps(e.get("data") or {}, sort_keys=True, ensure_ascii=False)
         groups[key].append(eid)
     dup_groups = [v for v in groups.values() if len(v) > 1]
 
@@ -103,7 +106,7 @@ def main(argv=None):
     print(f"duplicate groups  : {len(dup_groups)} groups covering "
           f"{sum(len(v) for v in dup_groups)} entries "
           f"(sizes {dict(collections.Counter(len(v) for v in dup_groups))})")
-    print(f"                    grouped on extracted people, NOT byte-identity\n")
+    print(f"                    grouped on the full data payload, as dedupe does\n")
     if not dup_groups:
         raise SystemExit("no duplicate entries found -- nothing to measure")
 
