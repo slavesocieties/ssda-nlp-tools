@@ -85,12 +85,6 @@ def main(argv=None):
     ap.add_argument("--shuffle-seed", type=int, default=None,
                     help="shuffle block and within-block order; any resulting "
                          "difference is path-dependence, not evidence")
-    ap.add_argument("--same-event-veto", action="store_true",
-                    help="treat entries whose extracted people are identical as "
-                         "ONE event, so co-participants across two copies of a "
-                         "record cannot merge. Off by default: it changes the "
-                         "corpus result and the promotion is Daniel's call. "
-                         "See eval_data/latent_coparticipant_20260813.md")
     ap.add_argument("--no-conflict-relations", action="store_true",
                     help="A/B control: disable Daniel's conflicting-relationship "
                          "penalty (different spouse/parent/enslaver).")
@@ -112,18 +106,6 @@ def main(argv=None):
     mentions = D._mentions_from_volume({"id": "corpus", "entries": entries})
     n = len(mentions)
     print(f"{len(paths)} volumes, {len(entries):,} entries, {n:,} mentions")
-
-    if args.same_event_veto:
-        n_events = D.assign_event_ids(mentions)
-        tagged = sum(1 for m in mentions if m.get("_event"))
-        print(f"same-event veto ON: {n_events} multi-entry events covering "
-              f"{tagged:,} mentions")
-        if not n_events:
-            # A flag no code consumes reports a perfect zero delta and reads as
-            # "no effect" -- HANDOVER sec.9 rule 1. Say so instead.
-            print("  WARNING: no duplicate-payload entries found, so this flag "
-                  "changes NOTHING on this corpus. A zero delta below is the "
-                  "flag doing nothing, not the veto having no effect.")
 
     stats = NameStats(mentions, is_clergy=_clergy)
     geo = load_geo(args.volumes)

@@ -247,3 +247,40 @@ phantom identity.
 Not asserted: two namesakes sharing one relationship is possible (siblings both
 "child of X", a dead child's name reused), so 60 is an **upper bound**. It is
 cheap to settle — the 60 are enumerable and readable — and nobody has looked.
+
+### Settled: five orderings, zero spread — and the veto is deleted
+
+| run | identities | auto | review |
+|---|---:|---:|---:|
+| control (unshuffled, seeds 1, 2, 3, 7) | **33,179** in all five | 6,274 | 629,212 |
+| same-event (unshuffled, seeds 1, 7) | 33,179 | 6,274 | 629,204 |
+
+**Spread = 0.** The cluster guards are not order-dependent on the current code,
+so the last argument for `--same-event-veto` is gone and **the flag, its wiring,
+its tests and the `assign_event_ids` helper have been removed.** The criterion
+was set before the run and it went against the code, which is the only reason
+setting it beforehand was worth anything.
+
+Removing the veto also orphaned the `--same-event-veto` flag on *this* script —
+it would have tagged events that nothing consumed, reported a zero delta, and
+read as "the veto has no effect". That is §9 rule 1 exactly, created by my own
+cleanup, so it went too.
+
+**§7d is stale.** It states identity counts vary **±6 across shuffles** and the
+cluster guards are order-dependent. Five orderings say otherwise. The
+`name_similarity` symmetry fix and the blocking rewrite both landed after §7d was
+written and either could account for it. On this evidence §7d is a **closed**
+problem listed as open, and the handover should say so.
+
+### The repair that is actually indicated
+
+Not a veto: **extend `dedupe_entries.py` from byte-identity to payload-identity.**
+It already collapses byte-identical records; the 28 groups that survive into
+`assembled_deduped` differ only in transcription text over identical extracted
+people. Collapsing those removes the duplicate copies at source, which fixes the
+scorer-level defect without adding a branch to the hot loop and shrinks the
+corpus rather than special-casing it.
+
+**Blocked, deliberately.** `dedupe_report.json` is locked — the label redirect
+resolver reads its kept/dropped pairs, so regenerating it repoints Daniel's
+outstanding grades. This waits until those grades are back.
