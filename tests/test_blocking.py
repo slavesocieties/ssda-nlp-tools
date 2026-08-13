@@ -163,3 +163,35 @@ def test_no_pair_is_ever_emitted_twice_on_a_mixed_corpus():
     got = list(B.candidate_pairs(ms))
     assert len(got) == len(set(got)), "duplicate pairs"
     assert all(i < j for i, j in got), "pairs must be ordered and non-self"
+
+
+def test_an_undated_mention_still_pairs_within_its_register_when_the_block_is_huge():
+    """The bug that cost 33 real merges.
+
+    The key loops used to skip every pair with an undated side, on the grounds
+    that the undated pass owned them; the undated pass then skipped any block
+    over max_block. An undated "Maria" was therefore owned by NOBODY -- not even
+    for same-register pairing, which is cheap, bounded, and where nearly all
+    real merges live. Every lost pair had y=None on one side.
+    """
+    ms = [_m("Maria", 1800 + i, register="V1", entry=f"V1-{i}") for i in range(6)]
+    ms.append(_m("Maria", None, register="V1", entry="V1-undated"))
+    ms.append(_m("Maria", None, register="V2", entry="V2-undated",
+                 ctx=[("parent", "ana lopez")]))
+    ms.append(_m("Maria", 1805, register="V3", entry="V3-1",
+                 ctx=[("parent", "ana lopez")]))
+    got = _pairs(ms, max_block=3)          # forces the name past the cap
+    u, ua, sh = 6, 7, 8
+    assert (0, u) in got, "undated must still pair inside its own register"
+    assert (ua, sh) in got, "undated must still pair on a shared associate"
+
+
+def test_the_capped_remainder_is_only_the_name_alone_case():
+    """What the cap is allowed to drop: an undated mention against a namesake it
+    shares neither a register nor an associate with. That pair has nothing but
+    the name, which Daniel's rule says can never carry a merge on its own."""
+    ms = [_m("Maria", 1800 + i, register="V1", entry=f"V1-{i}") for i in range(6)]
+    ms.append(_m("Maria", None, register="V2", entry="V2-undated"))
+    got = _pairs(ms, max_block=3)
+    assert not any(j == 6 or i == 6 for i, j in got), \
+        "name-alone undated pairs are the capped remainder"

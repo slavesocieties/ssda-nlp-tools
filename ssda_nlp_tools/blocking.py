@@ -170,8 +170,24 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
         ax = _assocs[x]
         return bool(ax) and not ax.isdisjoint(_assocs[y])
 
+    # This pass owns only the pairs no KEY can own: an undated mention against a
+    # namesake it shares neither a register nor an associate with. Those have
+    # nothing to match on but the name, so they need the whole block, and that
+    # is the one part which must stay capped.
+    #
+    # THE CAP USED TO SWALLOW MORE THAN THAT, and it cost 33 real merges. The
+    # key loops skipped every pair with an undated side, on the grounds that
+    # this pass owned them; this pass then skipped any block over max_block. An
+    # undated "Maria" was therefore owned by NOBODY -- not even for
+    # same-register pairing, which is cheap, bounded, and where nearly all real
+    # merges live. Every one of the 33 lost pairs had y=None on one side and
+    # most shared a register.
+    #
+    # So register and associate pairing now runs for undated mentions through
+    # the ordinary keys, exactly as it does for dated ones, and only the
+    # name-alone remainder is capped.
     for i, m in enumerate(mentions):
-        if m.get("_year") is not None:
+        if _years[i] is not None:
             continue
         p = phonetic_key(m.get("name"))
         block = by_name.get(p) or ()
@@ -186,12 +202,11 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
             # lower index owns it
             if _years[j] is None and j < i:
                 continue
-            # This pass owns EVERY pair with an undated side, unconditionally.
-            # An earlier version skipped ones that also shared a register, while
-            # the key loops skipped anything undated -- so those pairs were
-            # emitted by nobody and 300,000 candidates vanished. Ownership has
-            # to be total as well as exclusive.
-            yield (i, j) if i < j else (j, i)
+            a, b = (i, j) if i < j else (j, i)
+            # the R and A keys own these; this pass takes only the remainder
+            if _same_register(a, b) or _shares_assoc(a, b):
+                continue
+            yield a, b
 
     for key, idxs in buckets.items():
         if len(idxs) < 2:
@@ -218,8 +233,11 @@ def candidate_pairs(mentions: List[dict], max_block: int = DEFAULT_MAX_BLOCK,
                 i, j = idxs[a], idxs[b]
                 if i > j:
                     i, j = j, i
-                if _years[i] is None or _years[j] is None:
-                    continue          # the undated pass above owns these
+                # An undated mention still belongs in its register and associate
+                # keys -- only the TIME key is meaningless without a year, and
+                # only the name-alone remainder belongs to the undated pass.
+                if kind == "Y" and (_years[i] is None or _years[j] is None):
+                    continue
                 # Priority R > A > Y: a key emits only pairs that no
                 # higher-priority key owns, which is what removes the need to
                 # remember every pair already emitted.

@@ -72,9 +72,13 @@ def main(argv=None):
     ap.add_argument("--auto", type=float, default=AUTO_MERGE_LOG_ODDS)
     ap.add_argument("--review", type=float, default=REVIEW_LOG_ODDS)
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
-    ap.add_argument("--blocking", choices=("legacy", "keyed"), default="keyed",
+    ap.add_argument("--blocking", choices=("legacy", "keyed"), default="legacy",
                     help="legacy scans every same-name pair then filters; keyed "
-                         "generates candidates from blocking keys (scales)")
+                         "generates candidates from blocking keys (scales). "
+                         "DEFAULT IS LEGACY: keyed was lossless when built, but "
+                         "after the 2026-08-11 grandparent backfill changed the "
+                         "scorer it drops ~40 pairs that now auto-merge. Re-run "
+                         "verify_blocking.py before switching it back.")
     ap.add_argument("--max-block", type=int, default=BL.DEFAULT_MAX_BLOCK,
                     help="keyed blocking: largest time-key block to enumerate")
     ap.add_argument("--shuffle-seed", type=int, default=None,
