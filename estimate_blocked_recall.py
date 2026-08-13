@@ -168,6 +168,21 @@ def main(argv=None):
         print("   They are excluded from the estimate, not counted as zero.")
         print("   Scale the result to the whole pool only after grading them.")
 
+    # The lock guarantees the FILE has not moved. It cannot guarantee the world
+    # the file describes has not moved, and it did: the sample was drawn from
+    # the raw assembly on 2026-08-10, and `assembled_deduped` became the default
+    # on 2026-08-12. Measured on 2026-08-13, the blocked population is 2,952,727
+    # there against the 3,013,215 this sample stands for -- 2.0% smaller.
+    print(f"\nPOPULATION DRIFT since the sample was drawn")
+    print(f"  this sample stands for       : {population:,} pairs "
+          f"(raw assembly, 2026-08-10)")
+    print(f"  default corpus now blocks    : 2,952,727 (assembled_deduped)")
+    print(f"  drift                        : 2.0% smaller")
+    print("  The estimate therefore describes the PRE-DEDUPE blocked set. The")
+    print("  drift is far smaller than the interval above, so the sample stays")
+    print("  usable and regrading would waste Daniel's work -- but say which")
+    print("  configuration the number describes when reporting it.")
+
     print("\nHOW TO REPORT THIS")
     print("  As a range, with the graded fraction and the unrepresented mass")
     print("  stated. HANDOVER sec.7b: 'report a range, not a point.' And it is an")
