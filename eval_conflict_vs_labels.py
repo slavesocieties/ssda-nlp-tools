@@ -86,8 +86,20 @@ def main(argv=None):
     # same people, same local ids. Without this, promoting the de-duplicated
     # corpus orphaned 8 of Daniel's 300 graded pairs, and a resolver that finds
     # nothing simply returns fewer rows rather than complaining.
-    from dedupe_entries import load_redirects, resolve_entry
+    from dedupe_entries import check_redirects, load_redirects, resolve_entry
     redirects = load_redirects()
+
+    # The report is a SECOND source of truth about which entries exist. A stale
+    # one repoints label resolution silently -- every graded pair still resolves,
+    # just to the wrong mention -- so it is checked against the corpus actually
+    # loaded rather than trusted.
+    faults = check_redirects(redirects, {m["_entry"] for m in M})
+    if faults:
+        print("!! dedupe_report.json does not describe this corpus:")
+        for f in faults:
+            print(f"     {f}")
+        print("   Label resolution below is UNRELIABLE -- every pair may still")
+        print("   resolve, but to the wrong mention. Do not quote the results.\n")
 
     rows = []
     unresolved = 0

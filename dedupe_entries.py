@@ -63,6 +63,39 @@ def load_redirects(report="production/luna_v3/dedupe_report.json"):
     return {r["dropped"]: r["kept"] for r in rep.get("collapsed_entries", [])}
 
 
+def check_redirects(redirects, corpus_entry_ids):
+    """Do these redirects actually describe THIS corpus? Returns a list of faults.
+
+    The report is a second source of truth about which entries exist, and a stale
+    one repoints label resolution silently: every graded pair still resolves, just
+    to the wrong mention. Nothing downstream can notice, because a redirect that
+    lands on a real entry looks exactly like a redirect that lands on the right
+    one.
+
+    Two invariants have to hold if the report was produced from this corpus:
+
+        every `kept` id EXISTS   -- it survived de-duplication
+        every `dropped` id is GONE -- it was collapsed away
+
+    Checking them needs no fingerprint stored in the file, so it works on the
+    report as it stands and cannot itself require regenerating a frozen artifact.
+    """
+    ids = set(corpus_entry_ids)
+    faults = []
+    missing_kept = sorted(k for k in set(redirects.values()) if k not in ids)
+    present_dropped = sorted(d for d in redirects if d in ids)
+    if missing_kept:
+        faults.append(
+            f"{len(missing_kept)} 'kept' entries are absent from the corpus "
+            f"(e.g. {missing_kept[:3]}) -- the report describes a different corpus")
+    if present_dropped:
+        faults.append(
+            f"{len(present_dropped)} 'dropped' entries are still present "
+            f"(e.g. {present_dropped[:3]}) -- the corpus was not de-duplicated "
+            f"with this report")
+    return faults
+
+
 def resolve_entry(entry_id, redirects):
     """Follow a dropped entry to its surviving twin, if it was collapsed."""
     seen = set()

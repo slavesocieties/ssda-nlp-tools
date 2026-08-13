@@ -123,3 +123,32 @@ def test_missing_report_is_not_fatal():
     """Tools must still run on a corpus that was never de-duplicated."""
     from dedupe_entries import load_redirects
     assert load_redirects("does/not/exist.json") == {}
+
+
+def test_check_redirects_passes_on_a_matching_corpus():
+    from dedupe_entries import check_redirects
+    red = {"V-2": "V-1", "V-3": "V-1"}
+    corpus = {"V-1", "V-4"}          # survivors present, dropped absent
+    assert check_redirects(red, corpus) == []
+
+
+def test_check_redirects_catches_a_report_from_a_different_corpus():
+    """The silent failure this exists for: a stale report still resolves every
+    graded pair, just to the wrong mention, and nothing downstream can tell."""
+    from dedupe_entries import check_redirects
+    red = {"V-2": "V-1"}
+    faults = check_redirects(red, {"V-9"})     # survivor missing
+    assert faults and "different corpus" in faults[0]
+
+
+def test_check_redirects_catches_a_corpus_that_was_never_deduplicated():
+    from dedupe_entries import check_redirects
+    red = {"V-2": "V-1"}
+    faults = check_redirects(red, {"V-1", "V-2"})   # dropped still present
+    assert faults and "still present" in faults[0]
+
+
+def test_check_redirects_is_silent_when_there_is_no_report():
+    """A corpus that was never de-duplicated must not produce a warning."""
+    from dedupe_entries import check_redirects
+    assert check_redirects({}, {"V-1", "V-2"}) == []
