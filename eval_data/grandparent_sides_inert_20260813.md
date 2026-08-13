@@ -76,3 +76,45 @@ Run the corpus A/B — `sided_7vol` against `assembled`, same everything else �
 see what the finer capacities actually change. That is the number that says
 whether promoting the sided corpus matters or is bookkeeping. Until then nobody
 should claim the ruling is in effect.
+
+---
+
+## The A/B: promoting the sided corpus is worth 1 identity
+
+`sided_7vol` against `assembled`, same scorer, same blocking, same everything
+else, both 6,794 entries / 39,697 mentions.
+
+| | unsided (delivered) | sided |
+|---|---:|---:|
+| identities | 33,253 | **33,254** (+1) |
+| auto-merges | 6,444 | **6,443** (−1) |
+| review pairs | 641,669 | 641,666 (−3) |
+| merged identities | 1,187 | 1,186 |
+| every veto count | identical | identical |
+
+**The direction is exactly right and the magnitude is nearly nothing.** A tighter
+capacity means fewer merges and therefore more identities, and that is precisely
+what moved: one merge prevented, one identity gained. The mechanism Daniel asked
+for works; it just almost never has occasion to fire.
+
+Why: the capacity contradicts only when two mentions name **more than two
+distinct maternal** (or paternal) grandparents between them. Most entries name at
+most two grandparents in total, so the tighter bound is reachable in a handful of
+cases at this scale.
+
+### What follows
+
+- **The finding stands**: the ruling is implemented and not in force. That is
+  worth fixing because a rule believed to be active and silently absent is a
+  liability independent of its size.
+- **The cost of the inertness is ~1 identity**, so nothing measured to date is
+  materially wrong because of it. Nobody needs to re-run anything.
+- **Promote it anyway, deliberately.** It is cheap, it is correct, and the case
+  it guards against — a record naming grandparents on both sides — gets more
+  common as volumes with fuller genealogies arrive. But it changes the delivered
+  corpus, so it belongs with the dedupe and blocking decisions, not folded into
+  something else.
+
+This is §8's "uncomfortable summary" again, from a third direction: the
+refinement is correct, it is worth keeping, and it moves under 1% of the corpus
+while 99.82% of the archive remains unprocessed.
