@@ -115,3 +115,58 @@ python measure_latent_coparticipant.py --out <outside production/>
 Refuses `assembled_deduped` by default: de-duplication removes the second copy,
 so the measurement would report near-zero and read as "no problem". The 28
 surviving groups above were measured by grouping that corpus directly.
+
+---
+
+## Corpus A/B: the veto changes nothing that matters
+
+Measured after the fact, on `assembled_deduped` with keyed blocking, both arms
+run serially. **This deflates the finding above and is the number to quote.**
+
+| | control | `--same-event-veto` |
+|---|---:|---:|
+| identities | 33,179 | 33,179 |
+| auto-merges | 6,274 | 6,274 |
+| review pairs | 629,212 | **629,204** (−8) |
+| merged identities | 1,118 | 1,118 |
+
+The veto fires 36 times and moves 8 review pairs. Zero identities, zero
+auto-merges.
+
+**Why**, from the veto counts:
+
+```
+veto-cluster-same-entry   612,388  ->  612,374   (-14)
+veto-same-event                 0  ->       36
+```
+
+`veto-cluster-same-entry` was already catching these **transitively**. Merging
+P01 from copy A with P02 from copy B would place two people who share an entry
+into one cluster, and that is refused regardless of what the pair scored.
+
+So the honest statement is narrower than the section above implies:
+
+- **The scorer is genuinely wrong on these pairs** — 24% of the scorable ones
+  clear auto-merge on evidence alone. That part stands.
+- **The pipeline was already protected.** §14's "the same-entry veto is doing
+  the heavy lifting, and it is doing it well" survives this better than my
+  finding did.
+
+§9 rule 3 — *score is not disposition; guards run after scoring* — is what
+separates those two sentences. Measuring at the pair level and reporting the
+result as a production defect would have overstated it by everything except 8
+review pairs.
+
+### So does the flag earn its place?
+
+Only on one argument, and it is not yet tested: §7d says the cluster guards are
+**order-dependent**, evaluated against the cluster as built so far. If that holds
+here, the protection currently relied on is path-dependent while a pairwise veto
+is not — the same distinction that made the `name_similarity` symmetry fix worth
+doing at a delta of 6 identities.
+
+That is a claim about stability, so it is testable with this project's own
+technique: run both arms under `--shuffle-seed` and see whether
+`veto-cluster-same-entry` moves across orderings while `veto-same-event` stays
+pinned at 36. **If the cluster guard is stable, the flag is redundant and should
+be deleted rather than kept for tidiness.**
