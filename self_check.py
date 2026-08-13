@@ -292,6 +292,12 @@ def _all_scripts_import(root):
             f"({skipped} network/paid never executed)")
 
 
+def _mtime(path):
+    import datetime
+    return datetime.datetime.fromtimestamp(
+        os.path.getmtime(path)).strftime("%Y-%m-%d %H:%M")
+
+
 @check("label sets handed to Daniel are byte-identical to what he was sent")
 def _delivered_labels_unchanged(root):
     """The position-keyed label trap, mechanised.
@@ -318,21 +324,35 @@ def _delivered_labels_unchanged(root):
     if not os.path.exists(lock_path):
         return None, "no delivered_labels.lock.json -- nothing claimed as sent"
     lock = json.load(open(lock_path, encoding="utf-8"))
-    drifted, missing = [], []
+    drifted, missing, touched = [], [], []
     for rel, want in lock["entries"].items():
         path = os.path.join(root, rel)
         if not os.path.exists(path):
             missing.append(rel)
             continue
-        got = hashlib.sha256(open(path, "rb").read()).hexdigest()
+        raw = open(path, "rb").read()
+        got = hashlib.sha256(raw).hexdigest()
+        now = _mtime(path)
         if got != want["sha256"]:
-            drifted.append(f"{os.path.basename(rel)} ({want['note']})")
+            # Say what it drifted TO. "Drifted" alone sends a reader to diff a
+            # file against nothing; the byte delta usually names the cause on
+            # sight -- a rewrite moves the size, a re-save rarely does.
+            drifted.append(
+                f"{os.path.basename(rel)}: {want['bytes']:,}B -> {len(raw):,}B, "
+                f"mtime {want['mtime']} -> {now} ({want['note']})")
+        elif now != want["mtime"]:
+            touched.append(f"{os.path.basename(rel)} ({want['mtime']} -> {now})")
     if missing:
         return False, f"DELIVERED ARTIFACT GONE: {'; '.join(missing)}"
     if drifted:
         return False, ("REGENERATED SINCE DELIVERY -- any grades returned for "
                        f"these no longer line up: {'; '.join(drifted)}")
-    return True, f"{len(lock['entries'])} delivered artifacts unchanged"
+    # A moved mtime with an intact hash is NOT a failure, and saying so matters:
+    # reading a timestamp as evidence of content is how a restored file gets
+    # reported as a rewrite. The hash is the evidence; mtime is a hint.
+    note = (f"; {len(touched)} touched but byte-identical: {'; '.join(touched)}"
+            if touched else "")
+    return True, f"{len(lock['entries'])} delivered artifacts unchanged{note}"
 
 
 @check("the test suite passes")
