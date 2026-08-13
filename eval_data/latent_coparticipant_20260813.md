@@ -177,3 +177,38 @@ technique: run both arms under `--shuffle-seed` and see whether
 `veto-cluster-same-entry` moves across orderings while `veto-same-event` stays
 pinned at 36. **If the cluster guard is stable, the flag is redundant and should
 be deleted rather than kept for tidiness.**
+
+### The stability argument fails — shuffled A/B, seed 7
+
+| run | identities | auto | review | `veto-cluster-same-entry` |
+|---|---:|---:|---:|---:|
+| control | 33,179 | 6,274 | 629,212 | 612,388 |
+| control `--shuffle-seed 7` | 33,179 | 6,274 | 629,212 | 612,388 |
+| same-event | 33,179 | 6,274 | 629,204 | 612,374 |
+| same-event `--shuffle-seed 7` | 33,179 | 6,274 | 629,204 | 612,374 |
+
+**Identical in every column.** The cluster guard is not behaving
+order-dependently here, so the last argument for the flag — that it replaces a
+path-dependent protection with a deterministic one — is unsupported.
+
+**On current evidence `--same-event-veto` is redundant and should be deleted
+rather than kept for tidiness**, which is the criterion set before the run. Two
+things stop that being the final word, and both are stated rather than used as
+cover:
+
+1. **One seed is weak evidence of stability.** A single shuffle agreeing proves
+   less than the claim it was asked to settle. Seeds 1 and 2 would cost ~26
+   minutes and would make this conclusive either way.
+2. **It is the only implementation of a mechanism §14 predicts will be needed**
+   — though not in this form, since it relies on a shared local-id scheme the
+   two-registers case will not have.
+
+### A contradiction with §7d worth chasing
+
+§7d states identity counts vary by **±6 across shuffles** and that the cluster
+guards are order-dependent. Measured here: **zero variation**, on both arms.
+
+Either §7d is stale — plausibly fixed by the `name_similarity` symmetry work or
+the blocking rewrite, both of which landed after it was written — or the spread
+needs more than one seed to surface. That is a live discrepancy in the handover,
+not a settled correction, and it is the cheaper of the two open questions above.
