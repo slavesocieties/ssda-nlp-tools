@@ -52,7 +52,14 @@ mechanism is visible in them:
 Siblings. Same surname, different given names, sharing parents — exactly the
 co-participant signature §14 predicted, confirmed rather than assumed.
 
-## The part that matters: it survives into production
+## It survives de-duplication — at the pair level
+
+> **Read the corpus A/B at the end before quoting this section.** Everything
+> here is measured at the *pair* level. The pipeline turns out to be protected
+> anyway by a later guard, so "survives into production" below means "survives
+> into the scored candidate set", not "produces a wrong identity". That
+> distinction is §9 rule 3 and I did not have it right when I wrote this
+> section.
 
 `dedupe_entries.py` collapses **byte-identical records only**. Two entries whose
 transcription text differs slightly but whose extracted people are identical are
