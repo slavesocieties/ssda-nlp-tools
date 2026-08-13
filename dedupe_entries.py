@@ -27,10 +27,10 @@ place. This will undercount. That is the intended failure direction.
 
 THE SAFETY RAIL THAT MATTERS MOST
 ---------------------------------
-**An empty payload is not an identity.** 321 of 6,794 entries (4.7%) have no
+**An empty payload is not an identity.** 334 of 6,794 entries (4.9%) have no
 extracted people at all, because their extraction failed -- and they all hash
 identically. A de-duplicator that grouped by hash alone would silently collapse
-them into a handful of entries and destroy 314 real records. Empty payloads are
+them into a handful of entries and destroy 333 real records. Empty payloads are
 counted and reported, never merged.
 """
 from __future__ import annotations
