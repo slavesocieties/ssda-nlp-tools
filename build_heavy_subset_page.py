@@ -7,7 +7,7 @@ for 1,995 of 3,013,215 discarded pairs: **0.066%**. The twenty heaviest rows
 stand for 1,692,576, or **56.2%** -- 848x more, for the same twenty judgements.
 
 Two causes, both ours. The sample is Horvitz-Thompson weighted, so rows differ in
-what they represent by a factor of 45,000, and `build_blocked_labels.py` emitted
+what they represent by a factor of 134,583, and `build_blocked_labels.py` emitted
 them in stratum-NAME order, which scatters weight arbitrarily. And the page shows
 **no row numbers at all** -- `data-i` is an invisible attribute -- so "please
 grade rows 80 to 104" is not a request anyone can act on without counting 80
@@ -114,7 +114,7 @@ def main(argv=None):
     blurb = (
         f"<b>These are the {len(order)} rows that carry the most weight.</b> "
         f"The 200-row set you already have is a weighted sample: each row stands "
-        f"in for a different number of real discarded pairs, from 3 to 134,583. "
+        f"in for a different number of real discarded pairs, from 1 to 134,583. "
         f"The first 20 you kindly graded stand for {already:,.0f} pairs, which is "
         f"{100*already/population:.3f}% of the discarded pool. "
         f"<b>These {len(order)} stand for {covered:,.0f}, about "

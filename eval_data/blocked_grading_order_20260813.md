@@ -21,7 +21,7 @@ same number of judgements.
 ## Why it happened
 
 The sample is Horvitz-Thompson weighted — that is the whole point, and it is why
-200 rows can stand for three million pairs. Row weights span **3 to 134,583**.
+200 rows can stand for three million pairs. Row weights span **1 to 134,583**.
 
 `build_blocked_labels.py` emitted rows in `sorted(size)` order, which sorts
 strata by **name**, scattering weight arbitrarily through the page. And the page
