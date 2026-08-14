@@ -63,9 +63,11 @@ def main(argv=None):
     ap.add_argument("--sample",
                     default="production/luna_v3/blocked_labels/blocked_pairs.json",
                     help="the weighted sample -- must be the file that was GRADED")
-    ap.add_argument("--grades", required=True,
-                    help="the json downloaded from the grading page "
-                         "({'labels': {'<row index>': 0-100}})")
+    ap.add_argument("--grades", required=True, action="append",
+                    help="json downloaded from a grading page "
+                         "({'labels': {'<row index>': 0-100}}). Repeatable: the "
+                         "heavy-subset page returns a second file keyed by the "
+                         "SAME original row indices, so pass both.")
     ap.add_argument("--root", default=".")
     ap.add_argument("--allow-unlocked", action="store_true",
                     help="proceed even if the sample does not match the lock. "
@@ -93,9 +95,24 @@ def main(argv=None):
     else:
         print("NOTE: no lock entry for this sample; identity is unverified.\n")
 
-    graded_raw = json.load(open(a.grades, encoding="utf-8"))
-    graded = graded_raw.get("labels", graded_raw)
-    graded = {int(k): float(v) for k, v in graded.items()}
+    graded, sources, clashes = {}, [], []
+    graded_raw = {}
+    for path in a.grades:
+        graded_raw = json.load(open(path, encoding="utf-8"))
+        part = graded_raw.get("labels", graded_raw)
+        for k, v in part.items():
+            k = int(k)
+            # Two files disagreeing on one row is a real event -- the same pair
+            # graded twice -- and averaging it silently would hide that.
+            if k in graded and graded[k] != float(v):
+                clashes.append((k, graded[k], float(v)))
+            graded[k] = float(v)
+        sources.append(f"{os.path.basename(path)} ({len(part)} rows)")
+    if clashes:
+        raise SystemExit(
+            "the same row is graded differently in two files: "
+            + "; ".join(f"row {k}: {x} vs {y}" for k, x, y in clashes[:5])
+            + ". Resolve before estimating -- one of them is stale.")
     bad = [i for i in graded if i < 0 or i >= len(rows)]
     if bad:
         raise SystemExit(f"grade indices outside the sample: {bad[:5]} "
@@ -103,7 +120,7 @@ def main(argv=None):
 
     print(f"sample     : {len(rows)} rows standing for {population:,} pairs")
     print(f"grades     : {len(graded)} of {len(rows)} rows "
-          f"({100*len(graded)/len(rows):.0f}%)")
+          f"({100*len(graded)/len(rows):.0f}%)  from {', '.join(sources)}")
     print(f"scale      : {graded_raw.get('scale', 'assumed 0-100 % same person')}\n")
 
     # ---- stratified estimate ---------------------------------------------
