@@ -118,3 +118,54 @@ cases at this scale.
 This is §8's "uncomfortable summary" again, from a third direction: the
 refinement is correct, it is worth keeping, and it moves under 1% of the corpus
 while 99.82% of the archive remains unprocessed.
+
+---
+
+## PROMOTED, on Daniel's approval — 2026-08-13
+
+> Daniel: *"This is great - do go ahead and switch to the relabeled version."*
+
+`production/luna_v3/assembled_deduped_sided` is now the default for 26 tools.
+
+The sides were applied to **`assembled_deduped`**, not to the raw assembly, so
+de-duplication is preserved and `dedupe_report.json` is never regenerated — it is
+locked, because the label redirect resolver reads it and his grades are
+outstanding.
+
+```
+2,235 grandparent edges -> 1,684 maternal + 378 paternal + 173 unsided  (92.3%)
+```
+
+**Verified the relabel changed nothing else**, rather than assuming: same 7
+files, same 6,735 entries, identical entry ids, same 39,453 mentions, and with
+grandparent labels normalised away, **zero entries differ in any other byte**.
+
+### The merge on the promoted corpus
+
+| | before (unsided) | **after (sided)** |
+|---|---:|---:|
+| identities | 33,179 | **33,180** (+1) |
+| auto-merges | 6,274 | **6,273** (−1) |
+| review pairs | 629,212 | 629,209 (−3) |
+| every veto count | — | identical |
+
+Exactly the direction and magnitude the raw-corpus A/B predicted: one merge
+prevented, one identity gained. The ruling is now in force, and it does what he
+asked for, and it is worth one person at this scale.
+
+### Two notes for whoever comes next
+
+**`dedupe_entries.py` is excluded from the default switch on purpose.** Its
+`--outdir` still points at `assembled_deduped`. Repointing it would have the
+de-duplicator overwrite the sided corpus with unsided data the next time it runs.
+
+**`KNOWN_INERT` in `self_check.py` is now empty.** The two roles were
+acknowledged there with their cause; the cause is gone, so the acknowledgement
+is gone. An acknowledgement that outlives its cause silently absolves the exact
+regression it was written about.
+
+And the check caught itself in the act: `_no_inert_categories` had the corpus
+path hardcoded, so the moment the default moved it reported both sided roles as
+INERT — at the exact moment they became live. A checker reading a stale corpus
+produces a confident false finding about the model. The path is now a named
+constant, `DELIVERED_CORPUS`, with that story attached to it.
