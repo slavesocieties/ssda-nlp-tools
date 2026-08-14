@@ -122,7 +122,7 @@ def priors():
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped_sided")
     ap.add_argument("--labels", default="labels.json")
     ap.add_argument("--l2", type=float, default=1.0)
     ap.add_argument("--report", default="production/luna_v3/calibration.json")

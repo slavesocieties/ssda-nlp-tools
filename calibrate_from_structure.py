@@ -65,7 +65,7 @@ def _score_ignoring_same_entry(x, y, stats, geo, vol_of):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped_sided")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--out", default="production/luna_v3/structural_calibration.json")
     a = ap.parse_args(argv)

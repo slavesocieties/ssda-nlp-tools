@@ -66,6 +66,16 @@ import re
 import subprocess
 import sys
 
+# The corpus the pipeline actually runs on. MUST track run_evidence_merge.py's
+# --assembled default. It is a constant rather than a lookup because parsing
+# another script's argparse is its own fragility -- but note what happened on
+# 2026-08-13: this check had the path hardcoded, the default moved to the sided
+# corpus, and the check reported the two sided grandparent roles as INERT when
+# they had just become live. A checker reading a stale corpus produces a
+# confident false finding about the model, which is the exact class it exists to
+# catch. If you move the default, move this.
+DELIVERED_CORPUS = "production/luna_v3/assembled_deduped_sided"
+
 CHECKS = []
 
 
@@ -296,15 +306,17 @@ def _all_scripts_import(root):
 # Scorer categories that exist in the code but not in the delivered corpus, with
 # the reason. Same contract as KNOWN_BROKEN: acknowledged is not tolerated, and
 # anything NOT on this list going inert is a regression that fails the check.
-KNOWN_INERT = {
-    "maternal grandparent":
-        "Daniel's 2026-08-10 ruling is implemented in MAX_HOLDERS but the "
-        "delivered corpus carries no sided grandparent edges at all. "
-        "backfill_grandparent_sides.py wrote production/sided_7vol (91.7% "
-        "sided) and nothing was ever pointed at it. See "
-        "eval_data/grandparent_sides_inert_20260813.md",
-    "paternal grandparent": "as maternal grandparent -- same cause, same fix",
-}
+# Scorer categories that exist in the code but not in the delivered corpus, with
+# the reason. Same contract as KNOWN_BROKEN: acknowledged is not tolerated, and
+# anything NOT on this list going inert is a regression that fails the check.
+#
+# EMPTIED 2026-08-13. The maternal/paternal grandparent capacities were listed
+# here because the delivered corpus carried no sided edges at all. Daniel
+# approved the switch, the corpus now carries 1,684 maternal and 378 paternal,
+# and both capacities are reachable. An acknowledgement that outlives its cause
+# is worse than none: it silently absolves the exact regression it was written
+# about, so it is removed rather than left as a comment.
+KNOWN_INERT = {}
 
 
 @check("every role the scorer can constrain exists in the corpus")
@@ -323,7 +335,7 @@ def _no_inert_categories(root):
     This is that check.
     """
     import ssda_nlp_tools.evidence as _E
-    corpus = os.path.join(root, "production/luna_v3/assembled_deduped")
+    corpus = os.path.join(root, DELIVERED_CORPUS)
     paths = sorted(glob.glob(os.path.join(corpus, "*.materialized.json")))
     if not paths:
         return None, "no delivered corpus in this checkout"

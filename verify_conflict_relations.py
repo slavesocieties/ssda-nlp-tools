@@ -188,7 +188,7 @@ def real_pairs(assembled, limit_vols):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped_sided")
     ap.add_argument("--volumes", type=int, default=10 ** 6)
     a = ap.parse_args()
     good = unit_cases()

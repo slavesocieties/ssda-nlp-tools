@@ -73,7 +73,7 @@ def token_prefix(a, b):
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped_sided")
     ap.add_argument("--outdir", default="production/luna_v3/merge")
     ap.add_argument("--tag", default="v9tradeoff")
     ap.add_argument("--floor", type=float, default=0.86,

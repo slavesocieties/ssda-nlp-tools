@@ -61,7 +61,7 @@ def main(argv=None):
     ap.add_argument("--pairs", default="production/luna_v3/targeted/targeted_pairs.json",
                     help="the pair file Daniel actually graded -- NOT the regenerated one")
     ap.add_argument("--labels", default="ssda_nlp_tools/targeted_labels.json")
-    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped")
+    ap.add_argument("--assembled", default="production/luna_v3/assembled_deduped_sided")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     a = ap.parse_args(argv)
 
