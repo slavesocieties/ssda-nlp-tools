@@ -34,6 +34,7 @@ his twenty answers are tied to its row positions.
 from __future__ import annotations
 
 import argparse
+import collections
 import glob
 import hashlib
 import json
@@ -53,7 +54,22 @@ def main(argv=None):
     ap.add_argument("--graded", default=None,
                     help="grades already returned; those rows are skipped")
     ap.add_argument("--top", type=int, default=25)
+    ap.add_argument("--cover-strata", action="store_true",
+                    help="pick ONE ungraded row from each stratum that has no "
+                         "graded row, largest stratum first, instead of the "
+                         "heaviest rows overall. This is what closes the "
+                         "UNREPRESENTED mass: a stratum is unrepresented until "
+                         "one of its rows is graded, so extra rows in a stratum "
+                         "already covered buy nothing toward coverage.")
     ap.add_argument("--outdir", default="production/luna_v3/blocked_labels_heavy")
+    ap.add_argument("--store", default="blkH",
+                    help="localStorage key. MUST differ from every other page "
+                         "the grader has open or previously used: a shared key "
+                         "silently merges two grading sessions into one, and "
+                         "Daniel already holds answers under 'blk' and 'blkH'.")
+    ap.add_argument("--download-name", default="blocked_labels_heavy.json",
+                    help="download filename. MUST also differ, or the second "
+                         "file overwrites the first in the downloads folder.")
     ap.add_argument("--volumes", default="../ssda-openai/volumes.json")
     ap.add_argument("--assembled", default="production/luna_v3/assembled",
                     help="corpus the sample was DRAWN from -- the raw assembly")
@@ -68,11 +84,42 @@ def main(argv=None):
         done = {int(k) for k in (g.get("labels") or g)}
         print(f"skipping {len(done)} rows already graded")
 
-    order = sorted((i for i in range(len(rows)) if i not in done),
-                   key=lambda i: -rows[i]["weight"])[:a.top]
+    if a.cover_strata:
+        # COVERAGE IS PER STRATUM, NOT PER ROW. The estimator reweights each
+        # stratum by its size, so a stratum with no graded row contributes
+        # nothing and is reported UNREPRESENTED. Grading a second row inside an
+        # already-covered stratum sharpens it but closes no gap, which is why
+        # "the next heaviest rows" is the wrong rule for this job.
+        by_stratum = collections.defaultdict(list)
+        for i, r in enumerate(rows):
+            by_stratum[r["stratum"]].append(i)
+        uncovered = [(rows[v[0]]["stratum_size"], k, v)
+                     for k, v in by_stratum.items() if not (set(v) & done)]
+        uncovered.sort(key=lambda t: -t[0])
+        order = [next(i for i in v if i not in done)
+                 for _, _, v in uncovered[:a.top]]
+    else:
+        order = sorted((i for i in range(len(rows)) if i not in done),
+                       key=lambda i: -rows[i]["weight"])[:a.top]
     order.sort()                       # present in original order, not by weight
-    covered = sum(rows[i]["weight"] for i in order)
-    already = sum(rows[i]["weight"] for i in done)
+    if a.cover_strata:
+        covered = sum(rows[i]["stratum_size"] for i in order)
+    else:
+        covered = sum(rows[i]["weight"] for i in order)
+    if a.cover_strata:
+        # UNITS. "Already covered" must be measured the same way as what this
+        # page adds, or the totals do not compose. Coverage is per stratum: a
+        # stratum counts as represented once ANY of its rows is graded, and it
+        # then contributes its whole stratum_size. Summing row WEIGHTS for the
+        # graded rows and stratum SIZES for the new ones gave 97.5% where the
+        # truth is 67.1% + 32.9% = 100%. HANDOVER sec.9 rule 3: state the unit.
+        _by = collections.defaultdict(list)
+        for i, r in enumerate(rows):
+            _by[r["stratum"]].append(i)
+        already = sum(rows[v[0]]["stratum_size"]
+                      for v in _by.values() if set(v) & done)
+    else:
+        already = sum(rows[i]["weight"] for i in done)
 
     print(f"sample     : {len(rows)} rows standing for {population:,} pairs")
     print(f"already    : {len(done)} rows = {already:,.0f} ({100*already/population:.3f}%)")
@@ -124,8 +171,8 @@ def main(argv=None):
 
     html_out = render(picked, geo, tag="blocked_by_prefilter_heavy",
                       title="Discarded pairs: the rows that carry the population",
-                      blurb=blurb, store="blkH",
-                      filename="blocked_labels_heavy.json")
+                      blurb=blurb, store=a.store,
+                      filename=a.download_name)
 
     # REWRITE THE ONCLICK INDEX, NOT THE data-i ATTRIBUTE.
     #
@@ -154,7 +201,8 @@ def main(argv=None):
                          f"whose grades would not map back")
 
     os.makedirs(a.outdir, exist_ok=True)
-    hp = os.path.join(a.outdir, "blocked_pairs_heavy.html")
+    hp = os.path.join(a.outdir, os.path.basename(a.download_name)
+                      .replace("_labels_", "_pairs_").replace(".json", ".html"))
     open(hp, "w", encoding="utf-8").write(html_out)
     meta = {"source_sample": a.sample,
             "source_sha256": hashlib.sha256(open(a.sample, "rb").read()).hexdigest(),
