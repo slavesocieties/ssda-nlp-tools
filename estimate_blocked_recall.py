@@ -214,8 +214,13 @@ def main(argv=None):
     print(f"\nPOPULATION DRIFT since the sample was drawn")
     print(f"  this sample stands for       : {population:,} pairs "
           f"(raw assembly, 2026-08-10)")
-    print(f"  default corpus now blocks    : 2,952,727 (assembled_deduped)")
+    print(f"  default corpus now blocks    : 2,952,727 "
+          f"(assembled_deduped_sided, re-measured 2026-08-13)")
     print(f"  drift                        : 2.0% smaller")
+    print("  Unchanged by the sided-corpus promotion, to the pair: blocking")
+    print("  compares associate NAMES and discards the relationship type, so")
+    print("  relabelling grandparents cannot move it. Predicted from the code,")
+    print("  then measured -- identical in every row.")
     print("  The estimate therefore describes the PRE-DEDUPE blocked set. The")
     print("  drift is far smaller than the interval above, so the sample stays")
     print("  usable and regrading would waste Daniel's work -- but say which")

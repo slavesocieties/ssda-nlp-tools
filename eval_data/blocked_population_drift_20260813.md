@@ -41,3 +41,41 @@ A lock over an artifact is not a lock over the configuration that produced it.
 Both can invalidate a returned grade, and only one of them is checkable by hash.
 When a delivered sample outlives a default change, measure the drift before
 assuming either that it is fine or that it is ruined.
+
+---
+
+## Re-measured after the sided corpus was promoted
+
+The default moved to `assembled_deduped_sided` on 2026-08-13, so the drift figure
+above described a corpus that was no longer the default. Re-run.
+
+**Predicted first, from the code.** `_shares_context` decides what gets blocked,
+and its associate test is:
+
+```python
+{n for _, n in ac} & {n for _, n in bc}
+```
+
+It compares associate **names** and throws the relationship type away. Relabelling
+a grandparent as maternal or paternal changes the type and not the name, so the
+prediction was that the blocked population would be **identical**, not merely
+close.
+
+**Measured. Identical in every row:**
+
+| | unsided | **sided (the default)** |
+|---|---:|---:|
+| survives every other guard | 2,952,727 | **2,952,727** |
+| also lifespan-impossible | 4,239,812 | 4,239,812 |
+| clergy | 1,213,577 | 1,213,577 |
+| also both-sacrament-principals | 9,578 | 9,578 |
+
+So the 2.0% drift against the sample's 3,013,215 is unchanged and still comes
+entirely from de-duplication, not from the sided promotion. The estimator's note
+now says so.
+
+Worth doing as a prediction rather than just a re-run: a re-measurement that
+merely agrees teaches nothing, while a prediction that survives measurement
+confirms the mechanism as well as the number. Had it come back different, the
+reading of `_shares_context` would have been wrong and that would have mattered
+well beyond this figure.
