@@ -127,11 +127,31 @@ def main(argv=None):
                       blurb=blurb, store="blkH",
                       filename="blocked_labels_heavy.json")
 
-    # render() numbers rows 0..n-1 by position. Rewrite each data-i to the index
-    # in the ORIGINAL sample, so returned grades line up with the locked file.
-    for pos, i in enumerate(order):
-        html_out = html_out.replace(f"data-i='{pos}'", f"data-i='ORIG{i}'", 1)
-    html_out = html_out.replace("data-i='ORIG", "data-i='")
+    # REWRITE THE ONCLICK INDEX, NOT THE data-i ATTRIBUTE.
+    #
+    # render() bakes the row's POSITION into each button as mk(<i>, <score>) and
+    # the download reads that dict. `data-i` is decorative -- no JS reads it.
+    #
+    # The first version of this rewrote only data-i, verified data-i, and shipped.
+    # Daniel graded 25 heavy rows and the file came back keyed 0..24, which are
+    # positions in this page and ALSO valid row numbers in the 200-row sample.
+    # Merged with his first twenty they would have collided silently -- both
+    # files say 0 for rows 0..19, so no disagreement fires -- and the estimator
+    # would have attributed 1.9M pairs of evidence to the twenty LIGHTEST rows.
+    # A confident zero over 0.07% of the pool, indistinguishable from a real
+    # result. Verifying the wrong attribute is not verification.
+    for pos, i in reversed(list(enumerate(order))):
+        html_out = html_out.replace(f"mk({pos},", f"mk(@{i},")
+        html_out = html_out.replace(f"data-i='{pos}'", f"data-i='@{i}'")
+    html_out = html_out.replace("mk(@", "mk(").replace("data-i='@", "data-i='")
+
+    # Prove it on the rendered bytes rather than trusting the loop.
+    import re as _re
+    keys = sorted({int(x) for x in _re.findall(r"mk\((\d+),", html_out)})
+    if keys != sorted(order):
+        raise SystemExit(f"onclick indices are {keys[:5]}..., expected "
+                         f"{sorted(order)[:5]}... -- refusing to write a page "
+                         f"whose grades would not map back")
 
     os.makedirs(a.outdir, exist_ok=True)
     hp = os.path.join(a.outdir, "blocked_pairs_heavy.html")

@@ -107,6 +107,27 @@ def main(argv=None):
             if k in graded and graded[k] != float(v):
                 clashes.append((k, graded[k], float(v)))
             graded[k] = float(v)
+        # A SUBSET PAGE THAT NUMBERED ITS OWN ROWS IS INDISTINGUISHABLE FROM A
+        # REAL ANSWER. The first heavy page baked page POSITIONS into its
+        # buttons, so 25 grades came back keyed 0..24 -- which are also perfectly
+        # valid row numbers in the 200-row sample. Merged with the first twenty
+        # they agree everywhere they overlap, so no clash fires, and 1.9M pairs
+        # of evidence get attributed to the twenty LIGHTEST rows. The output
+        # looks exactly like a real result.
+        idx = sorted(int(k) for k in part)
+        if ("heavy" in str(graded_raw.get("tag", ""))
+                and not graded_raw.get("_remapped_from")
+                and idx == list(range(len(idx)))
+                and len(idx) < len(rows)):
+            raise SystemExit(
+                f"{os.path.basename(path)} is keyed by PAGE POSITION "
+                f"(0..{idx[-1]}), not by sample row. It came from a subset page "
+                f"that numbered its own rows.\n"
+                f"Those indices are ALSO valid rows in the {len(rows)}-row "
+                f"sample, so merging them would silently attribute this evidence "
+                f"to the wrong pairs.\n"
+                f"Remap through that page's heavy_rows.json "
+                f"(position p -> rows[p]) and set _remapped_from.")
         sources.append(f"{os.path.basename(path)} ({len(part)} rows)")
     if clashes:
         raise SystemExit(
