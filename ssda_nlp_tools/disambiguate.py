@@ -175,7 +175,43 @@ def _entry_year(events) -> Optional[int]:
     return min(years) if years else None
 
 
-def _shares_context(a: dict, b: dict, year_window: int) -> bool:
+# Daniel, 2026-08-13: "The only case in which a pairing >50 years apart, or
+# frankly even half of that, should even be 'looked at twice' (i.e. passed to
+# more complex algorithmic processes) is if there is potential overlap in social
+# networks or complete alignment in name/phenotype/ethnonym etc."
+#
+# OFF BY DEFAULT. Turning it on drops 6,328,621 candidate pairs, 43.7% of the
+# set, and costs ZERO auto-merges and 814 review pairs -- of which he graded a
+# 25-row sample 25/25 "would not want to see", calling them "quite remote from
+# true corner cases". It is nonetheless a change to what the pipeline LOOKS at,
+# and that is the one class of change that can silently lose people here, so it
+# is promoted deliberately or not at all.
+GAP_RULE_YEARS = 25
+_GAP_RULE_ATTRS = ("phenotype", "free", "ethnicity", "origin")
+
+
+def _identity_aligns(a: dict, b: dict) -> bool:
+    """His exception: "complete alignment in name/phenotype/ethnonym etc."
+
+    Every attribute BOTH records state must agree, and at least one must be
+    stated -- two records that say nothing about anybody align on nothing.
+    """
+    from .textmatch import name_similarity
+    if name_similarity(a.get("name"), b.get("name")) < 0.999:
+        return False
+    stated = 0
+    for k in _GAP_RULE_ATTRS:
+        x, y = a.get(k), b.get(k)
+        if x is None or y is None:
+            continue
+        stated += 1
+        if str(x).strip().lower() != str(y).strip().lower():
+            return False
+    return stated > 0
+
+
+def _shares_context(a: dict, b: dict, year_window: int,
+                    gap_rule: bool = False) -> bool:
     """Daniel, 2026-07-27 (Q6): filter before scoring.
 
     FAILS OPEN. This returns False (skip the pair) only on positive evidence
@@ -197,7 +233,13 @@ def _shares_context(a: dict, b: dict, year_window: int) -> bool:
     ya, yb = a.get("_year"), b.get("_year")
     if ya is None or yb is None:
         return True                       # undated: cannot rule the pair out
-    return abs(ya - yb) <= year_window
+    gap = abs(ya - yb)
+    if gap_rule and gap > GAP_RULE_YEARS:
+        # Reached only when the registers differ AND nobody is named in both,
+        # so the year window is the sole thing keeping the pair alive. His rule
+        # says that is not enough past ~25 years without identity alignment.
+        return _identity_aligns(a, b)
+    return gap <= year_window
 
 
 def _surname_of(name: Optional[str]) -> Optional[str]:

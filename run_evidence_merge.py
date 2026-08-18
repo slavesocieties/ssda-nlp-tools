@@ -85,6 +85,13 @@ def main(argv=None):
     ap.add_argument("--shuffle-seed", type=int, default=None,
                     help="shuffle block and within-block order; any resulting "
                          "difference is path-dependence, not evidence")
+    ap.add_argument("--gap-rule", action="store_true",
+                    help="Daniel 2026-08-13: a cross-register pair sharing "
+                         "nobody and more than 25 years apart is not worth "
+                         "scoring unless name AND stated attributes align. "
+                         "Drops 6.3M candidates (43.7%), costs 0 auto-merges "
+                         "and 814 review pairs he graded 25/25 as noise. OFF "
+                         "by default: it changes what the pipeline LOOKS at.")
     ap.add_argument("--no-conflict-relations", action="store_true",
                     help="A/B control: disable Daniel's conflicting-relationship "
                          "penalty (different spouse/parent/enslaver).")
@@ -94,6 +101,9 @@ def main(argv=None):
     # the log rather than showing up as a mysteriously zero delta.
     if args.no_conflict_relations:
         E.W_CONFLICT_DISQUALIFYING = E.W_CONFLICT_SUBSTANTIAL = 0.0
+    if args.gap_rule:
+        print(f"GAP RULE ON: cross-register pairs sharing nobody and more than "
+              f"{D.GAP_RULE_YEARS}y apart are dropped unless identity aligns")
     print(f"conflict weights: disqualifying={E.W_CONFLICT_DISQUALIFYING:.2f} "
           f"substantial={E.W_CONFLICT_SUBSTANTIAL} "
           f"roles={sorted(E.MAX_HOLDERS)}")
@@ -173,7 +183,7 @@ def main(argv=None):
         mi, mj = mentions[i], mentions[j]
         if mi["_entry"] == mj["_entry"]:
             continue
-        if not D._shares_context(mi, mj, 60):
+        if not D._shares_context(mi, mj, 60, gap_rule=args.gap_rule):
             reasons["blocked-context"] += 1
             continue
         if D.lifespan_conflict(mi, mj):

@@ -88,3 +88,64 @@ python measure_gap_rule.py          # the benefit side
 
 The cost side scores all 6.3M dropped pairs and takes ~10 minutes; the script is
 in the session scratchpad rather than committed, since it is a one-off.
+
+---
+
+## CORRECTION: the increment is 25%, not 44%
+
+The corpus A/B says the rule is real and my headline number was **1.75x too high.**
+
+| | pairs |
+|---|---:|
+| `blocked-context`, current default | 2,712,293 |
+| `blocked-context`, gap rule on | 6,328,621 |
+| **newly blocked by the rule** | **3,616,328 = 25.0% of candidates** |
+
+**6,328,621 is the total blocked under the rule, not the increment.** 2,712,293 of
+those pairs were *already* blocked by the existing 60-year window — every pair
+more than 60 years apart is refused today. I counted pairs matching the rule's
+criteria and reported it as pairs whose disposition changes.
+
+That is §9 rule 4, verbatim: *"A BLOCK COUNT IS NOT AN IMPACT. The chronology
+guard blocked 1,416 merges; 1,305 were already blocked by another rule."* The
+handover names this trap with a worked example and I walked into it anyway,
+inside a measurement built to price a change.
+
+### What the rule actually does
+
+| | |
+|---|---:|
+| pairs newly blocked | 3,616,328 (25.0% of candidates) |
+| ...would have scored below review | 3,506,838 |
+| ...would have been lifespan-vetoed anyway | 104,745 |
+| ...would have reached review | **665** |
+| ...would have AUTO-MERGED | **0** |
+| identities | 33,180 → **33,180**, unchanged |
+| auto-merges | 6,273 → **6,273**, unchanged |
+| review pairs | 629,209 → **628,544** |
+
+**The delivered answer does not move at all.** Same people, same merges, 665
+fewer pairs put in front of a historian — and he graded a sample of exactly those
+25/25 as noise.
+
+Note the review-pair loss is **665**, not the 814 I predicted from scoring pairs
+in isolation. The pipeline's cluster guards and blocking already removed 149 of
+them. Score is not disposition, again.
+
+### On runtime: no claim
+
+The two runs clocked 966s and 952s, and **that comparison is worthless** — they
+were not taken serially under controlled load, which HANDOVER §15 records as the
+one measurement contention can corrupt. Counts are safe; timings are not. Anyone
+wanting the efficiency figure must run both arms serially on an idle machine.
+
+What can be said without a timing: **3.5 million fewer pairs reach the scorer**,
+because `_shares_context` short-circuits before `score()` is called. Whether that
+translates to wall-clock proportionally is unmeasured.
+
+### The claim, corrected
+
+**25% fewer pairs scored, no change to the delivered result, 665 fewer review
+pairs, all of which the supervisor has confirmed are noise.**
+
+Still worth doing. Just not 44%.
