@@ -149,3 +149,55 @@ translates to wall-clock proportionally is unmeasured.
 pairs, all of which the supervisor has confirmed are noise.**
 
 Still worth doing. Just not 44%.
+
+---
+
+## PROMOTED — 2026-08-14
+
+`--gap-rule` is gone; the rule is **on by default**, with `--no-gap-rule` as the
+escape back to the previous behaviour.
+
+Authorised by Daniel twice over: the ruling itself, then a random sample of the
+only thing it costs, graded **25 of 25** as not worth seeing, with the note that
+they are *"quite remote from true corner cases"*.
+
+| | before | after |
+|---|---:|---:|
+| identities | 33,180 | **33,180** |
+| auto-merges | 6,273 | **6,273** |
+| review pairs | 629,209 | 628,544 |
+| pairs newly blocked | — | 3,616,328 (25.0%) |
+
+**`verify_blocking.py` re-run against the shipped filter**, because changing
+`_shares_context` changes the exact basis it compares keyed blocking against —
+and that losslessness has lapsed silently once before:
+
+```
+1,188,457 dropped vs the legacy candidate set
+  refused anyway            1,074,354
+  lifespan-vetoed             106,203
+  both-sacrament-principals     7,900
+  merges lost : 0
+  review lost : 0
+```
+
+`GAP_RULE = True` is now a named constant at the top of `verify_blocking.py`,
+with a comment saying it must track the merge default. A verifier checking a
+filter nobody runs is worse than no verifier, and this file has already produced
+one false finding that way today (`self_check`'s hardcoded corpus path).
+
+### What this does NOT do
+
+**It does not invalidate the recall measurement, but it does change what that
+measurement describes.** Daniel's 73 grades cover the pool blocked under the
+*previous* filter, 3,013,215 pairs. Turning the rule on adds 3,616,328 more pairs
+to "blocked", and those are **not** represented in his sample.
+
+They have their own evidence, which is why this is safe rather than a hole: all
+3,616,328 were scored individually, 0 would have auto-merged, 665 would have
+reached review, and he graded a random 25 of those 665 as noise. Different
+measurement, same conclusion.
+
+Anyone re-drawing the blocked sample will get a larger population than 3,013,215.
+That is expected. Do not treat it as drift, and do not regenerate the locked
+sample to chase it.

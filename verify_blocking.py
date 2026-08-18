@@ -20,6 +20,11 @@ import time
 
 import ssda_nlp_tools.blocking as B
 import ssda_nlp_tools.disambiguate as D
+
+# Must match run_evidence_merge.py's default, or this verifies a filter nobody
+# runs. The whole point of this script is that keyed blocking's losslessness is
+# a property of the pair set AND the filter, and it has lapsed silently once.
+GAP_RULE = True
 import ssda_nlp_tools.evidence as E
 from ssda_nlp_tools.evidence import NameStats, score
 from ssda_nlp_tools.textmatch import phonetic_key
@@ -65,7 +70,7 @@ def main(argv=None):
                 old_enumerated += 1
                 if M[i]["_entry"] == M[j]["_entry"]:
                     continue
-                if not D._shares_context(M[i], M[j], 60):
+                if not D._shares_context(M[i], M[j], 60, gap_rule=GAP_RULE):
                     continue
                 old.add((min(i, j), max(i, j)))
     t_old = time.time() - t0

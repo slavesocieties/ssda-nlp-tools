@@ -85,13 +85,16 @@ def main(argv=None):
     ap.add_argument("--shuffle-seed", type=int, default=None,
                     help="shuffle block and within-block order; any resulting "
                          "difference is path-dependence, not evidence")
-    ap.add_argument("--gap-rule", action="store_true",
-                    help="Daniel 2026-08-13: a cross-register pair sharing "
-                         "nobody and more than 25 years apart is not worth "
-                         "scoring unless name AND stated attributes align. "
-                         "Drops 6.3M candidates (43.7%), costs 0 auto-merges "
-                         "and 814 review pairs he graded 25/25 as noise. OFF "
-                         "by default: it changes what the pipeline LOOKS at.")
+    ap.add_argument("--no-gap-rule", dest="gap_rule", action="store_false",
+                    default=True,
+                    help="DEFAULT IS ON since 2026-08-14, on Daniel's ruling: a "
+                         "cross-register pair sharing nobody and more than "
+                         "25 years apart is dropped unless the name and every "
+                         "stated attribute align. Verified against the previous "
+                         "default: identities 33,180 and auto-merges 6,273 are "
+                         "IDENTICAL either way, 665 fewer review pairs, and he "
+                         "graded a random 25 of those 665 as not worth seeing. "
+                         "Pass this flag to get the old behaviour back.")
     ap.add_argument("--no-conflict-relations", action="store_true",
                     help="A/B control: disable Daniel's conflicting-relationship "
                          "penalty (different spouse/parent/enslaver).")
@@ -101,9 +104,10 @@ def main(argv=None):
     # the log rather than showing up as a mysteriously zero delta.
     if args.no_conflict_relations:
         E.W_CONFLICT_DISQUALIFYING = E.W_CONFLICT_SUBSTANTIAL = 0.0
-    if args.gap_rule:
-        print(f"GAP RULE ON: cross-register pairs sharing nobody and more than "
-              f"{D.GAP_RULE_YEARS}y apart are dropped unless identity aligns")
+    print(f"gap rule: {'ON' if args.gap_rule else 'OFF'}"
+          + (f" (cross-register, sharing nobody, >{D.GAP_RULE_YEARS}y apart, "
+             f"dropped unless identity aligns)" if args.gap_rule
+             else " -- pre-2026-08-14 behaviour"))
     print(f"conflict weights: disqualifying={E.W_CONFLICT_DISQUALIFYING:.2f} "
           f"substantial={E.W_CONFLICT_SUBSTANTIAL} "
           f"roles={sorted(E.MAX_HOLDERS)}")
