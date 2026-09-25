@@ -1,0 +1,841 @@
+source,target,relationship_type,weight,source_label,target_label,entries
+74234-0002,74234-0330,godparent,1,Roza,Domingos Dias,74234-0003-01
+74234-0002,74234-0003,parent,1,Roza,Manuel Martins Machado,74234-0003-01
+74234-0002,74234-0004,parent,1,Roza,Maria Jacinta,74234-0003-01
+74234-0002,74234-0005,grandparent,1,Roza,Francisco Martins Machado,74234-0003-01
+74234-0002,74234-0006,grandparent,1,Roza,Catarina Bernarda,74234-0003-01
+74234-0002,74234-0007,grandparent,1,Roza,José Ferreira da Ponte,74234-0003-01
+74234-0002,74234-0008,grandparent,1,Roza,Catarina da Anunciada,74234-0003-01
+74234-0003,74234-0004,spouse,1,Manuel Martins Machado,Maria Jacinta,74234-0003-01
+74234-0003,74234-0002,child,1,Manuel Martins Machado,Roza,74234-0003-01
+74234-0004,74234-0003,spouse,1,Maria Jacinta,Manuel Martins Machado,74234-0003-01
+74234-0004,74234-0002,child,1,Maria Jacinta,Roza,74234-0003-01
+74234-0005,74234-0006,spouse,1,Francisco Martins Machado,Catarina Bernarda,74234-0003-01
+74234-0005,74234-0002,grandchild,1,Francisco Martins Machado,Roza,74234-0003-01
+74234-0006,74234-0005,spouse,1,Catarina Bernarda,Francisco Martins Machado,74234-0003-01
+74234-0006,74234-0002,grandchild,1,Catarina Bernarda,Roza,74234-0003-01
+74234-0007,74234-0008,spouse,1,José Ferreira da Ponte,Catarina da Anunciada,74234-0003-01
+74234-0007,74234-0002,grandchild,1,José Ferreira da Ponte,Roza,74234-0003-01
+74234-0008,74234-0007,spouse,1,Catarina da Anunciada,José Ferreira da Ponte,74234-0003-01
+74234-0008,74234-0002,grandchild,1,Catarina da Anunciada,Roza,74234-0003-01
+74234-0330,74234-0002,godchild,1,Domingos Dias,Roza,74234-0003-01
+74234-0009,74234-0016,godparent,1,Maria,António Pereira de Barros,74234-0003-02
+74234-0009,74234-0017,godparent,1,Maria,Maria Gomes,74234-0003-02
+74234-0009,74234-0010,parent,1,Maria,José Pereira Álvares,74234-0003-02
+74234-0009,74234-0011,parent,1,Maria,Ana Maria Barbalha,74234-0003-02
+74234-0009,74234-0012,grandparent,1,Maria,Domingos Tomás Ferreira,74234-0003-02
+74234-0009,74234-0013,grandparent,1,Maria,Maria Pereira Álvares,74234-0003-02
+74234-0009,74234-0014,grandparent,1,Maria,José Dias dos Santos,74234-0003-02
+74234-0009,74234-0015,grandparent,1,Maria,Maria do Bom Sucesso,74234-0003-02
+74234-0010,74234-0011,spouse,1,José Pereira Álvares,Ana Maria Barbalha,74234-0003-02
+74234-0010,74234-0009,child,1,José Pereira Álvares,Maria,74234-0003-02
+74234-0011,74234-0010,spouse,1,Ana Maria Barbalha,José Pereira Álvares,74234-0003-02
+74234-0011,74234-0009,child,1,Ana Maria Barbalha,Maria,74234-0003-02
+74234-0012,74234-0013,spouse,1,Domingos Tomás Ferreira,Maria Pereira Álvares,74234-0003-02
+74234-0012,74234-0009,grandchild,1,Domingos Tomás Ferreira,Maria,74234-0003-02
+74234-0013,74234-0012,spouse,1,Maria Pereira Álvares,Domingos Tomás Ferreira,74234-0003-02
+74234-0013,74234-0009,grandchild,1,Maria Pereira Álvares,Maria,74234-0003-02
+74234-0014,74234-0015,spouse,1,José Dias dos Santos,Maria do Bom Sucesso,74234-0003-02
+74234-0014,74234-0009,grandchild,1,José Dias dos Santos,Maria,74234-0003-02
+74234-0015,74234-0014,spouse,1,Maria do Bom Sucesso,José Dias dos Santos,74234-0003-02
+74234-0015,74234-0009,grandchild,1,Maria do Bom Sucesso,Maria,74234-0003-02
+74234-0016,74234-0009,godchild,1,António Pereira de Barros,Maria,74234-0003-02
+74234-0017,74234-0009,godchild,1,Maria Gomes,Maria,74234-0003-02
+74234-0019,74234-0021,godparent,1,José,Eugénia,74234-0003-03
+74234-0019,74234-0020,godparent,1,José,João Gonçalves dos Santos,74234-0003-03
+74234-0020,74234-0019,godchild,1,João Gonçalves dos Santos,José,74234-0003-03
+74234-0021,74234-0022,godparent,1,Eugénia,Gabriel Francisco,74234-0003-03
+74234-0021,74234-0019,godchild,1,Eugénia,José,74234-0003-03
+74234-0021,74234-0084,parent,1,Eugénia,Anna Joaquina,74234-0003-03
+74234-0084,74234-0023,spouse,1,Anna Joaquina,Francisco Gomes dos Santos,74234-0003-03
+74234-0084,74234-0021,child,1,Anna Joaquina,Eugénia,74234-0003-03
+74234-0022,74234-0021,godchild,1,Gabriel Francisco,Eugénia,74234-0003-03
+74234-0023,74234-0084,spouse,1,Francisco Gomes dos Santos,Anna Joaquina,74234-0003-03
+74234-0024,74234-0031,godparent,1,Manuel,Manuel Raposo de Vasconcelos,74234-0004-01
+74234-0024,74234-0025,parent,1,Manuel,Francisco de Frias Vasconcelos,74234-0004-01
+74234-0024,74234-0026,parent,1,Manuel,Ana Maria do Amaral,74234-0004-01
+74234-0024,74234-0027,grandparent,1,Manuel,Miguel de Frias Nascimento,74234-0004-01
+74234-0024,74234-0028,grandparent,1,Manuel,Antónia do Rio,74234-0004-01
+74234-0024,74234-0029,grandparent,1,Manuel,João Dias,74234-0004-01
+74234-0024,74234-0030,grandparent,1,Manuel,Quitéria Maria da Assunção,74234-0004-01
+74234-0025,74234-0026,spouse,1,Francisco de Frias Vasconcelos,Ana Maria do Amaral,74234-0004-01
+74234-0025,74234-0024,child,1,Francisco de Frias Vasconcelos,Manuel,74234-0004-01
+74234-0026,74234-0025,spouse,1,Ana Maria do Amaral,Francisco de Frias Vasconcelos,74234-0004-01
+74234-0026,74234-0024,child,1,Ana Maria do Amaral,Manuel,74234-0004-01
+74234-0026,74234-0030,child,1,Ana Maria do Amaral,Quitéria Maria da Assunção,74234-0004-01
+74234-0027,74234-0028,spouse,1,Miguel de Frias Nascimento,Antónia do Rio,74234-0004-01
+74234-0027,74234-0024,grandchild,1,Miguel de Frias Nascimento,Manuel,74234-0004-01
+74234-0028,74234-0027,spouse,1,Antónia do Rio,Miguel de Frias Nascimento,74234-0004-01
+74234-0028,74234-0024,grandchild,1,Antónia do Rio,Manuel,74234-0004-01
+74234-0029,74234-0030,spouse,1,João Dias,Quitéria Maria da Assunção,74234-0004-01
+74234-0029,74234-0024,grandchild,1,João Dias,Manuel,74234-0004-01
+74234-0030,74234-0029,spouse,1,Quitéria Maria da Assunção,João Dias,74234-0004-01
+74234-0030,74234-0026,parent,1,Quitéria Maria da Assunção,Ana Maria do Amaral,74234-0004-01
+74234-0030,74234-0024,grandchild,1,Quitéria Maria da Assunção,Manuel,74234-0004-01
+74234-0031,74234-0024,godchild,1,Manuel Raposo de Vasconcelos,Manuel,74234-0004-01
+74234-0032,74234-0039,godparent,1,Bernardo,Jerónimo José Vicente,74234-0004-01
+74234-0032,74234-0040,godparent,1,Bernardo,Antónia Teresa da Conceição,74234-0004-01
+74234-0032,74234-0033,parent,1,Bernardo,Bernardo Lisbonca Coelho,74234-0004-01
+74234-0032,74234-0034,parent,1,Bernardo,Clara Rangel de Azeredo,74234-0004-01
+74234-0032,74234-0035,grandparent,1,Bernardo,Bernardo da Fonseca Coelho,74234-0004-01
+74234-0032,74234-0036,grandparent,1,Bernardo,Escolástica Maria de Lisbonca,74234-0004-01
+74234-0032,74234-0037,grandparent,1,Bernardo,José Leal dos Reis,74234-0004-01
+74234-0032,74234-0038,grandparent,1,Bernardo,Maria Rangel,74234-0004-01
+74234-0033,74234-0034,spouse,1,Bernardo Lisbonca Coelho,Clara Rangel de Azeredo,74234-0004-01
+74234-0033,74234-0032,child,1,Bernardo Lisbonca Coelho,Bernardo,74234-0004-01
+74234-0034,74234-0033,spouse,1,Clara Rangel de Azeredo,Bernardo Lisbonca Coelho,74234-0004-01
+74234-0034,74234-0032,child,1,Clara Rangel de Azeredo,Bernardo,74234-0004-01
+74234-0035,74234-0036,spouse,1,Bernardo da Fonseca Coelho,Escolástica Maria de Lisbonca,74234-0004-01
+74234-0035,74234-0032,grandchild,1,Bernardo da Fonseca Coelho,Bernardo,74234-0004-01
+74234-0036,74234-0035,spouse,1,Escolástica Maria de Lisbonca,Bernardo da Fonseca Coelho,74234-0004-01
+74234-0036,74234-0032,grandchild,1,Escolástica Maria de Lisbonca,Bernardo,74234-0004-01
+74234-0037,74234-0038,spouse,1,José Leal dos Reis,Maria Rangel,74234-0004-01
+74234-0037,74234-0032,grandchild,1,José Leal dos Reis,Bernardo,74234-0004-01
+74234-0038,74234-0037,spouse,1,Maria Rangel,José Leal dos Reis,74234-0004-01
+74234-0038,74234-0032,grandchild,1,Maria Rangel,Bernardo,74234-0004-01
+74234-0039,74234-0032,godchild,1,Jerónimo José Vicente,Bernardo,74234-0004-01
+74234-0040,74234-0032,godchild,1,Antónia Teresa da Conceição,Bernardo,74234-0004-01
+74234-0041,74234-0046,godparent,1,Jerónimo,Manuel Cordeiro da Fonseca,74234-0004-02
+74234-0041,74234-0042,parent,1,Jerónimo,José Morais,74234-0004-02
+74234-0041,74234-0043,parent,1,Jerónimo,Antónia Maria Pimentel,74234-0004-02
+74234-0041,74234-0044,grandparent,1,Jerónimo,Tomé Morais,74234-0004-02
+74234-0041,74234-0045,grandparent,1,Jerónimo,Maria Frias,74234-0004-02
+74234-0042,74234-0043,spouse,1,José Morais,Antónia Maria Pimentel,74234-0004-02
+74234-0042,74234-0041,child,1,José Morais,Jerónimo,74234-0004-02
+74234-0043,74234-0042,spouse,1,Antónia Maria Pimentel,José Morais,74234-0004-02
+74234-0043,74234-0041,child,1,Antónia Maria Pimentel,Jerónimo,74234-0004-02
+74234-0044,74234-0041,grandchild,1,Tomé Morais,Jerónimo,74234-0004-02
+74234-0045,74234-0041,grandchild,1,Maria Frias,Jerónimo,74234-0004-02
+74234-0046,74234-0041,godchild,1,Manuel Cordeiro da Fonseca,Jerónimo,74234-0004-02
+74234-0047,74234-0053,godparent,1,João,João Gonçalves da Silva,74234-0004-02
+74234-0047,74234-0048,parent,1,João,Francisco de Lemos Maciel,74234-0004-02
+74234-0047,74234-0049,parent,1,João,Maria Soares de Borba,74234-0004-02
+74234-0047,74234-0050,grandparent,1,João,Manuel de Lemos Maciel,74234-0004-02
+74234-0047,74234-0051,grandparent,1,João,Inácio Soares,74234-0004-02
+74234-0047,74234-0052,grandparent,1,João,Luzia da Trindade,74234-0004-02
+74234-0048,74234-0049,spouse,1,Francisco de Lemos Maciel,Maria Soares de Borba,74234-0004-02
+74234-0048,74234-0047,child,1,Francisco de Lemos Maciel,João,74234-0004-02
+74234-0049,74234-0048,spouse,1,Maria Soares de Borba,Francisco de Lemos Maciel,74234-0004-02
+74234-0049,74234-0047,child,1,Maria Soares de Borba,João,74234-0004-02
+74234-0050,74234-0047,grandchild,1,Manuel de Lemos Maciel,João,74234-0004-02
+74234-0051,74234-0052,spouse,1,Inácio Soares,Luzia da Trindade,74234-0004-02
+74234-0051,74234-0047,grandchild,1,Inácio Soares,João,74234-0004-02
+74234-0052,74234-0051,spouse,1,Luzia da Trindade,Inácio Soares,74234-0004-02
+74234-0052,74234-0047,grandchild,1,Luzia da Trindade,João,74234-0004-02
+74234-0053,74234-0047,godchild,1,João Gonçalves da Silva,João,74234-0004-02
+74234-0054,74234-0055,custodian,1,Mamerto,José Francisco de Medeiros,74234-0005-01
+74234-0054,74234-0056,godparent,1,Mamerto,Manuel José Francisco,74234-0005-01
+74234-0054,74234-0278,godparent,1,Mamerto,Anna Maria Rosa,74234-0005-01
+74234-0055,74234-0054,ward,1,José Francisco de Medeiros,Mamerto,74234-0005-01
+74234-0056,74234-0278,spouse,1,Manuel José Francisco,Anna Maria Rosa,74234-0005-01
+74234-0056,74234-0054,godchild,1,Manuel José Francisco,Mamerto,74234-0005-01
+74234-0278,74234-0056,spouse,1,Anna Maria Rosa,Manuel José Francisco,74234-0005-01
+74234-0278,74234-0054,godchild,1,Anna Maria Rosa,Mamerto,74234-0005-01
+74234-0058,74234-0059,parent,1,Leonor,Félix José da Silva,74234-0005-02
+74234-0058,74234-0204,parent,1,Leonor,Ana Rosa do Espírito Santo,74234-0005-02
+74234-0058,74234-0060,godparent,1,Leonor,José Dias de Oliveira,74234-0005-02
+74234-0058,74234-0061,godparent,1,Leonor,Luís,74234-0005-02
+74234-0059,74234-0204,spouse,1,Félix José da Silva,Ana Rosa do Espírito Santo,74234-0005-02
+74234-0059,74234-0058,child,1,Félix José da Silva,Leonor,74234-0005-02
+74234-0204,74234-0059,spouse,1,Ana Rosa do Espírito Santo,Félix José da Silva,74234-0005-02
+74234-0204,74234-0058,child,1,Ana Rosa do Espírito Santo,Leonor,74234-0005-02
+74234-0060,74234-0058,godchild,1,José Dias de Oliveira,Leonor,74234-0005-02
+74234-0061,74234-0058,godchild,1,Luís,Leonor,74234-0005-02
+74234-0063,74234-0066,godparent,1,Maria,José Alves de Ávila,74234-0005-03
+74234-0063,74234-0064,parent,1,Maria,Francisco das Chagas Moniz,74234-0005-03
+74234-0063,74234-0065,parent,1,Maria,Anna Maria Correia,74234-0005-03
+74234-0064,74234-0065,spouse,1,Francisco das Chagas Moniz,Anna Maria Correia,74234-0005-03
+74234-0064,74234-0063,child,1,Francisco das Chagas Moniz,Maria,74234-0005-03
+74234-0065,74234-0064,spouse,1,Anna Maria Correia,Francisco das Chagas Moniz,74234-0005-03
+74234-0065,74234-0063,child,1,Anna Maria Correia,Maria,74234-0005-03
+74234-0066,74234-0063,godchild,1,José Alves de Ávila,Maria,74234-0005-03
+74234-0068,74234-0069,parent,1,Sebastião Inocente,Eulália da Silva Brandão,74234-0005-03
+74234-0068,74234-0070,godparent,1,Sebastião Inocente,Antônio de Souza Rosa,74234-0005-03
+74234-0069,74234-0068,child,1,Eulália da Silva Brandão,Sebastião Inocente,74234-0005-03
+74234-0070,74234-0068,godchild,1,Antônio de Souza Rosa,Sebastião Inocente,74234-0005-03
+74234-0073,74234-0074,parent,1,Feliciano,José Martins Pinheiro,74234-0006-00
+74234-0073,74234-0075,parent,1,Feliciano,Rosária Maria,74234-0006-00
+74234-0073,74234-0076,grandparent,1,Feliciano,Custódio José Pinheiro,74234-0006-00
+74234-0073,74234-0077,grandparent,1,Feliciano,Maria do Couto,74234-0006-00
+74234-0073,74234-0078,grandparent,1,Feliciano,Manuel da Lapa,74234-0006-00
+74234-0073,74234-0079,grandparent,1,Feliciano,Clélia Maria,74234-0006-00
+74234-0073,74234-0080,godparent,1,Feliciano,Francisco Dias,74234-0006-00
+74234-0074,74234-0075,spouse,1,José Martins Pinheiro,Rosária Maria,74234-0006-00
+74234-0074,74234-0073,child,1,José Martins Pinheiro,Feliciano,74234-0006-00
+74234-0074,74234-0076,child,1,José Martins Pinheiro,Custódio José Pinheiro,74234-0006-00
+74234-0074,74234-0077,child,1,José Martins Pinheiro,Maria do Couto,74234-0006-00
+74234-0075,74234-0074,spouse,1,Rosária Maria,José Martins Pinheiro,74234-0006-00
+74234-0075,74234-0073,child,1,Rosária Maria,Feliciano,74234-0006-00
+74234-0075,74234-0078,child,1,Rosária Maria,Manuel da Lapa,74234-0006-00
+74234-0075,74234-0079,child,1,Rosária Maria,Clélia Maria,74234-0006-00
+74234-0076,74234-0077,spouse,1,Custódio José Pinheiro,Maria do Couto,74234-0006-00
+74234-0076,74234-0074,parent,1,Custódio José Pinheiro,José Martins Pinheiro,74234-0006-00
+74234-0076,74234-0073,grandchild,1,Custódio José Pinheiro,Feliciano,74234-0006-00
+74234-0077,74234-0076,spouse,1,Maria do Couto,Custódio José Pinheiro,74234-0006-00
+74234-0077,74234-0074,parent,1,Maria do Couto,José Martins Pinheiro,74234-0006-00
+74234-0077,74234-0073,grandchild,1,Maria do Couto,Feliciano,74234-0006-00
+74234-0078,74234-0079,spouse,1,Manuel da Lapa,Clélia Maria,74234-0006-00
+74234-0078,74234-0075,parent,1,Manuel da Lapa,Rosária Maria,74234-0006-00
+74234-0078,74234-0073,grandchild,1,Manuel da Lapa,Feliciano,74234-0006-00
+74234-0079,74234-0078,spouse,1,Clélia Maria,Manuel da Lapa,74234-0006-00
+74234-0079,74234-0075,parent,1,Clélia Maria,Rosária Maria,74234-0006-00
+74234-0079,74234-0073,grandchild,1,Clélia Maria,Feliciano,74234-0006-00
+74234-0080,74234-0073,godchild,1,Francisco Dias,Feliciano,74234-0006-00
+74234-0081,74234-0083,godparent,1,Jacinta,Francisco Nova Gomes,74234-0006-01
+74234-0081,74234-0084,godparent,1,Jacinta,Anna Joaquina,74234-0006-01
+74234-0081,74234-0082,custodian,1,Jacinta,Félix de Proença Quintanilha,74234-0006-01
+74234-0082,74234-0081,ward,1,Félix de Proença Quintanilha,Jacinta,74234-0006-01
+74234-0083,74234-0081,godchild,1,Francisco Nova Gomes,Jacinta,74234-0006-01
+74234-0084,74234-0081,godchild,1,Anna Joaquina,Jacinta,74234-0006-01
+74234-0085,74234-0087,godparent,1,Antônio,João Morais da Silva,74234-0006-02
+74234-0085,74234-0088,godparent,1,Antônio,Rosa Antônia Corte,74234-0006-02
+74234-0085,74234-0086,parent,1,Antônio,João da Conceição,74234-0006-02
+74234-0085,74234-0224,parent,1,Antônio,Josefa Maria,74234-0006-02
+74234-0086,74234-0224,spouse,1,João da Conceição,Josefa Maria,74234-0006-02
+74234-0086,74234-0085,child,1,João da Conceição,Antônio,74234-0006-02
+74234-0224,74234-0086,spouse,1,Josefa Maria,João da Conceição,74234-0006-02
+74234-0224,74234-0085,child,1,Josefa Maria,Antônio,74234-0006-02
+74234-0087,74234-0085,godchild,1,João Morais da Silva,Antônio,74234-0006-02
+74234-0088,74234-0089,spouse,1,Rosa Antônia Corte,José Severiano Barreto,74234-0006-02
+74234-0088,74234-0085,godchild,1,Rosa Antônia Corte,Antônio,74234-0006-02
+74234-0089,74234-0088,spouse,1,José Severiano Barreto,Rosa Antônia Corte,74234-0006-02
+74234-0090,74234-0096,godparent,1,Jerônimo,José Alves da Silva,74234-0006-03
+74234-0090,74234-0097,godparent,1,Jerônimo,Leonor Luísa de Portes,74234-0006-03
+74234-0090,74234-0091,parent,1,Jerônimo,Manuel de Araújo Gomes,74234-0006-03
+74234-0090,74234-0092,parent,1,Jerônimo,Anna Maria de Andrade,74234-0006-03
+74234-0090,74234-0093,grandparent,1,Jerônimo,João Francisco Gomes,74234-0006-03
+74234-0090,74234-0094,grandparent,1,Jerônimo,Anna Barbosa Cortes,74234-0006-03
+74234-0090,74234-0297,grandparent,1,Jerônimo,Balthazar de Andrade,74234-0006-03
+74234-0090,74234-0095,grandparent,1,Jerônimo,Francisca Monteira,74234-0006-03
+74234-0091,74234-0092,spouse,1,Manuel de Araújo Gomes,Anna Maria de Andrade,74234-0006-03
+74234-0091,74234-0090,child,1,Manuel de Araújo Gomes,Jerônimo,74234-0006-03
+74234-0091,74234-0093,child,1,Manuel de Araújo Gomes,João Francisco Gomes,74234-0006-03
+74234-0091,74234-0094,child,1,Manuel de Araújo Gomes,Anna Barbosa Cortes,74234-0006-03
+74234-0092,74234-0091,spouse,1,Anna Maria de Andrade,Manuel de Araújo Gomes,74234-0006-03
+74234-0092,74234-0090,child,1,Anna Maria de Andrade,Jerônimo,74234-0006-03
+74234-0092,74234-0297,child,1,Anna Maria de Andrade,Balthazar de Andrade,74234-0006-03
+74234-0092,74234-0095,child,1,Anna Maria de Andrade,Francisca Monteira,74234-0006-03
+74234-0093,74234-0094,spouse,1,João Francisco Gomes,Anna Barbosa Cortes,74234-0006-03
+74234-0093,74234-0091,parent,1,João Francisco Gomes,Manuel de Araújo Gomes,74234-0006-03
+74234-0093,74234-0090,grandchild,1,João Francisco Gomes,Jerônimo,74234-0006-03
+74234-0094,74234-0093,spouse,1,Anna Barbosa Cortes,João Francisco Gomes,74234-0006-03
+74234-0094,74234-0091,parent,1,Anna Barbosa Cortes,Manuel de Araújo Gomes,74234-0006-03
+74234-0094,74234-0090,grandchild,1,Anna Barbosa Cortes,Jerônimo,74234-0006-03
+74234-0297,74234-0095,spouse,1,Balthazar de Andrade,Francisca Monteira,74234-0006-03
+74234-0297,74234-0092,parent,1,Balthazar de Andrade,Anna Maria de Andrade,74234-0006-03
+74234-0297,74234-0090,grandchild,1,Balthazar de Andrade,Jerônimo,74234-0006-03
+74234-0095,74234-0297,spouse,1,Francisca Monteira,Balthazar de Andrade,74234-0006-03
+74234-0095,74234-0092,parent,1,Francisca Monteira,Anna Maria de Andrade,74234-0006-03
+74234-0095,74234-0090,grandchild,1,Francisca Monteira,Jerônimo,74234-0006-03
+74234-0096,74234-0090,godchild,1,José Alves da Silva,Jerônimo,74234-0006-03
+74234-0097,74234-0090,godchild,1,Leonor Luísa de Portes,Jerônimo,74234-0006-03
+74234-0098,74234-0283,godparent,1,Damásio,João da Silva,74234-0007-01
+74234-0098,74234-0101,godparent,1,Damásio,Inês Maria de Jesus,74234-0007-01
+74234-0098,74234-0099,parent,1,Damásio,Manuel José Machado,74234-0007-01
+74234-0098,74234-0100,parent,1,Damásio,Anna Maria de Menezes,74234-0007-01
+74234-0099,74234-0100,spouse,1,Manuel José Machado,Anna Maria de Menezes,74234-0007-01
+74234-0099,74234-0098,child,1,Manuel José Machado,Damásio,74234-0007-01
+74234-0100,74234-0099,spouse,1,Anna Maria de Menezes,Manuel José Machado,74234-0007-01
+74234-0100,74234-0098,child,1,Anna Maria de Menezes,Damásio,74234-0007-01
+74234-0283,74234-0098,godchild,1,João da Silva,Damásio,74234-0007-01
+74234-0101,74234-0098,godchild,1,Inês Maria de Jesus,Damásio,74234-0007-01
+74234-0102,74234-0109,godparent,1,Custódio,João Ribeiro,74234-0007-02
+74234-0102,74234-0103,parent,1,Custódio,Inácio Pinto Ribeiro,74234-0007-02
+74234-0102,74234-0104,parent,1,Custódio,Anna Inácia da Silva,74234-0007-02
+74234-0102,74234-0105,grandparent,1,Custódio,Manoel Pinto de Sucesso,74234-0007-02
+74234-0102,74234-0106,grandparent,1,Custódio,Maria Ribeiro,74234-0007-02
+74234-0102,74234-0107,grandparent,1,Custódio,Joaquim da Silva Corrêa,74234-0007-02
+74234-0102,74234-0108,grandparent,1,Custódio,Inês Fagundes,74234-0007-02
+74234-0103,74234-0104,spouse,1,Inácio Pinto Ribeiro,Anna Inácia da Silva,74234-0007-02
+74234-0103,74234-0102,child,1,Inácio Pinto Ribeiro,Custódio,74234-0007-02
+74234-0103,74234-0105,child,1,Inácio Pinto Ribeiro,Manoel Pinto de Sucesso,74234-0007-02
+74234-0103,74234-0106,child,1,Inácio Pinto Ribeiro,Maria Ribeiro,74234-0007-02
+74234-0104,74234-0103,spouse,1,Anna Inácia da Silva,Inácio Pinto Ribeiro,74234-0007-02
+74234-0104,74234-0102,child,1,Anna Inácia da Silva,Custódio,74234-0007-02
+74234-0104,74234-0107,child,1,Anna Inácia da Silva,Joaquim da Silva Corrêa,74234-0007-02
+74234-0104,74234-0108,child,1,Anna Inácia da Silva,Inês Fagundes,74234-0007-02
+74234-0105,74234-0106,spouse,1,Manoel Pinto de Sucesso,Maria Ribeiro,74234-0007-02
+74234-0105,74234-0103,parent,1,Manoel Pinto de Sucesso,Inácio Pinto Ribeiro,74234-0007-02
+74234-0105,74234-0102,grandchild,1,Manoel Pinto de Sucesso,Custódio,74234-0007-02
+74234-0106,74234-0105,spouse,1,Maria Ribeiro,Manoel Pinto de Sucesso,74234-0007-02
+74234-0106,74234-0103,parent,1,Maria Ribeiro,Inácio Pinto Ribeiro,74234-0007-02
+74234-0106,74234-0102,grandchild,1,Maria Ribeiro,Custódio,74234-0007-02
+74234-0107,74234-0108,spouse,1,Joaquim da Silva Corrêa,Inês Fagundes,74234-0007-02
+74234-0107,74234-0104,parent,1,Joaquim da Silva Corrêa,Anna Inácia da Silva,74234-0007-02
+74234-0107,74234-0102,grandchild,1,Joaquim da Silva Corrêa,Custódio,74234-0007-02
+74234-0108,74234-0107,spouse,1,Inês Fagundes,Joaquim da Silva Corrêa,74234-0007-02
+74234-0108,74234-0104,parent,1,Inês Fagundes,Anna Inácia da Silva,74234-0007-02
+74234-0108,74234-0102,grandchild,1,Inês Fagundes,Custódio,74234-0007-02
+74234-0109,74234-0102,godchild,1,João Ribeiro,Custódio,74234-0007-02
+74234-0110,74234-0116,godparent,1,Afonso,Manuel Caetano Pinto,74234-0007-03
+74234-0110,74234-0111,parent,1,Afonso,João Antônio Corrêa,74234-0007-03
+74234-0110,74234-0217,parent,1,Afonso,Anna Maria de Jesus,74234-0007-03
+74234-0110,74234-0112,grandparent,1,Afonso,Antônio Corrêa Ximenes,74234-0007-03
+74234-0110,74234-0113,grandparent,1,Afonso,Francisca Inácia Botelha,74234-0007-03
+74234-0110,74234-0114,grandparent,1,Afonso,Manoel Martins Nogueira,74234-0007-03
+74234-0110,74234-0115,grandparent,1,Afonso,Rita Margarida,74234-0007-03
+74234-0111,74234-0217,spouse,1,João Antônio Corrêa,Anna Maria de Jesus,74234-0007-03
+74234-0111,74234-0110,child,1,João Antônio Corrêa,Afonso,74234-0007-03
+74234-0111,74234-0112,child,1,João Antônio Corrêa,Antônio Corrêa Ximenes,74234-0007-03
+74234-0111,74234-0113,child,1,João Antônio Corrêa,Francisca Inácia Botelha,74234-0007-03
+74234-0217,74234-0111,spouse,1,Anna Maria de Jesus,João Antônio Corrêa,74234-0007-03
+74234-0217,74234-0110,child,1,Anna Maria de Jesus,Afonso,74234-0007-03
+74234-0217,74234-0114,child,1,Anna Maria de Jesus,Manoel Martins Nogueira,74234-0007-03
+74234-0217,74234-0115,child,1,Anna Maria de Jesus,Rita Margarida,74234-0007-03
+74234-0112,74234-0113,spouse,1,Antônio Corrêa Ximenes,Francisca Inácia Botelha,74234-0007-03
+74234-0112,74234-0111,parent,1,Antônio Corrêa Ximenes,João Antônio Corrêa,74234-0007-03
+74234-0112,74234-0110,grandchild,1,Antônio Corrêa Ximenes,Afonso,74234-0007-03
+74234-0113,74234-0112,spouse,1,Francisca Inácia Botelha,Antônio Corrêa Ximenes,74234-0007-03
+74234-0113,74234-0111,parent,1,Francisca Inácia Botelha,João Antônio Corrêa,74234-0007-03
+74234-0113,74234-0110,grandchild,1,Francisca Inácia Botelha,Afonso,74234-0007-03
+74234-0114,74234-0115,spouse,1,Manoel Martins Nogueira,Rita Margarida,74234-0007-03
+74234-0114,74234-0217,parent,1,Manoel Martins Nogueira,Anna Maria de Jesus,74234-0007-03
+74234-0114,74234-0110,grandchild,1,Manoel Martins Nogueira,Afonso,74234-0007-03
+74234-0115,74234-0114,spouse,1,Rita Margarida,Manoel Martins Nogueira,74234-0007-03
+74234-0115,74234-0217,parent,1,Rita Margarida,Anna Maria de Jesus,74234-0007-03
+74234-0115,74234-0110,grandchild,1,Rita Margarida,Afonso,74234-0007-03
+74234-0116,74234-0110,godchild,1,Manuel Caetano Pinto,Afonso,74234-0007-03
+74234-0117,74234-0118,parent,1,João,Luísa,74234-0007-04
+74234-0117,74234-0119,godparent,1,João,Sebastião,74234-0007-04
+74234-0117,74234-0120,godparent,1,João,Thereza,74234-0007-04
+74234-0118,74234-0117,child,1,Luísa,João,74234-0007-04
+74234-0119,74234-0117,godchild,1,Sebastião,João,74234-0007-04
+74234-0120,74234-0117,godchild,1,Thereza,João,74234-0007-04
+74234-0122,74234-0123,parent,1,Umbelina,Manoel Antônio,74234-0007-05
+74234-0122,74234-0124,parent,1,Umbelina,Maria Custódia,74234-0007-05
+74234-0122,74234-0125,grandparent,1,Umbelina,José Afonso,74234-0007-05
+74234-0122,74234-0126,grandparent,1,Umbelina,Jozepha Vieira,74234-0007-05
+74234-0122,74234-0127,grandparent,1,Umbelina,Antônio Barbosa de Mendonça,74234-0007-05
+74234-0122,74234-0128,grandparent,1,Umbelina,José Vieira de Lemos,74234-0007-05
+74234-0122,74234-0131,godparent,1,Umbelina,Luiz Barbosa de Mendonça,74234-0007-05
+74234-0122,74234-0132,godparent,1,Umbelina,Maria da Motta Barbosa,74234-0007-05
+74234-0123,74234-0124,spouse,1,Manoel Antônio,Maria Custódia,74234-0007-05
+74234-0123,74234-0122,child,1,Manoel Antônio,Umbelina,74234-0007-05
+74234-0123,74234-0125,child,1,Manoel Antônio,José Afonso,74234-0007-05
+74234-0123,74234-0126,child,1,Manoel Antônio,Jozepha Vieira,74234-0007-05
+74234-0124,74234-0123,spouse,1,Maria Custódia,Manoel Antônio,74234-0007-05
+74234-0124,74234-0122,child,1,Maria Custódia,Umbelina,74234-0007-05
+74234-0124,74234-0127,child,1,Maria Custódia,Antônio Barbosa de Mendonça,74234-0007-05
+74234-0124,74234-0128,child,1,Maria Custódia,José Vieira de Lemos,74234-0007-05
+74234-0124,74234-0129,child,1,Maria Custódia,Inês Matheus,74234-0007-05
+74234-0125,74234-0126,spouse,1,José Afonso,Jozepha Vieira,74234-0007-05
+74234-0125,74234-0123,parent,1,José Afonso,Manoel Antônio,74234-0007-05
+74234-0125,74234-0122,grandchild,1,José Afonso,Umbelina,74234-0007-05
+74234-0126,74234-0125,spouse,1,Jozepha Vieira,José Afonso,74234-0007-05
+74234-0126,74234-0123,parent,1,Jozepha Vieira,Manoel Antônio,74234-0007-05
+74234-0126,74234-0122,grandchild,1,Jozepha Vieira,Umbelina,74234-0007-05
+74234-0127,74234-0128,spouse,1,Antônio Barbosa de Mendonça,José Vieira de Lemos,74234-0007-05
+74234-0127,74234-0124,parent,1,Antônio Barbosa de Mendonça,Maria Custódia,74234-0007-05
+74234-0127,74234-0122,grandchild,1,Antônio Barbosa de Mendonça,Umbelina,74234-0007-05
+74234-0128,74234-0129,spouse,1,José Vieira de Lemos,Inês Matheus,74234-0007-05
+74234-0128,74234-0124,parent,1,José Vieira de Lemos,Maria Custódia,74234-0007-05
+74234-0128,74234-0127,spouse,1,José Vieira de Lemos,Antônio Barbosa de Mendonça,74234-0007-05
+74234-0128,74234-0122,grandchild,1,José Vieira de Lemos,Umbelina,74234-0007-05
+74234-0129,74234-0128,spouse,1,Inês Matheus,José Vieira de Lemos,74234-0007-05
+74234-0129,74234-0124,parent,1,Inês Matheus,Maria Custódia,74234-0007-05
+74234-0131,74234-0122,godchild,1,Luiz Barbosa de Mendonça,Umbelina,74234-0007-05
+74234-0132,74234-0122,godchild,1,Maria da Motta Barbosa,Umbelina,74234-0007-05
+74234-0133,74234-0134,spouse,1,Pedro Machado de Faria,Joaquina Roza,74234-0008-01
+74234-0133,74234-0139,child,1,Pedro Machado de Faria,Vitoriana,74234-0008-01
+74234-0134,74234-0133,spouse,1,Joaquina Roza,Pedro Machado de Faria,74234-0008-01
+74234-0134,74234-0139,child,1,Joaquina Roza,Vitoriana,74234-0008-01
+74234-0135,74234-0139,grandchild,1,Antonio Barboza Branco,Vitoriana,74234-0008-01
+74234-0136,74234-0139,grandchild,1,Bernarda de Faria,Vitoriana,74234-0008-01
+74234-0137,74234-0138,spouse,1,Miguel de Gouvea Franco,Maria Josefa,74234-0008-01
+74234-0137,74234-0139,grandchild,1,Miguel de Gouvea Franco,Vitoriana,74234-0008-01
+74234-0138,74234-0137,spouse,1,Maria Josefa,Miguel de Gouvea Franco,74234-0008-01
+74234-0138,74234-0139,grandchild,1,Maria Josefa,Vitoriana,74234-0008-01
+74234-0139,74234-0133,parent,1,Vitoriana,Pedro Machado de Faria,74234-0008-01
+74234-0139,74234-0134,parent,1,Vitoriana,Joaquina Roza,74234-0008-01
+74234-0139,74234-0135,grandparent,1,Vitoriana,Antonio Barboza Branco,74234-0008-01
+74234-0139,74234-0136,grandparent,1,Vitoriana,Bernarda de Faria,74234-0008-01
+74234-0139,74234-0137,grandparent,1,Vitoriana,Miguel de Gouvea Franco,74234-0008-01
+74234-0139,74234-0138,grandparent,1,Vitoriana,Maria Josefa,74234-0008-01
+74234-0139,74234-0254,godparent,1,Vitoriana,João Batista dos Santos,74234-0008-01
+74234-0139,74234-0140,godparent,1,Vitoriana,Maria Ignacia,74234-0008-01
+74234-0254,74234-0139,godchild,1,João Batista dos Santos,Vitoriana,74234-0008-01
+74234-0140,74234-0139,godchild,1,Maria Ignacia,Vitoriana,74234-0008-01
+74234-0141,74234-0249,spouse,1,Thomaz Gonçalves Lima,Maria Roza,74234-0008-02
+74234-0141,74234-0144,child,1,Thomaz Gonçalves Lima,Antonio,74234-0008-02
+74234-0249,74234-0141,spouse,1,Maria Roza,Thomaz Gonçalves Lima,74234-0008-02
+74234-0249,74234-0144,child,1,Maria Roza,Antonio,74234-0008-02
+74234-0142,74234-0144,grandchild,1,João Gonçalves Lima,Antonio,74234-0008-02
+74234-0214,74234-0144,grandchild,1,Thereza Maria,Antonio,74234-0008-02
+74234-0143,74234-0144,grandchild,1,João Roiz Moreira,Antonio,74234-0008-02
+74234-0144,74234-0141,parent,1,Antonio,Thomaz Gonçalves Lima,74234-0008-02
+74234-0144,74234-0249,parent,1,Antonio,Maria Roza,74234-0008-02
+74234-0144,74234-0142,grandparent,1,Antonio,João Gonçalves Lima,74234-0008-02
+74234-0144,74234-0145,godparent,1,Antonio,Luiz Pinto de Mello,74234-0008-02
+74234-0144,74234-0214,grandparent,1,Antonio,Thereza Maria,74234-0008-02
+74234-0144,74234-0143,grandparent,1,Antonio,João Roiz Moreira,74234-0008-02
+74234-0145,74234-0144,godchild,1,Luiz Pinto de Mello,Antonio,74234-0008-02
+74234-0148,74234-0149,spouse,1,Luiz Manoel de Magalhães,Joaquina Roiz,74234-0008-02
+74234-0148,74234-0151,child,1,Luiz Manoel de Magalhães,Antonio José Alvares,74234-0008-02
+74234-0148,74234-0150,child,1,Luiz Manoel de Magalhães,Ignacio,74234-0008-02
+74234-0149,74234-0148,spouse,1,Joaquina Roiz,Luiz Manoel de Magalhães,74234-0008-02
+74234-0149,74234-0151,parent,1,Joaquina Roiz,Antonio José Alvares,74234-0008-02
+74234-0149,74234-0150,child,1,Joaquina Roiz,Ignacio,74234-0008-02
+74234-0150,74234-0148,parent,1,Ignacio,Luiz Manoel de Magalhães,74234-0008-02
+74234-0150,74234-0149,parent,1,Ignacio,Joaquina Roiz,74234-0008-02
+74234-0150,74234-0151,godparent,1,Ignacio,Antonio José Alvares,74234-0008-02
+74234-0151,74234-0150,godchild,1,Antonio José Alvares,Ignacio,74234-0008-02
+74234-0151,74234-0148,parent,1,Antonio José Alvares,Luiz Manoel de Magalhães,74234-0008-02
+74234-0151,74234-0149,child,1,Antonio José Alvares,Joaquina Roiz,74234-0008-02
+74234-0152,74234-0155,child,1,Manoel Roiz,João Miz de Souza,74234-0008-03
+74234-0152,74234-0154,child,1,Manoel Roiz,Maria,74234-0008-03
+74234-0153,74234-0155,godparent,1,Gilia de Jesus,João Miz de Souza,74234-0008-03
+74234-0154,74234-0155,godparent,1,Maria,João Miz de Souza,74234-0008-03
+74234-0154,74234-0152,parent,1,Maria,Manoel Roiz,74234-0008-03
+74234-0155,74234-0154,godchild,1,João Miz de Souza,Maria,74234-0008-03
+74234-0155,74234-0152,parent,1,João Miz de Souza,Manoel Roiz,74234-0008-03
+74234-0155,74234-0153,godchild,1,João Miz de Souza,Gilia de Jesus,74234-0008-03
+74234-0156,74234-0157,spouse,1,Thomé Luiz Ribeiro,Maria da Glória Ferreira,74234-0009-01
+74234-0156,74234-0162,child,1,Thomé Luiz Ribeiro,Antonio,74234-0009-01
+74234-0157,74234-0156,spouse,1,Maria da Glória Ferreira,Thomé Luiz Ribeiro,74234-0009-01
+74234-0157,74234-0162,child,1,Maria da Glória Ferreira,Antonio,74234-0009-01
+74234-0158,74234-0159,spouse,1,Luiz Ribeiro de Sant'Anna,Rita Carlota,74234-0009-01
+74234-0158,74234-0162,grandchild,1,Luiz Ribeiro de Sant'Anna,Antonio,74234-0009-01
+74234-0159,74234-0158,spouse,1,Rita Carlota,Luiz Ribeiro de Sant'Anna,74234-0009-01
+74234-0159,74234-0162,grandchild,1,Rita Carlota,Antonio,74234-0009-01
+74234-0160,74234-0161,spouse,1,Vicente Fena,Marianna Vicencia de Jesus,74234-0009-01
+74234-0160,74234-0162,grandchild,1,Vicente Fena,Antonio,74234-0009-01
+74234-0161,74234-0160,spouse,1,Marianna Vicencia de Jesus,Vicente Fena,74234-0009-01
+74234-0161,74234-0162,grandchild,1,Marianna Vicencia de Jesus,Antonio,74234-0009-01
+74234-0162,74234-0156,parent,1,Antonio,Thomé Luiz Ribeiro,74234-0009-01
+74234-0162,74234-0157,parent,1,Antonio,Maria da Glória Ferreira,74234-0009-01
+74234-0162,74234-0229,godparent,1,Antonio,José da Silva,74234-0009-01
+74234-0162,74234-0163,godparent,1,Antonio,Maria Jacinta de Todo,74234-0009-01
+74234-0162,74234-0158,grandparent,1,Antonio,Luiz Ribeiro de Sant'Anna,74234-0009-01
+74234-0162,74234-0159,grandparent,1,Antonio,Rita Carlota,74234-0009-01
+74234-0162,74234-0160,grandparent,1,Antonio,Vicente Fena,74234-0009-01
+74234-0162,74234-0161,grandparent,1,Antonio,Marianna Vicencia de Jesus,74234-0009-01
+74234-0229,74234-0162,godchild,1,José da Silva,Antonio,74234-0009-01
+74234-0163,74234-0162,godchild,1,Maria Jacinta de Todo,Antonio,74234-0009-01
+74234-0165,74234-0166,spouse,1,João Pereira de Mattos,Luiza Maria da Conceição,74234-0009-02
+74234-0165,74234-0171,child,1,João Pereira de Mattos,Maria,74234-0009-02
+74234-0166,74234-0165,spouse,1,Luiza Maria da Conceição,João Pereira de Mattos,74234-0009-02
+74234-0166,74234-0171,child,1,Luiza Maria da Conceição,Maria,74234-0009-02
+74234-0167,74234-0171,grandchild,1,José Pereira de Mattos,Maria,74234-0009-02
+74234-0168,74234-0171,grandchild,1,Maria de Andrada,Maria,74234-0009-02
+74234-0169,74234-0170,spouse,1,João Pereira Pimentel,Maria José de Jesus,74234-0009-02
+74234-0169,74234-0171,grandchild,1,João Pereira Pimentel,Maria,74234-0009-02
+74234-0170,74234-0169,spouse,1,Maria José de Jesus,João Pereira Pimentel,74234-0009-02
+74234-0170,74234-0171,grandchild,1,Maria José de Jesus,Maria,74234-0009-02
+74234-0171,74234-0165,parent,1,Maria,João Pereira de Mattos,74234-0009-02
+74234-0171,74234-0166,parent,1,Maria,Luiza Maria da Conceição,74234-0009-02
+74234-0171,74234-0172,godparent,1,Maria,José Pereira Pimentel,74234-0009-02
+74234-0171,74234-0167,grandparent,1,Maria,José Pereira de Mattos,74234-0009-02
+74234-0171,74234-0168,grandparent,1,Maria,Maria de Andrada,74234-0009-02
+74234-0171,74234-0169,grandparent,1,Maria,João Pereira Pimentel,74234-0009-02
+74234-0171,74234-0170,grandparent,1,Maria,Maria José de Jesus,74234-0009-02
+74234-0172,74234-0171,godchild,1,José Pereira Pimentel,Maria,74234-0009-02
+74234-0173,74234-0174,spouse,1,José de Mendonça,Maria da Glória,74234-0009-03
+74234-0173,74234-0175,child,1,José de Mendonça,Jacinta,74234-0009-03
+74234-0174,74234-0173,spouse,1,Maria da Glória,José de Mendonça,74234-0009-03
+74234-0174,74234-0175,child,1,Maria da Glória,Jacinta,74234-0009-03
+74234-0175,74234-0173,parent,1,Jacinta,José de Mendonça,74234-0009-03
+74234-0175,74234-0176,godparent,1,Jacinta,Floriano de Magalhães,74234-0009-03
+74234-0175,74234-0174,parent,1,Jacinta,Maria da Glória,74234-0009-03
+74234-0176,74234-0175,godchild,1,Floriano de Magalhães,Jacinta,74234-0009-03
+74234-0179,74234-0180,spouse,1,Hilario Antonio,Maria Luiza,74234-0009-04
+74234-0179,74234-0181,child,1,Hilario Antonio,Joaquina,74234-0009-04
+74234-0180,74234-0179,spouse,1,Maria Luiza,Hilario Antonio,74234-0009-04
+74234-0180,74234-0181,child,1,Maria Luiza,Joaquina,74234-0009-04
+74234-0181,74234-0179,parent,1,Joaquina,Hilario Antonio,74234-0009-04
+74234-0181,74234-0180,parent,1,Joaquina,Maria Luiza,74234-0009-04
+74234-0183,74234-0184,spouse,1,Luis da Costa,Maria Alvares da Piedade,74234-0010-01
+74234-0183,74234-0185,child,1,Luis da Costa,Eduardo,74234-0010-01
+74234-0184,74234-0183,spouse,1,Maria Alvares da Piedade,Luis da Costa,74234-0010-01
+74234-0184,74234-0185,child,1,Maria Alvares da Piedade,Eduardo,74234-0010-01
+74234-0185,74234-0183,parent,1,Eduardo,Luis da Costa,74234-0010-01
+74234-0185,74234-0184,parent,1,Eduardo,Maria Alvares da Piedade,74234-0010-01
+74234-0185,74234-0186,godparent,1,Eduardo,Manoel de Azeredo,74234-0010-01
+74234-0186,74234-0185,godchild,1,Manoel de Azeredo,Eduardo,74234-0010-01
+74234-0188,74234-0189,spouse,1,Francisco de Lemos d'Aguiar,Florencia Maria de Jesus,74234-0010-02
+74234-0188,74234-0194,child,1,Francisco de Lemos d'Aguiar,Jeronimo,74234-0010-02
+74234-0189,74234-0188,spouse,1,Florencia Maria de Jesus,Francisco de Lemos d'Aguiar,74234-0010-02
+74234-0189,74234-0194,child,1,Florencia Maria de Jesus,Jeronimo,74234-0010-02
+74234-0190,74234-0191,spouse,1,João Corvel,Andrea de Medeiros,74234-0010-02
+74234-0190,74234-0194,grandchild,1,João Corvel,Jeronimo,74234-0010-02
+74234-0191,74234-0190,spouse,1,Andrea de Medeiros,João Corvel,74234-0010-02
+74234-0191,74234-0194,grandchild,1,Andrea de Medeiros,Jeronimo,74234-0010-02
+74234-0192,74234-0193,spouse,1,Sebastião de Moraes,Maria Bernarda,74234-0010-02
+74234-0192,74234-0194,grandchild,1,Sebastião de Moraes,Jeronimo,74234-0010-02
+74234-0193,74234-0192,spouse,1,Maria Bernarda,Sebastião de Moraes,74234-0010-02
+74234-0193,74234-0194,grandchild,1,Maria Bernarda,Jeronimo,74234-0010-02
+74234-0194,74234-0188,parent,1,Jeronimo,Francisco de Lemos d'Aguiar,74234-0010-02
+74234-0194,74234-0189,parent,1,Jeronimo,Florencia Maria de Jesus,74234-0010-02
+74234-0194,74234-0195,godparent,1,Jeronimo,Jeronimo de Barros Moreira,74234-0010-02
+74234-0194,74234-0190,grandparent,1,Jeronimo,João Corvel,74234-0010-02
+74234-0194,74234-0191,grandparent,1,Jeronimo,Andrea de Medeiros,74234-0010-02
+74234-0194,74234-0192,grandparent,1,Jeronimo,Sebastião de Moraes,74234-0010-02
+74234-0194,74234-0193,grandparent,1,Jeronimo,Maria Bernarda,74234-0010-02
+74234-0195,74234-0194,godchild,1,Jeronimo de Barros Moreira,Jeronimo,74234-0010-02
+74234-0196,74234-0197,custodian,1,Joaquim,Bento da Silva,74234-0010-03
+74234-0196,74234-0198,godparent,1,Joaquim,João de Carvalho,74234-0010-03
+74234-0197,74234-0196,ward,1,Bento da Silva,Joaquim,74234-0010-03
+74234-0198,74234-0196,godchild,1,João de Carvalho,Joaquim,74234-0010-03
+74234-0200,74234-0201,parent,1,Lourenço,José Terra Guterres,74234-0010-04
+74234-0200,74234-0202,parent,1,Lourenço,Bernarda Vitória de Carvalho,74234-0010-04
+74234-0200,74234-0203,grandparent,1,Lourenço,Antônio Terra Guterres,74234-0010-04
+74234-0200,74234-0204,grandparent,1,Lourenço,Ana Rosa do Espírito Santo,74234-0010-04
+74234-0200,74234-0205,grandparent,1,Lourenço,Vitoriano José da Fonseca,74234-0010-04
+74234-0200,74234-0329,grandparent,1,Lourenço,Anna Maria,74234-0010-04
+74234-0200,74234-0206,godparent,1,Lourenço,Manuel Antônio Pereira,74234-0010-04
+74234-0200,74234-0207,godparent,1,Lourenço,Francisca Joaquina,74234-0010-04
+74234-0201,74234-0202,spouse,1,José Terra Guterres,Bernarda Vitória de Carvalho,74234-0010-04
+74234-0201,74234-0200,child,1,José Terra Guterres,Lourenço,74234-0010-04
+74234-0201,74234-0203,child,1,José Terra Guterres,Antônio Terra Guterres,74234-0010-04
+74234-0201,74234-0204,child,1,José Terra Guterres,Ana Rosa do Espírito Santo,74234-0010-04
+74234-0202,74234-0201,spouse,1,Bernarda Vitória de Carvalho,José Terra Guterres,74234-0010-04
+74234-0202,74234-0200,child,1,Bernarda Vitória de Carvalho,Lourenço,74234-0010-04
+74234-0202,74234-0205,child,1,Bernarda Vitória de Carvalho,Vitoriano José da Fonseca,74234-0010-04
+74234-0202,74234-0329,child,1,Bernarda Vitória de Carvalho,Anna Maria,74234-0010-04
+74234-0203,74234-0201,parent,1,Antônio Terra Guterres,José Terra Guterres,74234-0010-04
+74234-0203,74234-0200,grandchild,1,Antônio Terra Guterres,Lourenço,74234-0010-04
+74234-0204,74234-0201,parent,1,Ana Rosa do Espírito Santo,José Terra Guterres,74234-0010-04
+74234-0204,74234-0200,grandchild,1,Ana Rosa do Espírito Santo,Lourenço,74234-0010-04
+74234-0205,74234-0202,parent,1,Vitoriano José da Fonseca,Bernarda Vitória de Carvalho,74234-0010-04
+74234-0205,74234-0200,grandchild,1,Vitoriano José da Fonseca,Lourenço,74234-0010-04
+74234-0329,74234-0202,parent,1,Anna Maria,Bernarda Vitória de Carvalho,74234-0010-04
+74234-0329,74234-0200,grandchild,1,Anna Maria,Lourenço,74234-0010-04
+74234-0206,74234-0200,godchild,1,Manuel Antônio Pereira,Lourenço,74234-0010-04
+74234-0207,74234-0200,godchild,1,Francisca Joaquina,Lourenço,74234-0010-04
+74234-0209,74234-0210,parent,1,Rita,Miguel Nunes Machado,74234-0010-05
+74234-0209,74234-0290,parent,1,Rita,Francisca Maria da Conceição,74234-0010-05
+74234-0209,74234-0211,grandparent,1,Rita,Rodrigo Bermudes Machado,74234-0010-05
+74234-0209,74234-0212,grandparent,1,Rita,Maria Rosa de Almeida,74234-0010-05
+74234-0209,74234-0253,grandparent,1,Rita,Maria da Conceição,74234-0010-05
+74234-0209,74234-0213,godparent,1,Rita,Francisco Xavier de Carvalho,74234-0010-05
+74234-0209,74234-0214,godparent,1,Rita,Thereza Maria,74234-0010-05
+74234-0210,74234-0290,spouse,1,Miguel Nunes Machado,Francisca Maria da Conceição,74234-0010-05
+74234-0210,74234-0209,child,1,Miguel Nunes Machado,Rita,74234-0010-05
+74234-0210,74234-0211,child,1,Miguel Nunes Machado,Rodrigo Bermudes Machado,74234-0010-05
+74234-0210,74234-0212,child,1,Miguel Nunes Machado,Maria Rosa de Almeida,74234-0010-05
+74234-0290,74234-0210,spouse,1,Francisca Maria da Conceição,Miguel Nunes Machado,74234-0010-05
+74234-0290,74234-0209,child,1,Francisca Maria da Conceição,Rita,74234-0010-05
+74234-0290,74234-0253,child,1,Francisca Maria da Conceição,Maria da Conceição,74234-0010-05
+74234-0211,74234-0210,parent,1,Rodrigo Bermudes Machado,Miguel Nunes Machado,74234-0010-05
+74234-0211,74234-0209,grandchild,1,Rodrigo Bermudes Machado,Rita,74234-0010-05
+74234-0212,74234-0210,parent,1,Maria Rosa de Almeida,Miguel Nunes Machado,74234-0010-05
+74234-0212,74234-0209,grandchild,1,Maria Rosa de Almeida,Rita,74234-0010-05
+74234-0253,74234-0290,parent,1,Maria da Conceição,Francisca Maria da Conceição,74234-0010-05
+74234-0253,74234-0209,grandchild,1,Maria da Conceição,Rita,74234-0010-05
+74234-0213,74234-0209,godchild,1,Francisco Xavier de Carvalho,Rita,74234-0010-05
+74234-0214,74234-0209,godchild,1,Thereza Maria,Rita,74234-0010-05
+74234-0215,74234-0290,parent,1,José,Francisca Maria da Conceição,74234-0012-01
+74234-0215,74234-0216,godparent,1,José,Matias Francisco Leitão,74234-0012-01
+74234-0215,74234-0217,godparent,1,José,Anna Maria de Jesus,74234-0012-01
+74234-0290,74234-0215,child,1,Francisca Maria da Conceição,José,74234-0012-01
+74234-0216,74234-0215,godchild,1,Matias Francisco Leitão,José,74234-0012-01
+74234-0217,74234-0215,godchild,1,Anna Maria de Jesus,José,74234-0012-01
+74234-0218,74234-0219,parent,1,Tomás,Manuel Francisco Vieira,74234-0012-02
+74234-0218,74234-0220,parent,1,Tomás,Joaquina Maria,74234-0012-02
+74234-0218,74234-0221,grandparent,1,Tomás,Manuel Vieira Lopes,74234-0012-02
+74234-0218,74234-0222,grandparent,1,Tomás,Jacinta Garcia,74234-0012-02
+74234-0218,74234-0223,grandparent,1,Tomás,Leandro Francisco,74234-0012-02
+74234-0218,74234-0224,grandparent,1,Tomás,Josefa Maria,74234-0012-02
+74234-0218,74234-0225,godparent,1,Tomás,José Garcia,74234-0012-02
+74234-0218,74234-0226,godparent,1,Tomás,Ana Maria da Conceição,74234-0012-02
+74234-0219,74234-0220,spouse,1,Manuel Francisco Vieira,Joaquina Maria,74234-0012-02
+74234-0219,74234-0218,child,1,Manuel Francisco Vieira,Tomás,74234-0012-02
+74234-0219,74234-0221,child,1,Manuel Francisco Vieira,Manuel Vieira Lopes,74234-0012-02
+74234-0219,74234-0222,child,1,Manuel Francisco Vieira,Jacinta Garcia,74234-0012-02
+74234-0220,74234-0219,spouse,1,Joaquina Maria,Manuel Francisco Vieira,74234-0012-02
+74234-0220,74234-0218,child,1,Joaquina Maria,Tomás,74234-0012-02
+74234-0220,74234-0223,child,1,Joaquina Maria,Leandro Francisco,74234-0012-02
+74234-0220,74234-0224,child,1,Joaquina Maria,Josefa Maria,74234-0012-02
+74234-0221,74234-0219,parent,1,Manuel Vieira Lopes,Manuel Francisco Vieira,74234-0012-02
+74234-0221,74234-0218,grandchild,1,Manuel Vieira Lopes,Tomás,74234-0012-02
+74234-0222,74234-0219,parent,1,Jacinta Garcia,Manuel Francisco Vieira,74234-0012-02
+74234-0222,74234-0218,grandchild,1,Jacinta Garcia,Tomás,74234-0012-02
+74234-0223,74234-0220,parent,1,Leandro Francisco,Joaquina Maria,74234-0012-02
+74234-0223,74234-0218,grandchild,1,Leandro Francisco,Tomás,74234-0012-02
+74234-0224,74234-0220,parent,1,Josefa Maria,Joaquina Maria,74234-0012-02
+74234-0224,74234-0218,grandchild,1,Josefa Maria,Tomás,74234-0012-02
+74234-0225,74234-0218,godchild,1,José Garcia,Tomás,74234-0012-02
+74234-0226,74234-0218,godchild,1,Ana Maria da Conceição,Tomás,74234-0012-02
+74234-0227,74234-0230,grandparent,1,Domingos,Avô não declarado,74234-0012-03
+74234-0227,74234-0229,parent,1,Domingos,José da Silva,74234-0012-03
+74234-0227,74234-0228,parent,1,Domingos,Ana Maria do Sacramento,74234-0012-03
+74234-0227,74234-0229,grandparent,1,Domingos,José da Silva,74234-0012-03
+74234-0227,74234-0231,grandparent,1,Domingos,Domingos Gonçalves da Silva,74234-0012-03
+74234-0227,74234-0329,grandparent,1,Domingos,Anna Maria,74234-0012-03
+74234-0227,74234-0232,godparent,1,Domingos,Antônio de Brien,74234-0012-03
+74234-0227,74234-0329,godparent,1,Domingos,Anna Maria,74234-0012-03
+74234-0229,74234-0228,spouse,1,José da Silva,Ana Maria do Sacramento,74234-0012-03
+74234-0229,74234-0227,child,1,José da Silva,Domingos,74234-0012-03
+74234-0228,74234-0229,spouse,1,Ana Maria do Sacramento,José da Silva,74234-0012-03
+74234-0228,74234-0227,child,1,Ana Maria do Sacramento,Domingos,74234-0012-03
+74234-0228,74234-0231,child,1,Ana Maria do Sacramento,Domingos Gonçalves da Silva,74234-0012-03
+74234-0228,74234-0329,child,1,Ana Maria do Sacramento,Anna Maria,74234-0012-03
+74234-0229,74234-0227,grandchild,1,José da Silva,Domingos,74234-0012-03
+74234-0230,74234-0227,grandchild,1,Avô não declarado,Domingos,74234-0012-03
+74234-0231,74234-0228,parent,1,Domingos Gonçalves da Silva,Ana Maria do Sacramento,74234-0012-03
+74234-0231,74234-0227,grandchild,1,Domingos Gonçalves da Silva,Domingos,74234-0012-03
+74234-0329,74234-0228,parent,1,Anna Maria,Ana Maria do Sacramento,74234-0012-03
+74234-0329,74234-0227,grandchild,1,Anna Maria,Domingos,74234-0012-03
+74234-0232,74234-0227,godchild,1,Antônio de Brien,Domingos,74234-0012-03
+74234-0329,74234-0227,godchild,1,Anna Maria,Domingos,74234-0012-03
+74234-0233,74234-0234,parent,1,Manuel,Francisco Manuel de Sousa,74234-0012-04
+74234-0233,74234-0235,parent,1,Manuel,Joaquina Maria de Jesus,74234-0012-04
+74234-0233,74234-0236,grandparent,1,Manuel,Domingos de Sousa Viegas,74234-0012-04
+74234-0233,74234-0237,grandparent,1,Manuel,Joana Maria Barbosa,74234-0012-04
+74234-0233,74234-0238,grandparent,1,Manuel,Xavier Pinto,74234-0012-04
+74234-0233,74234-0239,grandparent,1,Manuel,Maria Teresa de Jesus,74234-0012-04
+74234-0233,74234-0240,godparent,1,Manuel,José Manuel Gonçalves Vilela,74234-0012-04
+74234-0233,74234-0241,godparent,1,Manuel,Maria Madalena de São José,74234-0012-04
+74234-0234,74234-0235,spouse,1,Francisco Manuel de Sousa,Joaquina Maria de Jesus,74234-0012-04
+74234-0234,74234-0233,child,1,Francisco Manuel de Sousa,Manuel,74234-0012-04
+74234-0234,74234-0236,child,1,Francisco Manuel de Sousa,Domingos de Sousa Viegas,74234-0012-04
+74234-0234,74234-0237,child,1,Francisco Manuel de Sousa,Joana Maria Barbosa,74234-0012-04
+74234-0235,74234-0234,spouse,1,Joaquina Maria de Jesus,Francisco Manuel de Sousa,74234-0012-04
+74234-0235,74234-0233,child,1,Joaquina Maria de Jesus,Manuel,74234-0012-04
+74234-0235,74234-0238,child,1,Joaquina Maria de Jesus,Xavier Pinto,74234-0012-04
+74234-0235,74234-0239,child,1,Joaquina Maria de Jesus,Maria Teresa de Jesus,74234-0012-04
+74234-0236,74234-0234,parent,1,Domingos de Sousa Viegas,Francisco Manuel de Sousa,74234-0012-04
+74234-0236,74234-0233,grandchild,1,Domingos de Sousa Viegas,Manuel,74234-0012-04
+74234-0237,74234-0234,parent,1,Joana Maria Barbosa,Francisco Manuel de Sousa,74234-0012-04
+74234-0237,74234-0233,grandchild,1,Joana Maria Barbosa,Manuel,74234-0012-04
+74234-0238,74234-0235,parent,1,Xavier Pinto,Joaquina Maria de Jesus,74234-0012-04
+74234-0238,74234-0233,grandchild,1,Xavier Pinto,Manuel,74234-0012-04
+74234-0239,74234-0235,parent,1,Maria Teresa de Jesus,Joaquina Maria de Jesus,74234-0012-04
+74234-0239,74234-0233,grandchild,1,Maria Teresa de Jesus,Manuel,74234-0012-04
+74234-0240,74234-0233,godchild,1,José Manuel Gonçalves Vilela,Manuel,74234-0012-04
+74234-0241,74234-0233,godchild,1,Maria Madalena de São José,Manuel,74234-0012-04
+74234-0242,74234-0243,parent,1,Feliciano,Antônia Maria,74234-0012-05
+74234-0242,74234-0244,godparent,1,Feliciano,Feliciano da Silva Pinto,74234-0012-05
+74234-0242,74234-0245,godparent,1,Feliciano,Ana Maria Teresa,74234-0012-05
+74234-0243,74234-0242,child,1,Antônia Maria,Feliciano,74234-0012-05
+74234-0244,74234-0242,godchild,1,Feliciano da Silva Pinto,Feliciano,74234-0012-05
+74234-0245,74234-0242,godchild,1,Ana Maria Teresa,Feliciano,74234-0012-05
+74234-0246,74234-0250,godparent,1,Candelária,Antônio da Silva Pedroso,74234-0012-05
+74234-0246,74234-0247,parent,1,Candelária,Bernardo Pimentel,74234-0012-05
+74234-0246,74234-0248,parent,1,Candelária,Catarina Rosa dos Santos,74234-0012-05
+74234-0246,74234-0270,godchild,1,Candelária,José Custódio Ribeiro de Magalhães,74234-0012-05
+74234-0246,74234-0249,godparent,1,Candelária,Maria Roza,74234-0012-05
+74234-0247,74234-0248,spouse,1,Bernardo Pimentel,Catarina Rosa dos Santos,74234-0012-05
+74234-0247,74234-0246,child,1,Bernardo Pimentel,Candelária,74234-0012-05
+74234-0248,74234-0247,spouse,1,Catarina Rosa dos Santos,Bernardo Pimentel,74234-0012-05
+74234-0248,74234-0246,child,1,Catarina Rosa dos Santos,Candelária,74234-0012-05
+74234-0270,74234-0246,godparent,1,José Custódio Ribeiro de Magalhães,Candelária,74234-0012-05
+74234-0249,74234-0246,godchild,1,Maria Roza,Candelária,74234-0012-05
+74234-0250,74234-0246,godchild,1,Antônio da Silva Pedroso,Candelária,74234-0012-05
+74234-0251,74234-0252,parent,1,Teresa,Antônio José Mendes,74234-0013-01
+74234-0251,74234-0253,parent,1,Teresa,Maria da Conceição,74234-0013-01
+74234-0251,74234-0254,godparent,1,Teresa,João Batista dos Santos,74234-0013-01
+74234-0251,74234-0255,godparent,1,Teresa,Ana Inácia,74234-0013-01
+74234-0252,74234-0253,spouse,1,Antônio José Mendes,Maria da Conceição,74234-0013-01
+74234-0252,74234-0251,child,1,Antônio José Mendes,Teresa,74234-0013-01
+74234-0253,74234-0252,spouse,1,Maria da Conceição,Antônio José Mendes,74234-0013-01
+74234-0253,74234-0251,child,1,Maria da Conceição,Teresa,74234-0013-01
+74234-0254,74234-0251,godchild,1,João Batista dos Santos,Teresa,74234-0013-01
+74234-0255,74234-0251,godchild,1,Ana Inácia,Teresa,74234-0013-01
+74234-0256,74234-0330,godparent,1,Silverio,Domingos Dias,74234-0013-02
+74234-0256,74234-0257,parent,1,Silverio,Manoel Esteves da Fonseca,74234-0013-02
+74234-0256,74234-0258,parent,1,Silverio,Luiza Maria,74234-0013-02
+74234-0256,74234-0259,godchild,1,Silverio,José Ribeiro Portela,74234-0013-02
+74234-0257,74234-0258,spouse,1,Manoel Esteves da Fonseca,Luiza Maria,74234-0013-02
+74234-0257,74234-0256,child,1,Manoel Esteves da Fonseca,Silverio,74234-0013-02
+74234-0258,74234-0257,spouse,1,Luiza Maria,Manoel Esteves da Fonseca,74234-0013-02
+74234-0258,74234-0256,child,1,Luiza Maria,Silverio,74234-0013-02
+74234-0259,74234-0256,godparent,1,José Ribeiro Portela,Silverio,74234-0013-02
+74234-0330,74234-0256,godchild,1,Domingos Dias,Silverio,74234-0013-02
+74234-0261,74234-0262,parent,1,Francisca,Antonio Vaz Villalobos,74234-0013-03
+74234-0261,74234-0263,parent,1,Francisca,Cipriana de Bom Sucesso,74234-0013-03
+74234-0261,74234-0264,godparent,1,Francisca,Pedro Vaz Coutinho,74234-0013-03
+74234-0262,74234-0263,spouse,1,Antonio Vaz Villalobos,Cipriana de Bom Sucesso,74234-0013-03
+74234-0262,74234-0261,child,1,Antonio Vaz Villalobos,Francisca,74234-0013-03
+74234-0263,74234-0262,spouse,1,Cipriana de Bom Sucesso,Antonio Vaz Villalobos,74234-0013-03
+74234-0263,74234-0261,child,1,Cipriana de Bom Sucesso,Francisca,74234-0013-03
+74234-0264,74234-0261,godchild,1,Pedro Vaz Coutinho,Francisca,74234-0013-03
+74234-0265,74234-0268,grandparent,1,Joaquim,Gonçalo Corrêa do Amaral,74234-0013-04
+74234-0265,74234-0269,grandparent,1,Joaquim,Juliana Maria,74234-0013-04
+74234-0265,74234-0266,parent,1,Joaquim,José Corrêa do Amaral,74234-0013-04
+74234-0265,74234-0267,parent,1,Joaquim,Maria de Santa Anna,74234-0013-04
+74234-0265,74234-0270,godparent,1,Joaquim,José Custódio Ribeiro de Magalhães,74234-0013-04
+74234-0265,74234-0271,godparent,1,Joaquim,Anna Luiza,74234-0013-04
+74234-0266,74234-0267,spouse,1,José Corrêa do Amaral,Maria de Santa Anna,74234-0013-04
+74234-0266,74234-0268,parent,1,José Corrêa do Amaral,Gonçalo Corrêa do Amaral,74234-0013-04
+74234-0266,74234-0269,parent,1,José Corrêa do Amaral,Juliana Maria,74234-0013-04
+74234-0266,74234-0265,child,1,José Corrêa do Amaral,Joaquim,74234-0013-04
+74234-0267,74234-0266,spouse,1,Maria de Santa Anna,José Corrêa do Amaral,74234-0013-04
+74234-0267,74234-0265,child,1,Maria de Santa Anna,Joaquim,74234-0013-04
+74234-0268,74234-0266,child,1,Gonçalo Corrêa do Amaral,José Corrêa do Amaral,74234-0013-04
+74234-0268,74234-0265,grandchild,1,Gonçalo Corrêa do Amaral,Joaquim,74234-0013-04
+74234-0268,74234-0269,spouse,1,Gonçalo Corrêa do Amaral,Juliana Maria,74234-0013-04
+74234-0269,74234-0266,child,1,Juliana Maria,José Corrêa do Amaral,74234-0013-04
+74234-0269,74234-0265,grandchild,1,Juliana Maria,Joaquim,74234-0013-04
+74234-0269,74234-0268,spouse,1,Juliana Maria,Gonçalo Corrêa do Amaral,74234-0013-04
+74234-0270,74234-0265,godchild,1,José Custódio Ribeiro de Magalhães,Joaquim,74234-0013-04
+74234-0271,74234-0265,godchild,1,Anna Luiza,Joaquim,74234-0013-04
+74234-0272,74234-0275,grandparent,1,João,Valerio de Miguel Gomes da Silva,74234-0014-01
+74234-0272,74234-0276,grandparent,1,João,Catherina da Mota,74234-0014-01
+74234-0272,74234-0273,parent,1,João,Luiz Gomes da Silva,74234-0014-01
+74234-0272,74234-0274,parent,1,João,Ignez de Jesus,74234-0014-01
+74234-0272,74234-0277,godparent,1,João,Francisco Pestana,74234-0014-01
+74234-0272,74234-0278,godparent,1,João,Anna Maria Rosa,74234-0014-01
+74234-0273,74234-0274,spouse,1,Luiz Gomes da Silva,Ignez de Jesus,74234-0014-01
+74234-0273,74234-0275,parent,1,Luiz Gomes da Silva,Valerio de Miguel Gomes da Silva,74234-0014-01
+74234-0273,74234-0276,parent,1,Luiz Gomes da Silva,Catherina da Mota,74234-0014-01
+74234-0273,74234-0272,child,1,Luiz Gomes da Silva,João,74234-0014-01
+74234-0274,74234-0273,spouse,1,Ignez de Jesus,Luiz Gomes da Silva,74234-0014-01
+74234-0274,74234-0272,child,1,Ignez de Jesus,João,74234-0014-01
+74234-0275,74234-0273,child,1,Valerio de Miguel Gomes da Silva,Luiz Gomes da Silva,74234-0014-01
+74234-0275,74234-0272,grandchild,1,Valerio de Miguel Gomes da Silva,João,74234-0014-01
+74234-0276,74234-0273,child,1,Catherina da Mota,Luiz Gomes da Silva,74234-0014-01
+74234-0276,74234-0272,grandchild,1,Catherina da Mota,João,74234-0014-01
+74234-0277,74234-0272,godchild,1,Francisco Pestana,João,74234-0014-01
+74234-0278,74234-0272,godchild,1,Anna Maria Rosa,João,74234-0014-01
+74234-0280,74234-0283,grandparent,1,José,João da Silva,74234-0014-02
+74234-0280,74234-0284,grandparent,1,José,Izabel de Castro,74234-0014-02
+74234-0280,74234-0321,godparent,1,José,Bento José Ferreira da Matta,74234-0014-02
+74234-0280,74234-0281,parent,1,José,Antonio José Ferreira,74234-0014-02
+74234-0280,74234-0282,parent,1,José,Thereza Maria de Jesus,74234-0014-02
+74234-0280,74234-0285,grandparent,1,José,Manoel Simoens,74234-0014-02
+74234-0280,74234-0286,grandparent,1,José,Anna Maria Mendes,74234-0014-02
+74234-0280,74234-0287,godparent,1,José,Mariana Rosa de Carvalho,74234-0014-02
+74234-0281,74234-0282,spouse,1,Antonio José Ferreira,Thereza Maria de Jesus,74234-0014-02
+74234-0281,74234-0283,parent,1,Antonio José Ferreira,João da Silva,74234-0014-02
+74234-0281,74234-0284,parent,1,Antonio José Ferreira,Izabel de Castro,74234-0014-02
+74234-0281,74234-0280,child,1,Antonio José Ferreira,José,74234-0014-02
+74234-0282,74234-0281,spouse,1,Thereza Maria de Jesus,Antonio José Ferreira,74234-0014-02
+74234-0282,74234-0280,child,1,Thereza Maria de Jesus,José,74234-0014-02
+74234-0282,74234-0285,child,1,Thereza Maria de Jesus,Manoel Simoens,74234-0014-02
+74234-0282,74234-0286,child,1,Thereza Maria de Jesus,Anna Maria Mendes,74234-0014-02
+74234-0283,74234-0281,child,1,João da Silva,Antonio José Ferreira,74234-0014-02
+74234-0283,74234-0280,grandchild,1,João da Silva,José,74234-0014-02
+74234-0283,74234-0284,spouse,1,João da Silva,Izabel de Castro,74234-0014-02
+74234-0284,74234-0281,child,1,Izabel de Castro,Antonio José Ferreira,74234-0014-02
+74234-0284,74234-0280,grandchild,1,Izabel de Castro,José,74234-0014-02
+74234-0284,74234-0283,spouse,1,Izabel de Castro,João da Silva,74234-0014-02
+74234-0285,74234-0282,parent,1,Manoel Simoens,Thereza Maria de Jesus,74234-0014-02
+74234-0285,74234-0287,godparent,1,Manoel Simoens,Mariana Rosa de Carvalho,74234-0014-02
+74234-0285,74234-0280,grandchild,1,Manoel Simoens,José,74234-0014-02
+74234-0285,74234-0286,spouse,1,Manoel Simoens,Anna Maria Mendes,74234-0014-02
+74234-0286,74234-0282,parent,1,Anna Maria Mendes,Thereza Maria de Jesus,74234-0014-02
+74234-0286,74234-0285,spouse,1,Anna Maria Mendes,Manoel Simoens,74234-0014-02
+74234-0286,74234-0280,grandchild,1,Anna Maria Mendes,José,74234-0014-02
+74234-0287,74234-0285,godchild,1,Mariana Rosa de Carvalho,Manoel Simoens,74234-0014-02
+74234-0287,74234-0280,godchild,1,Mariana Rosa de Carvalho,José,74234-0014-02
+74234-0321,74234-0280,godchild,1,Bento José Ferreira da Matta,José,74234-0014-02
+74234-0288,74234-0293,godparent,1,Clemente,João Marcelo de Andrade,74234-0014-03
+74234-0288,74234-0321,godparent,1,Clemente,Bento José Ferreira da Matta,74234-0014-03
+74234-0288,74234-0289,parent,1,Clemente,Manoel de Andrade Cardoso,74234-0014-03
+74234-0288,74234-0290,parent,1,Clemente,Francisca Maria da Conceição,74234-0014-03
+74234-0288,74234-0291,godchild,1,Clemente,Manoel de Andrade Cardoso,74234-0014-03
+74234-0288,74234-0292,godchild,1,Clemente,Luiza Delfina de Moraes,74234-0014-03
+74234-0289,74234-0290,spouse,1,Manoel de Andrade Cardoso,Francisca Maria da Conceição,74234-0014-03
+74234-0289,74234-0288,child,1,Manoel de Andrade Cardoso,Clemente,74234-0014-03
+74234-0290,74234-0289,spouse,1,Francisca Maria da Conceição,Manoel de Andrade Cardoso,74234-0014-03
+74234-0290,74234-0288,child,1,Francisca Maria da Conceição,Clemente,74234-0014-03
+74234-0291,74234-0288,godparent,1,Manoel de Andrade Cardoso,Clemente,74234-0014-03
+74234-0292,74234-0288,godparent,1,Luiza Delfina de Moraes,Clemente,74234-0014-03
+74234-0293,74234-0288,godchild,1,João Marcelo de Andrade,Clemente,74234-0014-03
+74234-0321,74234-0288,godchild,1,Bento José Ferreira da Matta,Clemente,74234-0014-03
+74234-0294,74234-0297,grandparent,1,Arsênio,Balthazar de Andrade,74234-0014-04
+74234-0294,74234-0298,grandparent,1,Arsênio,Françisca Honoria,74234-0014-04
+74234-0294,74234-0295,parent,1,Arsênio,Manoel João Gonçalo,74234-0014-04
+74234-0294,74234-0296,parent,1,Arsênio,Joaquina Joaquina,74234-0014-04
+74234-0294,74234-0299,grandparent,1,Arsênio,Luzia Coelha,74234-0014-04
+74234-0294,74234-0300,godparent,1,Arsênio,Antonio Fernandes Dias,74234-0014-04
+74234-0294,74234-0301,godparent,1,Arsênio,Anna Joaquina Barbosa,74234-0014-04
+74234-0295,74234-0296,spouse,1,Manoel João Gonçalo,Joaquina Joaquina,74234-0014-04
+74234-0295,74234-0297,parent,1,Manoel João Gonçalo,Balthazar de Andrade,74234-0014-04
+74234-0295,74234-0298,parent,1,Manoel João Gonçalo,Françisca Honoria,74234-0014-04
+74234-0295,74234-0294,child,1,Manoel João Gonçalo,Arsênio,74234-0014-04
+74234-0296,74234-0295,spouse,1,Joaquina Joaquina,Manoel João Gonçalo,74234-0014-04
+74234-0296,74234-0294,child,1,Joaquina Joaquina,Arsênio,74234-0014-04
+74234-0296,74234-0299,child,1,Joaquina Joaquina,Luzia Coelha,74234-0014-04
+74234-0297,74234-0295,child,1,Balthazar de Andrade,Manoel João Gonçalo,74234-0014-04
+74234-0297,74234-0294,grandchild,1,Balthazar de Andrade,Arsênio,74234-0014-04
+74234-0297,74234-0298,spouse,1,Balthazar de Andrade,Françisca Honoria,74234-0014-04
+74234-0298,74234-0295,child,1,Françisca Honoria,Manoel João Gonçalo,74234-0014-04
+74234-0298,74234-0294,grandchild,1,Françisca Honoria,Arsênio,74234-0014-04
+74234-0298,74234-0297,spouse,1,Françisca Honoria,Balthazar de Andrade,74234-0014-04
+74234-0299,74234-0296,parent,1,Luzia Coelha,Joaquina Joaquina,74234-0014-04
+74234-0299,74234-0294,grandchild,1,Luzia Coelha,Arsênio,74234-0014-04
+74234-0300,74234-0294,godchild,1,Antonio Fernandes Dias,Arsênio,74234-0014-04
+74234-0301,74234-0294,godchild,1,Anna Joaquina Barbosa,Arsênio,74234-0014-04
+74234-0303,74234-0321,grandparent,1,Maria,Bento José Ferreira da Matta,74234-0015-01
+74234-0303,74234-0304,parent,1,Maria,José Borges da Costa,74234-0015-01
+74234-0303,74234-0305,parent,1,Maria,Izabel Gomes Barbosa,74234-0015-01
+74234-0303,74234-0306,grandparent,1,Maria,José Borges da Costa,74234-0015-01
+74234-0303,74234-0307,grandparent,1,Maria,Domingas Gonçalves de Morais,74234-0015-01
+74234-0303,74234-0308,grandparent,1,Maria,Domingas Gonçalves de Morais,74234-0015-01
+74234-0303,74234-0309,grandparent,1,Maria,João Francisco Gomes,74234-0015-01
+74234-0303,74234-0310,parent,1,Maria,Anna Barbosa Costa,74234-0015-01
+74234-0304,74234-0305,spouse,1,José Borges da Costa,Izabel Gomes Barbosa,74234-0015-01
+74234-0304,74234-0306,parent,1,José Borges da Costa,José Borges da Costa,74234-0015-01
+74234-0304,74234-0307,parent,1,José Borges da Costa,Domingas Gonçalves de Morais,74234-0015-01
+74234-0304,74234-0303,child,1,José Borges da Costa,Maria,74234-0015-01
+74234-0305,74234-0304,spouse,1,Izabel Gomes Barbosa,José Borges da Costa,74234-0015-01
+74234-0305,74234-0303,child,1,Izabel Gomes Barbosa,Maria,74234-0015-01
+74234-0306,74234-0304,child,1,José Borges da Costa,José Borges da Costa,74234-0015-01
+74234-0306,74234-0307,spouse,1,José Borges da Costa,Domingas Gonçalves de Morais,74234-0015-01
+74234-0306,74234-0303,grandchild,1,José Borges da Costa,Maria,74234-0015-01
+74234-0307,74234-0304,child,1,Domingas Gonçalves de Morais,José Borges da Costa,74234-0015-01
+74234-0307,74234-0306,spouse,1,Domingas Gonçalves de Morais,José Borges da Costa,74234-0015-01
+74234-0307,74234-0303,grandchild,1,Domingas Gonçalves de Morais,Maria,74234-0015-01
+74234-0308,74234-0309,spouse,1,Domingas Gonçalves de Morais,João Francisco Gomes,74234-0015-01
+74234-0308,74234-0303,grandchild,1,Domingas Gonçalves de Morais,Maria,74234-0015-01
+74234-0309,74234-0308,spouse,1,João Francisco Gomes,Domingas Gonçalves de Morais,74234-0015-01
+74234-0309,74234-0303,grandchild,1,João Francisco Gomes,Maria,74234-0015-01
+74234-0310,74234-0303,child,1,Anna Barbosa Costa,Maria,74234-0015-01
+74234-0321,74234-0303,grandchild,1,Bento José Ferreira da Matta,Maria,74234-0015-01
+74234-0312,74234-0315,grandparent,1,José,Matheus de Souza Dias,74234-0015-02
+74234-0312,74234-0316,grandparent,1,José,Maria da Conceição,74234-0015-02
+74234-0312,74234-0317,grandparent,1,José,Dionizio da Costa Bravo,74234-0015-02
+74234-0312,74234-0318,grandparent,1,José,Anna da Conceição,74234-0015-02
+74234-0312,74234-0313,parent,1,José,Antonio de Souza Dias,74234-0015-02
+74234-0312,74234-0314,parent,1,José,Brigida Maria da Conceição,74234-0015-02
+74234-0312,74234-0319,godparent,1,José,Joaquim de Souza Vasconcelos,74234-0015-02
+74234-0312,74234-0320,godparent,1,José,Anna de Jesus,74234-0015-02
+74234-0313,74234-0314,spouse,1,Antonio de Souza Dias,Brigida Maria da Conceição,74234-0015-02
+74234-0313,74234-0315,parent,1,Antonio de Souza Dias,Matheus de Souza Dias,74234-0015-02
+74234-0313,74234-0316,parent,1,Antonio de Souza Dias,Maria da Conceição,74234-0015-02
+74234-0313,74234-0312,child,1,Antonio de Souza Dias,José,74234-0015-02
+74234-0314,74234-0313,spouse,1,Brigida Maria da Conceição,Antonio de Souza Dias,74234-0015-02
+74234-0314,74234-0317,parent,1,Brigida Maria da Conceição,Dionizio da Costa Bravo,74234-0015-02
+74234-0314,74234-0318,parent,1,Brigida Maria da Conceição,Anna da Conceição,74234-0015-02
+74234-0314,74234-0312,child,1,Brigida Maria da Conceição,José,74234-0015-02
+74234-0315,74234-0313,child,1,Matheus de Souza Dias,Antonio de Souza Dias,74234-0015-02
+74234-0315,74234-0312,grandchild,1,Matheus de Souza Dias,José,74234-0015-02
+74234-0315,74234-0316,spouse,1,Matheus de Souza Dias,Maria da Conceição,74234-0015-02
+74234-0316,74234-0313,child,1,Maria da Conceição,Antonio de Souza Dias,74234-0015-02
+74234-0316,74234-0312,grandchild,1,Maria da Conceição,José,74234-0015-02
+74234-0316,74234-0315,spouse,1,Maria da Conceição,Matheus de Souza Dias,74234-0015-02
+74234-0317,74234-0314,child,1,Dionizio da Costa Bravo,Brigida Maria da Conceição,74234-0015-02
+74234-0317,74234-0312,grandchild,1,Dionizio da Costa Bravo,José,74234-0015-02
+74234-0317,74234-0318,spouse,1,Dionizio da Costa Bravo,Anna da Conceição,74234-0015-02
+74234-0318,74234-0314,child,1,Anna da Conceição,Brigida Maria da Conceição,74234-0015-02
+74234-0318,74234-0312,grandchild,1,Anna da Conceição,José,74234-0015-02
+74234-0318,74234-0317,spouse,1,Anna da Conceição,Dionizio da Costa Bravo,74234-0015-02
+74234-0319,74234-0312,godchild,1,Joaquim de Souza Vasconcelos,José,74234-0015-02
+74234-0320,74234-0312,godchild,1,Anna de Jesus,José,74234-0015-02
+74234-0322,74234-0323,parent,1,Marianna,João da Costa,74234-0016-00
+74234-0322,74234-0329,parent,1,Marianna,Anna Maria,74234-0016-00
+74234-0322,74234-0324,grandparent,1,Marianna,Manoel da Silva Lessa,74234-0016-00
+74234-0322,74234-0325,grandparent,1,Marianna,Anna Thereza Vasconcellos,74234-0016-00
+74234-0322,74234-0326,grandparent,1,Marianna,Francisco Riz Lima,74234-0016-00
+74234-0322,74234-0327,grandparent,1,Marianna,Rita Monteira,74234-0016-00
+74234-0322,74234-0328,godparent,1,Marianna,Caetano da Costa,74234-0016-00
+74234-0322,74234-0329,godparent,1,Marianna,Anna Maria,74234-0016-00
+74234-0323,74234-0329,spouse,1,João da Costa,Anna Maria,74234-0016-00
+74234-0323,74234-0322,child,1,João da Costa,Marianna,74234-0016-00
+74234-0329,74234-0323,spouse,1,Anna Maria,João da Costa,74234-0016-00
+74234-0329,74234-0322,child,1,Anna Maria,Marianna,74234-0016-00
+74234-0329,74234-0326,child,1,Anna Maria,Francisco Riz Lima,74234-0016-00
+74234-0329,74234-0327,child,1,Anna Maria,Rita Monteira,74234-0016-00
+74234-0324,74234-0325,spouse,1,Manoel da Silva Lessa,Anna Thereza Vasconcellos,74234-0016-00
+74234-0324,74234-0322,grandchild,1,Manoel da Silva Lessa,Marianna,74234-0016-00
+74234-0325,74234-0324,spouse,1,Anna Thereza Vasconcellos,Manoel da Silva Lessa,74234-0016-00
+74234-0325,74234-0322,grandchild,1,Anna Thereza Vasconcellos,Marianna,74234-0016-00
+74234-0326,74234-0329,parent,1,Francisco Riz Lima,Anna Maria,74234-0016-00
+74234-0326,74234-0327,spouse,1,Francisco Riz Lima,Rita Monteira,74234-0016-00
+74234-0326,74234-0322,grandchild,1,Francisco Riz Lima,Marianna,74234-0016-00
+74234-0327,74234-0329,parent,1,Rita Monteira,Anna Maria,74234-0016-00
+74234-0327,74234-0326,spouse,1,Rita Monteira,Francisco Riz Lima,74234-0016-00
+74234-0327,74234-0322,grandchild,1,Rita Monteira,Marianna,74234-0016-00
+74234-0328,74234-0322,godchild,1,Caetano da Costa,Marianna,74234-0016-00
+74234-0329,74234-0322,godchild,1,Anna Maria,Marianna,74234-0016-00

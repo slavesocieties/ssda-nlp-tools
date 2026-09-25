@@ -1,0 +1,247 @@
+[
+  {
+    "volume": null,
+    "entries": 50,
+    "issues": [
+      {
+        "type": "chronology_break",
+        "entry": "74234-0005-01",
+        "detail": "1791-6-20 after 1891-6-27 (74234-0004-02)"
+      },
+      {
+        "type": "chronology_break",
+        "entry": "74234-0005-03",
+        "detail": "1791-5-29 after 1791-9-11 (74234-0005-02)"
+      },
+      {
+        "type": "chronology_break",
+        "entry": "74234-0006-01",
+        "detail": "1791-6-29 after 1791-10-7 (74234-0006-00)"
+      },
+      {
+        "type": "chronology_break",
+        "entry": "74234-0007-02",
+        "detail": "1791-7-21 after 1891-7-10 (74234-0007-01)"
+      },
+      {
+        "type": "chronology_break",
+        "entry": "74234-0010-01",
+        "detail": "1791-9-10 after 1891-8-4 (74234-0009-04)"
+      },
+      {
+        "type": "dangling_relationship",
+        "entry": "74234-0004-01",
+        "detail": "P03 -> missing None"
+      },
+      {
+        "type": "dangling_relationship",
+        "entry": "74234-0008-02",
+        "detail": "P13 -> missing P15"
+      },
+      {
+        "type": "dangling_relationship",
+        "entry": "74234-0015-01",
+        "detail": "P01 -> missing P11"
+      },
+      {
+        "type": "no_people",
+        "entry": "74234-0001-00",
+        "detail": "entry has no people"
+      },
+      {
+        "type": "no_people",
+        "entry": "74234-0003-00",
+        "detail": "entry has no people"
+      },
+      {
+        "type": "no_people",
+        "entry": "74234-0005-00",
+        "detail": "entry has no people"
+      },
+      {
+        "type": "no_people",
+        "entry": "74234-0009-05",
+        "detail": "entry has no people"
+      },
+      {
+        "type": "no_people",
+        "entry": "74234-0011-01",
+        "detail": "entry has no people"
+      }
+    ],
+    "issues_by_type": {
+      "chronology_break": 5,
+      "dangling_relationship": 3,
+      "no_people": 5
+    },
+    "duplicates": [],
+    "chronology_breaks": [
+      {
+        "prev_entry": "74234-0004-02",
+        "entry": "74234-0005-01",
+        "prev": "1891-6-27",
+        "cur": "1791-6-20"
+      },
+      {
+        "prev_entry": "74234-0005-02",
+        "entry": "74234-0005-03",
+        "prev": "1791-9-11",
+        "cur": "1791-5-29"
+      },
+      {
+        "prev_entry": "74234-0006-00",
+        "entry": "74234-0006-01",
+        "prev": "1791-10-7",
+        "cur": "1791-6-29"
+      },
+      {
+        "prev_entry": "74234-0007-01",
+        "entry": "74234-0007-02",
+        "prev": "1891-7-10",
+        "cur": "1791-7-21"
+      },
+      {
+        "prev_entry": "74234-0009-04",
+        "entry": "74234-0010-01",
+        "prev": "1891-8-4",
+        "cur": "1791-9-10"
+      }
+    ],
+    "nonreciprocal_relationships": 0,
+    "vocabulary": {
+      "phenotype": {
+        "parda": 8,
+        "pardo": 4,
+        "crioula": 2
+      },
+      "ethnicity": {},
+      "origin": {
+        "são gonçalo": 38,
+        "ilha do pico": 13,
+        "ilha do faial": 12,
+        "rio de janeiro": 11,
+        "ilha de são miguel": 10,
+        "ilha terceira": 8,
+        "são joão de carahy": 3,
+        "lisboa": 3,
+        "estremoz": 3,
+        "sé do rio de janeiro": 2,
+        "bispado do porto": 2,
+        "vila franca do campo": 2,
+        "sé, rio de janeiro": 2,
+        "ilha de santa maria": 2,
+        "são joão de maroahy": 2,
+        "são joão batista de maroahy": 2,
+        "patriarcado de lisboa": 2,
+        "santa maria de padora": 2,
+        "trás-os-montes": 2,
+        "inhomerim": 2,
+        "são pedro de guguins": 1,
+        "cavaneis": 1,
+        "nossa senhora da calheta": 1,
+        "são josé do rio de janeiro": 1,
+        "santa rita, rio de janeiro": 1,
+        "póvoa de varzim": 1,
+        "candelária, rio de janeiro": 1,
+        "santa rita": 1,
+        "são salvador de silveiros": 1,
+        "nossa senhora do livramento de campanha": 1,
+        "nossa senhora da campanha": 1,
+        "regato pinto": 1,
+        "ilha de são jorge": 1,
+        "maricá": 1,
+        "coimbra": 1,
+        "são joão grande": 1,
+        "jacarepaguá": 1,
+        "são bartolomeu de monte redondo": 1,
+        "são paulo do arcebispado de braga": 1,
+        "palmella": 1,
+        "rio verde": 1,
+        "portugal": 1,
+        "inhaúma": 1,
+        "ilhas": 1
+      },
+      "age": {
+        "infant": 41
+      }
+    },
+    "conformance": {
+      "titles": {
+        "seen": 54,
+        "in_vocab": 21,
+        "rate": 0.3888888888888889,
+        "stray": {
+          "Coadjutor": 12,
+          "Reverendo": 5,
+          "Alferes": 4,
+          "Sargento-Mor": 2,
+          "Reverendo Vigário": 2,
+          "Tenente": 2,
+          "Cabo": 1,
+          "Padre Mestre": 1
+        }
+      },
+      "rank": {
+        "seen": 5,
+        "in_vocab": 5,
+        "rate": 1.0,
+        "stray": {}
+      },
+      "ethnicity": {
+        "seen": 0,
+        "in_vocab": 0,
+        "rate": null,
+        "stray": {}
+      },
+      "age": {
+        "seen": 41,
+        "in_vocab": 41,
+        "rate": 1.0,
+        "stray": {}
+      },
+      "occupation": {
+        "seen": 44,
+        "in_vocab": 44,
+        "rate": 1.0,
+        "stray": {}
+      },
+      "phenotype": {
+        "seen": 14,
+        "in_vocab": 12,
+        "rate": 0.8571428571428571,
+        "stray": {
+          "crioula": 2
+        }
+      },
+      "legitimate": {
+        "seen": 46,
+        "in_vocab": 46,
+        "rate": 1.0,
+        "stray": {}
+      },
+      "free": {
+        "seen": 14,
+        "in_vocab": 14,
+        "rate": 1.0,
+        "stray": {}
+      },
+      "relationship_type": {
+        "seen": 845,
+        "in_vocab": 845,
+        "rate": 1.0,
+        "english_canonical": 845,
+        "canonical_rate": 1.0,
+        "stray": {}
+      },
+      "_events": {
+        "total": 53,
+        "with_witnesses": 0,
+        "types": {
+          "baptism": 51,
+          "birth": 2
+        }
+      }
+    },
+    "file": "live_74234.json"
+  }
+]

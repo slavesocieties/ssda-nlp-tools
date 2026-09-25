@@ -1,0 +1,65 @@
+================================================================
+Volume QA — None  (50 entries)
+================================================================
+issues: chronology_break=5, dangling_relationship=3, no_people=5
+
+chronology breaks:
+  74234-0005-01: 1791-6-20 follows 1891-6-27 (74234-0004-02)
+  74234-0005-03: 1791-5-29 follows 1791-9-11 (74234-0005-02)
+  74234-0006-01: 1791-6-29 follows 1791-10-7 (74234-0006-00)
+  74234-0007-02: 1791-7-21 follows 1891-7-10 (74234-0007-01)
+  74234-0010-01: 1791-9-10 follows 1891-8-4 (74234-0009-04)
+
+vocabulary (drift check):
+  phenotype  parda×8, pardo×4, crioula×2
+  origin     são gonçalo×38, ilha do pico×13, ilha do faial×12, rio de janeiro×11, ilha de são miguel×10, ilha terceira×8, são joão de carahy×3, lisboa×3
+  age        infant×41
+
+controlled-vocabulary conformance:
+  field                seen inVocab    rate  top strays
+  titles                 54      21   38.9%  Coadjutor x12, Reverendo x5, Alferes x4
+  rank                    5       5  100.0%  -
+  ethnicity               0       0       -  -
+  age                    41      41  100.0%  -
+  occupation             44      44  100.0%  -
+  phenotype              14      12   85.7%  crioula x2
+  legitimate             46      46  100.0%  -
+  free                   14      14  100.0%  -
+  relationship_type     845     845  100.0%  -
+  relationship_type using the English canonical set: 100.0%
+  events: 53 total, 0 carry witnesses
+================================================================
+
+================================================================
+Cross-chunk person linking
+================================================================
+chunks:   live_74234
+entries:  50   mentions: 376
+identities: 330  (reduction 12.2%)
+CROSS-CHUNK identities: 0  <- people linked across files
+review queue: 302 pairs
+
+people spanning chunks (top by mentions):
+
+============================================================
+Person / relationship network
+============================================================
+nodes (people):        330
+edges (relationships): 840 unique typed (840 instances)
+isolated nodes:        22
+connected components:  52 (largest 73 people)
+cross-entry people:    20 (appear in >1 entry — the links that matter)
+cross-entry edges:     0
+
+relationship types: spouse=160, parent=150, child=150, grandparent=103, grandchild=103, godparent=84, godchild=84, custodian=3, ward=3
+
+top hubs (by degree):
+   20  'Anna Maria'  (74234-0329, x5 mentions)
+   16  'Maria'  (74234-0009, x1 mentions)
+   16  'Bernardo'  (74234-0032, x1 mentions)
+   16  'Jerônimo'  (74234-0090, x1 mentions)
+   16  'Umbelina'  (74234-0122, x1 mentions)
+   16  'Vitoriana'  (74234-0139, x1 mentions)
+   16  'Antonio'  (74234-0162, x1 mentions)
+   16  'Lourenço'  (74234-0200, x1 mentions)
+============================================================
