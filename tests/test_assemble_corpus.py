@@ -4,6 +4,7 @@ import json
 import os
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DELIVERED = ["176899", "201991", "29597", "375062", "701054"]
 
 
 def _module():
@@ -15,7 +16,7 @@ def _module():
 
 
 def test_volume_of_handles_plain_and_aliased_custom_ids():
-    v = _module()._volume_of
+    v = lambda cid: _module()._volume_of(cid, DELIVERED)
     assert v("176899-b0000") == "176899"
     assert v("luna-production-701054-b0004") == "701054"      # historical alias prefix
     assert v("29597-b0012") == "29597"
@@ -40,7 +41,7 @@ def test_read_rows_groups_by_volume_and_separates_invalid(tmp_path):
     ]
     (tmp_path / "j.accepted.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
-    by = mod.read_rows_by_volume(tmp_path)
+    by = mod.read_rows_by_volume(tmp_path, DELIVERED)
     assert set(by["701054"]["valid"]) == {"701054-0001-01"}    # valid row parsed
     assert by["701054"]["invalid"] == []
     assert by["176899"]["valid"] == {}                         # both 176899 rows rejected
@@ -52,7 +53,7 @@ def test_repair_ids_map_home_but_vocabtest_is_excluded():
     `*-vocabtest-*` must NOT: it re-extracts entry IDs already delivered, so
     assembling it would collide with the real records and either corrupt the
     volume or silently discard the experiment."""
-    v = _module()._volume_of
+    v = lambda cid: _module()._volume_of(cid, DELIVERED)
     assert v("201991-repair-b0000") == "201991"
     assert v("29597-repair-b0000") == "29597"
     assert v("701054-vocabtest-b0000") is None
@@ -67,7 +68,7 @@ def test_vocabtest_rows_are_isolated_from_delivery(tmp_path):
             _resp_row("701054-b0000", good)]
     (tmp_path / "j.accepted.jsonl").write_text(
         "\n".join(json.dumps(row) for row in rows), encoding="utf-8")
-    delivery = mod.read_rows_by_volume(tmp_path)
+    delivery = mod.read_rows_by_volume(tmp_path, DELIVERED)
     experiment = mod.read_vocabtest_rows(tmp_path)
     assert set(delivery["701054"]["valid"]) == {"701054-0001-01"}
     assert set(experiment["valid"]) == {"701054-0001-01"}
@@ -90,7 +91,7 @@ def test_read_rows_flags_duplicate_entry_ids(tmp_path):
     rows = [_resp_row("701054-b0000", good), _resp_row("701054-b0001", good)]
     (tmp_path / "dupe.accepted.jsonl").write_text(
         "\n".join(json.dumps(r) for r in rows), encoding="utf-8")
-    by = mod.read_rows_by_volume(tmp_path)
+    by = mod.read_rows_by_volume(tmp_path, DELIVERED)
     assert set(by["701054"]["valid"]) == {"701054-0001-01"}
     assert len(by["701054"]["invalid"]) == 1
 
@@ -101,4 +102,27 @@ def test_raw_provider_output_is_never_assembled(tmp_path):
         {"entry": "701054-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
     (tmp_path / "unvalidated.output.jsonl").write_text(
         json.dumps(_resp_row("701054-b0000", good)), encoding="utf-8")
-    assert mod.read_rows_by_volume(tmp_path)["701054"]["valid"] == {}
+    assert mod.read_rows_by_volume(tmp_path, DELIVERED)["701054"]["valid"] == {}
+
+
+def test_volumes_come_from_the_corpus_directory(tmp_path):
+    mod = _module()
+    for vol in ("239746", "2959", "29597"):
+        (tmp_path / f"{vol}.segmented.json").write_text('{"entries": []}', encoding="utf-8")
+    (tmp_path / "notes.json").write_text("{}", encoding="utf-8")
+    vols = mod.discover_volumes(tmp_path)
+    assert vols == ["239746", "2959", "29597"]
+    assert mod._volume_of("239746-b0003", vols) == "239746"      # not in the old fixed list
+    assert mod._volume_of("29597-b0000", vols) == "29597"        # longer ID is not cut short
+    assert mod._volume_of("2959-b0000", vols) == "2959"          # nor the shorter one widened
+    assert mod._volume_of("v2-239746-b0000", vols) == "239746"   # --run-id namespaced
+
+
+def test_rows_for_unknown_volumes_are_reported_not_dropped(tmp_path):
+    mod = _module()
+    good = json.dumps({"results": [
+        {"entry": "999999-0001-01", "normalized": "x", "data": {"people": [], "events": []}}]})
+    (tmp_path / "j.accepted.jsonl").write_text(
+        json.dumps(_resp_row("999999-b0000", good)), encoding="utf-8")
+    by = mod.read_rows_by_volume(tmp_path, DELIVERED)
+    assert by["unassigned"] == ["999999-b0000"]

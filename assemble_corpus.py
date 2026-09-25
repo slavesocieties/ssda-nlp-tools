@@ -3,7 +3,8 @@
 
 Run this AFTER the monitor has downloaded and validated the provider results
 (the `production/luna_live/*.accepted.jsonl` files). It performs no network calls
-and reads no API key. For every sacramental volume it:
+and reads no API key. For every volume with a `<vol>.segmented.json` in the
+corpus directory (or only those named with --volumes) it:
 
   1. groups the downloaded provider response rows by volume (via custom_id),
      splitting the single big multi-volume Batch job as well as per-batch files;
@@ -15,6 +16,7 @@ and reads no API key. For every sacramental volume it:
   5. writes production/luna_live/CORPUS_SUMMARY.json.
 
     python assemble_corpus.py [--live production/luna_live] [--corpus production/corpus]
+                              [--volumes 176899 701054 ...]
 
 Coverage < 100% for a volume is reported, never hidden. Nothing here spends
 money or can submit paid work.
@@ -27,12 +29,20 @@ from pathlib import Path
 
 from ssda_nlp_tools.batch_extract import parse_response
 
-VOLUMES = ["176899", "201991", "29597", "375062", "701054"]
-_VOL_RE = re.compile(r"(" + "|".join(VOLUMES) + r")")
+def discover_volumes(corpus: Path):
+    """Volume IDs are the file stems of the corpus's `<vol>.segmented.json` files."""
+    return sorted(p.name[:-len(".segmented.json")] for p in corpus.glob("*.segmented.json"))
 
 
-def _volume_of(custom_id: str):
-    """Map a provider custom_id back to its delivered volume.
+def _volume_re(volumes):
+    # Longest first and digit-bounded, so one volume ID can never match inside
+    # another (e.g. 2959 inside 29597).
+    alternatives = "|".join(re.escape(v) for v in sorted(volumes, key=len, reverse=True))
+    return re.compile(r"(?<!\d)(" + alternatives + r")(?!\d)")
+
+
+def _volume_of(custom_id: str, volumes):
+    """Map a provider custom_id back to one of `volumes`.
 
     `<vol>-repair-*` intentionally maps to `<vol>`: repair requests re-fetch
     records that belong in that volume. `*-vocabtest-*` deliberately maps to
@@ -43,9 +53,9 @@ def _volume_of(custom_id: str):
     vocab_ab_report.py.
     """
     cid = custom_id or ""
-    if "vocabtest" in cid:
+    if "vocabtest" in cid or not volumes:
         return None
-    m = _VOL_RE.search(cid)
+    m = _volume_re(volumes).search(cid)
     return m.group(1) if m else None
 
 
@@ -59,9 +69,13 @@ def apply_delivery_convention(entries, keep_partials: bool):
     return kept, len(entries) - len(kept)
 
 
-def read_rows_by_volume(live: Path):
-    """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "seen":set}}"""
-    by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in VOLUMES}
+def read_rows_by_volume(live: Path, volumes):
+    """{volume: {"valid": {id: {normalized,data}}, "invalid":[custom_id], "batches":n}}
+
+    Rows whose custom_id names none of `volumes` are counted under
+    `unassigned` rather than silently skipped."""
+    by = {v: {"valid": {}, "invalid": [], "batches": 0} for v in volumes}
+    by["unassigned"] = []
     # Never assemble raw provider output.  The guarded runner writes a separate
     # accepted artifact containing only request-level responses that passed the
     # exact-ID, stop-reason, JSON, and usage checks.  This lets a large Batch
@@ -72,8 +86,10 @@ def read_rows_by_volume(live: Path):
             if not line.strip():
                 continue
             row = json.loads(line)
-            vol = _volume_of(row.get("custom_id", ""))
+            vol = _volume_of(row.get("custom_id", ""), volumes)
             if vol is None:
+                if "vocabtest" not in (row.get("custom_id") or ""):
+                    by["unassigned"].append(row.get("custom_id"))
                 continue
             by[vol]["batches"] += 1
             resp = row.get("response") or {}
@@ -160,12 +176,18 @@ def main(argv=None):
     ap.add_argument("--skip-pipeline", action="store_true",
                     help="materialize and report coverage only; skip the expensive "
                     "QA, identity, and graph refresh stages")
+    ap.add_argument("--volumes", nargs="+", default=None,
+                    help="only these volume IDs (default: every <vol>.segmented.json "
+                    "in --corpus)")
     args = ap.parse_args(argv)
 
     import materialize_luna_results as M
     import run_pipeline
 
-    by = read_rows_by_volume(args.live)
+    volumes = args.volumes or discover_volumes(args.corpus)
+    if not volumes:
+        raise SystemExit(f"REFUSING: no *.segmented.json files in {args.corpus}")
+    by = read_rows_by_volume(args.live, volumes)
     vocabtest = read_vocabtest_rows(args.live)
     outdir = args.live / "assembled"
     outdir.mkdir(parents=True, exist_ok=True)
@@ -173,9 +195,10 @@ def main(argv=None):
     materialized_files = []
     tot_corpus = tot_mat = tot_missing = tot_invalid = 0
 
-    for vol in VOLUMES:
+    for vol in volumes:
         corpus_path = args.corpus / f"{vol}.segmented.json"
         if not corpus_path.exists():
+            print(f"{vol}: no corpus file {corpus_path}; skipped")
             continue
         corpus = json.loads(corpus_path.read_text(encoding="utf-8"))
         extracted = by[vol]["valid"]
@@ -272,7 +295,12 @@ def main(argv=None):
 
     summary["totals"] = {"corpus_records": tot_corpus, "materialized_records": tot_mat,
                          "missing_records": tot_missing, "invalid_batches": tot_invalid,
-                         "volumes_with_output": len(materialized_files)}
+                         "volumes_with_output": len(materialized_files),
+                         "unassigned_rows": len(by["unassigned"])}
+    if by["unassigned"]:
+        summary["unassigned_custom_ids"] = by["unassigned"]
+        print(f"NOTE: {len(by['unassigned'])} accepted rows match no assembled volume "
+              f"(e.g. {by['unassigned'][0]}); listed in CORPUS_SUMMARY.json")
     (args.live / "CORPUS_SUMMARY.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     print(f"\nTOTAL materialized: {tot_mat}/{tot_corpus} records; "

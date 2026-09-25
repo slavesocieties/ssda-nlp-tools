@@ -7,7 +7,9 @@ State as of 2026-07-27. Everything below is offline/$0 unless marked **PAID**.
 The monitor should do this automatically. To check, or to do it by hand:
 
 ```bash
-python assemble_corpus.py      # offline: repairs -> corpus, vocabtest -> separate file
+# offline: repairs -> corpus, vocabtest -> separate file. The volumes are named
+# because assemble_corpus now takes every volume in production/corpus by default.
+python assemble_corpus.py --volumes 176899 201991 29597 375062 701054
 python vocab_ab_report.py      # offline: the age/ethnicity verdict
 ```
 
@@ -44,7 +46,7 @@ Batches are already staged with the vocabulary-aware prompt in
 > A separate output directory is necessary for data isolation, but it must not
 > create a separate budget. The guarded runner now **refuses** any non-default
 > `--outdir` unless `--ledger-path` is supplied. Point it at the live ledger so
-> the existing $20 cap remains cumulative.
+> the cap remains cumulative.
 >
 > A re-extraction also needs a distinct `--run-id`: the source compact files
 > reuse `<volume>-bNNNN` custom IDs, and the shared ledger correctly treats
@@ -57,16 +59,19 @@ Batches are already staged with the vocabulary-aware prompt in
 python run_luna_production.py production/batches_v2/176899.batches.jsonl \
     --outdir production/luna_v2 \
     --ledger-path production/luna_live/spend_ledger.json \
-    --run-id v2 --cap-usd 20.00 --take 109
+    --run-id v2 --take 109
 
 # assemble the NEW corpus from the NEW directory only
-python assemble_corpus.py --live production/luna_v2 --corpus production/corpus
+python assemble_corpus.py --live production/luna_v2 --corpus production/corpus     --volumes 176899 201991 29597 375062 701054
 ```
 
-A full v2 run is ~$15.09, which does **not** fit inside the current $7.99
-global headroom. The command above must refuse once its reservation would cross
-the live ledger's $20 cap. Raising that total cap is a separate, explicit user
-approval; it is never achieved by creating a second ledger.
+**Cap raised to $200 (approved by Daniel 2026-09-25).** `run_luna_production.py`
+now defaults to `--cap-usd 200`, but the live ledger still records $20 and the
+runner refuses the mismatch. The first run after the change must add
+`--raise-cap`. With `--confirm`, that writes the new cap and a `cap_history`
+entry into the live ledger. After the raise, headroom is ~$187.99, so a full v2
+run (~$15.09) fits. A cap is still never raised by creating a second ledger,
+and the runner never lowers one.
 
 Keep `production/luna_live/` intact until the v2 corpus is checked — it is the
 current delivered dataset and the only copy of the baseline extraction.
@@ -79,12 +84,12 @@ receipts and downloaded outputs still live under their own `--outdir`.
 
 | ledger | cap | committed |
 |---|---|---|
-| `production/luna_live/spend_ledger.json` | $20 | $11.051032 + $0.96 reserved = **$12.011032** (headroom $7.99) |
+| `production/luna_live/spend_ledger.json` | $20 recorded (as of 2026-07-27); $200 approved 2026-09-25, applied on the first `--raise-cap` run | $11.051032 + $0.96 reserved = **$12.011032** (headroom $7.99 at $20, $187.99 at $200) |
 | `production/luna_v2/` | no independent ledger | isolated v2 receipts, outputs, and assembled corpus only |
 
-A full v2 run (~$15.09) does **not** fit in `luna_live`'s remaining $7.99. That
-is a genuine signal, not an obstacle to route around: re-extracting the whole
-corpus needs a new, explicitly approved global cap.
+A full v2 run (~$15.09) did not fit in the old $7.99 headroom. The cap was
+therefore raised to $200 on 2026-09-25, in the same ledger, never by starting a
+second one.
 
 ## 4. Open, needs Daniel
 

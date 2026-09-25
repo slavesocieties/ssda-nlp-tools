@@ -26,6 +26,10 @@ DEFAULT_OUTDIR = Path("production/luna_live")
 # Batch API prices, conservatively computed from provider-reported token usage.
 BATCH_INPUT_PER_M = 0.50
 BATCH_OUTPUT_PER_M = 3.00
+# Cumulative hard cap across every job sharing a ledger. Raised from $20 to
+# $200 on 2026-09-25 (Daniel). An existing ledger keeps its recorded cap until
+# it is raised deliberately with --raise-cap.
+DEFAULT_CAP_USD = 200.0
 
 
 def read_compact(path: Path):
@@ -171,14 +175,27 @@ def validate_output(rows: list[dict], response_rows: list[dict]) -> dict:
                 {"prompt_tokens": prompt, "completion_tokens": completion}), 7)}
 
 
-def load_ledger(path: Path, cap: float) -> dict:
+def load_ledger(path: Path, cap: float, raise_cap: bool = False) -> dict:
+    """Load the cumulative ledger, refusing any cap that differs from its record.
+
+    With raise_cap, a HIGHER requested cap replaces the recorded one and the
+    change is appended to ``cap_history``. A cap is never lowered here: that
+    could put already-committed spend over the cap.
+    """
     if path.exists():
         ledger = json.loads(path.read_text(encoding="utf-8"))
     else:
         ledger = {"cap_usd": cap, "confirmed_usd": 0.0, "reserved_usd": 0.0, "jobs": []}
-    if float(ledger.get("cap_usd", cap)) != cap:
-        raise ValueError(f"ledger cap ${ledger.get('cap_usd')} differs from requested ${cap}")
-    return ledger
+    recorded = float(ledger.get("cap_usd", cap))
+    if recorded == cap:
+        return ledger
+    if raise_cap and cap > recorded:
+        ledger["cap_usd"] = cap
+        ledger.setdefault("cap_history", []).append({"from_usd": recorded, "to_usd": cap})
+        return ledger
+    hint = (" (pass --raise-cap to raise it deliberately)" if cap > recorded
+            else " (a recorded cap is never lowered)")
+    raise ValueError(f"ledger cap ${recorded:g} differs from requested ${cap:g}{hint}")
 
 
 def write_json(path: Path, value: object):
@@ -220,7 +237,11 @@ def main(argv=None):
                     help="shared cumulative ledger; required with a non-default --outdir")
     ap.add_argument("--run-id", default="",
                     help="namespace request custom IDs for an auditable re-extraction")
-    ap.add_argument("--cap-usd", type=float, default=20.0)
+    ap.add_argument("--cap-usd", type=float, default=DEFAULT_CAP_USD,
+                    help=f"cumulative hard cap for the ledger (default ${DEFAULT_CAP_USD:g})")
+    ap.add_argument("--raise-cap", action="store_true",
+                    help="raise an existing ledger's recorded cap to --cap-usd; "
+                         "with --confirm the new cap is written immediately")
     ap.add_argument("--take", type=int, default=50, help="maximum compact requests to submit")
     ap.add_argument("--reservation-per-request", type=float, default=0.04)
     ap.add_argument("--confirm", action="store_true")
@@ -235,7 +256,17 @@ def main(argv=None):
         ap.error("--settle-invalid requires --poll")
     require_isolated_output_for_run_id(args.outdir, args.run_id)
     ledger_path = resolve_ledger_path(args.outdir, args.ledger_path)
-    ledger = load_ledger(ledger_path, args.cap_usd)
+    recorded_cap = (json.loads(ledger_path.read_text(encoding="utf-8")).get("cap_usd")
+                    if ledger_path.exists() else None)
+    ledger = load_ledger(ledger_path, args.cap_usd, args.raise_cap)
+    if recorded_cap is not None and float(recorded_cap) != float(ledger["cap_usd"]):
+        if not args.confirm:
+            print(f"DRY RUN: would raise ledger cap ${float(recorded_cap):g} -> "
+                  f"${ledger['cap_usd']:g} in {ledger_path}")
+        else:
+            write_json(ledger_path, ledger)
+            print(f"RAISED ledger cap ${float(recorded_cap):g} -> ${ledger['cap_usd']:g} "
+                  f"in {ledger_path}")
     header, all_rows = read_compact(args.batch_file)
     known = set()
     for item in ledger.get("jobs", []):

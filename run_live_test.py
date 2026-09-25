@@ -18,7 +18,10 @@ Safety rails (all hard, not advisory):
 
 Outputs: per-batch actual prompt/cached/completion tokens and cost, the measured
 COST PER ENTRY and PER IMAGE, side-by-side with our offline projection, plus the
-parsed extraction results (so quality can be eyeballed at the same time).
+parsed extraction results under "entries" (so quality can be eyeballed at the
+same time). That is the key the QA tools read, so the file feeds straight in:
+
+    python run_pipeline.py live_test_results.json --tag 239746 --outdir out_live
 """
 import argparse
 import json
@@ -162,8 +165,9 @@ def main(argv=None):
                    "per_entry_usd": per_entry, "results": results,
                    # confirmed 2026-07-16: keep BOTH faithful (what Archivault
                    # produced) and normalized (the LLM's cleaned-up version) —
-                   # neither replaces the other in the final record
-                   "records": merged_records},
+                   # neither replaces the other in the final record.
+                   # "entries" is the key run_qa/run_pipeline/run_eval read.
+                   "entries": merged_records},
                   fh, ensure_ascii=False, indent=1)
     print(f"-> {args.out}  ({len(merged_records)} records, each with "
           f"text_faithful + text_normalized + data)")

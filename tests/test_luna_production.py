@@ -98,3 +98,57 @@ def test_namespaced_reextract_requires_isolated_artifact_directory():
     else:
         raise AssertionError("namespaced re-extraction can overwrite live artifacts")
     runner.require_isolated_output_for_run_id(Path("production/luna_v3"), "v3")
+
+
+def _ledger(tmp_path, cap):
+    path = tmp_path / "spend_ledger.json"
+    path.write_text(json.dumps({"cap_usd": cap, "confirmed_usd": 11.0,
+                                "reserved_usd": 1.0, "jobs": []}), encoding="utf-8")
+    return path
+
+
+def test_default_cap_is_200_and_new_ledgers_record_it(tmp_path):
+    assert runner.DEFAULT_CAP_USD == 200.0
+    ledger = runner.load_ledger(tmp_path / "new.json", runner.DEFAULT_CAP_USD)
+    assert ledger["cap_usd"] == 200.0
+
+
+def test_existing_ledger_cap_is_only_raised_deliberately(tmp_path):
+    path = _ledger(tmp_path, 20.0)
+    try:
+        runner.load_ledger(path, 200.0)
+        raise AssertionError("a changed cap must not be accepted silently")
+    except ValueError as exc:
+        assert "--raise-cap" in str(exc)
+    raised = runner.load_ledger(path, 200.0, raise_cap=True)
+    assert raised["cap_usd"] == 200.0
+    assert raised["cap_history"] == [{"from_usd": 20.0, "to_usd": 200.0}]
+    assert raised["confirmed_usd"] == 11.0          # committed spend is untouched
+
+
+def test_recorded_cap_is_never_lowered(tmp_path):
+    path = _ledger(tmp_path, 200.0)
+    try:
+        runner.load_ledger(path, 20.0, raise_cap=True)
+        raise AssertionError("lowering the cap must be refused")
+    except ValueError as exc:
+        assert "never lowered" in str(exc)
+
+
+def test_raise_cap_dry_run_leaves_ledger_unchanged_and_confirm_writes_it(tmp_path, capsys):
+    path = _ledger(tmp_path, 20.0)
+    batch = tmp_path / "1.batches.jsonl"
+    batch.write_text(json.dumps({"header": {"volume": "1", "prefix_messages": []}}) + "\n"
+                     + json.dumps(_row()) + "\n", encoding="utf-8")
+    args = [str(batch), "--outdir", str(tmp_path), "--ledger-path", str(path), "--raise-cap"]
+    assert runner.main(args) == 0
+    assert "would raise ledger cap $20 -> $200" in capsys.readouterr().out
+    assert json.loads(path.read_text(encoding="utf-8"))["cap_usd"] == 20.0
+    # --confirm with nothing left to submit: the raise is recorded, nothing is sent
+    ledger = json.loads(path.read_text(encoding="utf-8"))
+    ledger["jobs"] = [{"status": "validated", "custom_id": "1-b0000"}]
+    path.write_text(json.dumps(ledger), encoding="utf-8")
+    assert runner.main(args + ["--confirm"]) == 0
+    out = capsys.readouterr().out
+    assert "RAISED ledger cap $20 -> $200" in out and "No unsent compact requests" in out
+    assert json.loads(path.read_text(encoding="utf-8"))["cap_usd"] == 200.0

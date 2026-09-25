@@ -8,8 +8,9 @@ a human review loop at every step.
 
 **Design rule: paid calls are always deliberate.** The pipeline tools work
 deterministically ($0) or *prepare and price* LLM work. The opt-in live
-runners (`run_live_test.py` and `run_model_bakeoff.py`) are dry-run by
-default and need an explicit `--confirm`. The full test suite (137 tests) runs
+runners (`run_luna_production.py` for Batch-API extraction, `run_live_test.py`
+for a small synchronous cost/quality spot check, `run_model_bakeoff.py` for
+provider comparison) are dry-run by default and need an explicit `--confirm`. The full test suite (137 tests) runs
 offline in under a second.
 
 ## The pipeline
@@ -20,7 +21,10 @@ Archivault transcriptions (per image)
   ▼
 segmented entries (id / text / partial, cross-page stitched)
   │  run_corpus_prompts.py   priced, ready-to-send extraction batches
-  ▼                          (OpenAI Batch-API JSONL; prepared, not submitted)
+  │                          (OpenAI Batch-API JSONL; prepared, not submitted)
+  │  run_luna_production.py  PAID: submit, poll, validate (capped ledger)
+  │  materialize_luna_results.py   accepted output -> one volume file
+  ▼
 extracted people/events per entry
   │  run_qa.py               duplicates, chronology, dangling refs, drift
   │  run_eval.py             P/R/F1 vs gold or model-vs-model agreement
@@ -60,12 +64,23 @@ python -m pytest tests -q                          # 137 tests, no network, <1s
 python run_segment.py path/to/VOLUME.json --structural --out segmented.json
 
 # stage priced extraction batches from a directory of segmented volumes
-python run_corpus_prompts.py --corpus out_corpus --outdir out_batches
-python run_corpus_prompts.py --expand out_batches/<vol>.batches.jsonl   # Batch-API file
+# (pass an OpenAI --model: the default claude-haiku-4.5 cannot be sent by the runners)
+python run_corpus_prompts.py --corpus out_corpus --outdir out_batches --model gpt-5.6-luna
+
+# PAID (dry run without --confirm): submit, then later collect + validate
+python run_luna_production.py out_batches/<vol>.batches.jsonl --outdir production/luna_<vol> --ledger-path production/luna_live/spend_ledger.json --confirm
+python run_luna_production.py out_batches/<vol>.batches.jsonl --outdir production/luna_<vol> --ledger-path production/luna_live/spend_ledger.json --poll <batch_id> --confirm
+python materialize_luna_results.py out_corpus/<vol>.segmented.json "production/luna_<vol>/*.accepted.jsonl" --out EXTRACTED.json
 
 # one-command QA + identities + graph + review page for extracted volumes
 python run_pipeline.py EXTRACTED.json --tag VOL --outdir out_vol
 ```
+
+**[USAGE.md](USAGE.md) is the step-by-step guide** to a full run: segmenting,
+staging, sending and collecting (both the quick `run_live_test.py` spot check
+and the production Batch run), materializing, and QA/review, with
+troubleshooting. `RUNBOOK.md` covers the current state of the delivered
+production run.
 
 Requirements: Python 3.10+ standard library only (pytest to run tests;
 `tiktoken` optional for exact token counts). `ssda_nlp_tools/README.md` has the
