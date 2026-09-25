@@ -110,7 +110,7 @@ ssda_nlp_tools/     the package (segmentation, eval, QA, identity, network, cost
 run_*.py            one CLI per pipeline stage (see ssda_nlp_tools/README.md)
 tests/              137 offline tests; tests/fixtures/ = the paired gold examples
 eval_data/          measured reports: segmentation, cost, model bake-off
-Text data/, Sample_output/, Reduction_test/, training_data.json, instructions.json,
+archivault_output/, Sample_output/, Reduction_test/, training_data.json, instructions.json,
 extract.py, normalize.py, utility.py, transcription_json_to_training_*.py
                     upstream project files + sample data these tools build on,
                     from github.com/Suzreal/SSDA_New_Workflow_Update (Zekai) and

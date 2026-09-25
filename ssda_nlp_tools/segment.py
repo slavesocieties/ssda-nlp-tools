@@ -82,7 +82,7 @@ _CLOSER = re.compile(
 # particular cleric: this used to also hardcode "O'Reilly|Hassett", the two
 # priests of St. Augustine vol 239746, which is pure overfitting to the volume we
 # tuned on. Removing them changes no boundary and no partial flag across all 5
-# gold fixtures and all 5 Text data volumes — the role prefixes already cover
+# gold fixtures and all 5 archivault_output sample volumes — the role prefixes already cover
 # those signatures — so the names bought nothing and only misled.
 _SIGNATURE = re.compile(
     r"^\s*(?:O\s+Vig(?:ari)?[or]?\.?[oa]?\b|El\s+(?:Cura|P\.?e?\b)|Fr(?:ay|\.)\s|"

@@ -188,7 +188,7 @@ def measure_components(repo_dir: str = ".",
 
     # transcription output = whole-page text produced by Archivault/Gemini
     trans_out = 0
-    for cand in ("Text data/SSDA_0013_0023_Gemini_V2.json",):
+    for cand in ("archivault_output/SSDA_0013_0023_Gemini_V2.json",):
         if os.path.exists(j(cand)):
             raw = json.load(open(j(cand), encoding="utf-8"))
             trans_out = _all_text_tokens(raw) // max(1, len(pages))

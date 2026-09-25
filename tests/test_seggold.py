@@ -11,7 +11,7 @@ from ssda_nlp_tools.seggold import build_sheet, score_corrections
 
 
 def test_build_sheet_embeds_valid_payload_and_escapes(tmp_path):
-    vol = os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json")
+    vol = os.path.join(ROOT, "archivault_output/SSDA_0013_0023_Gemini_V2.json")
     html = str(tmp_path / "s.html")
     pred = str(tmp_path / "s.pred.json")
     info = build_sheet(vol, html, pred, max_pages=4, vol_id="T")

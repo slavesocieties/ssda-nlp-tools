@@ -22,7 +22,7 @@ def _mini_corpus(tmp_path):
     """Build a one-volume segmented corpus from the in-repo raw pages, so these
     tests do not depend on the (gitignored, regenerable) full out_corpus/."""
     from ssda_nlp_tools.segment import load_pages, segment_volume
-    pages = load_pages(os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json"))
+    pages = load_pages(os.path.join(ROOT, "archivault_output/SSDA_0013_0023_Gemini_V2.json"))
     res = segment_volume(pages)
     corpus = tmp_path / "corpus"
     corpus.mkdir()
@@ -69,7 +69,7 @@ def _expand_body(tmp_path, sub, model, reasoning):
     base = tmp_path / sub
     corpus = base / "corpus"
     corpus.mkdir(parents=True)
-    pages = load_pages(os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json"))
+    pages = load_pages(os.path.join(ROOT, "archivault_output/SSDA_0013_0023_Gemini_V2.json"))
     res = segment_volume(pages)
     with open(corpus / "239746.segmented.json", "w", encoding="utf-8") as f:
         json.dump({"volume": "239746", "stats": res["stats"], "entries": res["entries"]},

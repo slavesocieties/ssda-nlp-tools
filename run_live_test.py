@@ -31,6 +31,7 @@ import time
 
 from ssda_nlp_tools.batch_extract import parse_response, merge_with_faithful
 from ssda_nlp_tools.cost import DEFAULT_PRICING, count_tokens
+from run_luna_production import request_lines
 
 
 def load_compact_batches(path, max_batches):
@@ -108,7 +109,12 @@ def main(argv=None):
     totals = {"prompt": 0, "cached": 0, "completion": 0, "usd": 0.0}
     results, failures, merged_records = [], [], []
     for i, r in enumerate(rows, 1):
-        messages = header["prefix_messages"] + [r["tail_message"]]
+        # Send exactly the body the production Batch runner sends (pinned
+        # reasoning_effort, max_completion_tokens, and NO temperature: GPT-5.x
+        # reasoning models reject any value but the default), so the measured
+        # cost and quality are the ones production will get.
+        body = next(request_lines(header, [r]))["body"]
+        body["model"] = model
         payload = json.loads(r["tail_message"]["content"])
         ids = [e["entry"] for e in payload["entries"]]
         # the segmenter's FAITHFUL text, in canonical form, so we can keep both
@@ -116,9 +122,7 @@ def main(argv=None):
         canonical = [{"id": e["entry"], "images": [e["entry"].rsplit("-", 1)[0] + ".jpg"],
                      "text": e["transcription"]} for e in payload["entries"]]
         t0 = time.time()
-        resp = client.chat.completions.create(
-            model=model, messages=messages, temperature=0,
-            response_format={"type": "json_object"})
+        resp = client.chat.completions.create(**body)
         dt = time.time() - t0
         u = resp.usage
         cached = getattr(getattr(u, "prompt_tokens_details", None), "cached_tokens", 0) or 0
@@ -130,12 +134,15 @@ def main(argv=None):
         totals["cached"] += cached
         totals["completion"] += u.completion_tokens
         totals["usd"] += cost
-        parsed, missing = parse_response(resp.choices[0].message.content, ids)
+        finish = resp.choices[0].finish_reason
+        parsed, missing = parse_response(resp.choices[0].message.content or "", ids)
         print(f"  [{i}/{len(rows)}] {r['custom_id']}: {dt:.1f}s  "
               f"prompt={u.prompt_tokens:,} (cached {cached:,})  "
               f"out={u.completion_tokens:,}  ${cost:.4f}  "
               f"parsed {len(parsed)}/{len(ids)}"
-              + (f"  MISSING {missing}" if missing else ""))
+              + (f"  MISSING {missing}" if missing else "")
+              + (f"  finish_reason={finish} (production would reject this batch)"
+                 if finish != "stop" else ""))
         results.append({"custom_id": r["custom_id"], "usage": {
             "prompt": u.prompt_tokens, "cached": cached,
             "completion": u.completion_tokens, "usd": cost},

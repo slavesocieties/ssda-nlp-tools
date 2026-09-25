@@ -79,7 +79,7 @@ would otherwise silently pollute the database.
 ## Reproduce
 
 ```bash
-python run_segment.py "Text data/SSDA_0013_0023_Gemini_V2.json" --structural --eval Sample_output/Generated_0013_0023_4o_prompt_V2.json
+python run_segment.py archivault_output/SSDA_0013_0023_Gemini_V2.json --structural --eval Sample_output/Generated_0013_0023_4o_prompt_V2.json
 python run_segment.py <corpus>/239746*.json --out segmented.json     # volume mode
 python -m pytest tests -q                                            # 65 tests
 ```

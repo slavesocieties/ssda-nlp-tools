@@ -4,7 +4,7 @@ This guide walks through one full run: segment a volume, stage the extraction
 requests, **send them and collect the results**, then run QA, identity
 resolution and the social graph. The README describes what each stage does.
 This file lists the exact commands. Every command was dry-run against the
-sample data in `Text data/`.
+sample data in `archivault_output/`.
 
 Only step 3 costs money. Every paid command is a dry run unless you add
 `--confirm`, so run it once without `--confirm` and read the output first.
@@ -36,7 +36,7 @@ directory. It takes the **volume ID from the file name**, and that ID is
 stamped into every request's `custom_id`. Name the file after the real volume:
 
 ```bash
-python run_segment.py "Text data/SSDA_0013_0023_Gemini_V2.json" --structural --out production/corpus/239746.segmented.json
+python run_segment.py archivault_output/SSDA_0013_0023_Gemini_V2.json --structural --out production/corpus/239746.segmented.json
 ```
 
 For the six Drive volumes, `python run_production.py` builds

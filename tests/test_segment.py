@@ -348,7 +348,7 @@ def test_catchword_dropped_not_emitted():
 
 def test_spanish_volume_chunk1_perfect_vs_reference():
     from ssda_nlp_tools.segeval import load_reference_entries
-    pages = load_pages(os.path.join(ROOT, "Text data/SSDA_0013_0023_Gemini_V2.json"))
+    pages = load_pages(os.path.join(ROOT, "archivault_output/SSDA_0013_0023_Gemini_V2.json"))
     res = segment_volume(pages)
     ref = load_reference_entries(
         os.path.join(ROOT, "Sample_output/Generated_0013_0023_4o_prompt_V2.json"))
@@ -360,7 +360,7 @@ def test_spanish_volume_chunk1_perfect_vs_reference():
 def test_structural_margin_agreement_100pct():
     total = agree = 0
     for tag in ("0013_0023", "0024_0034", "0035_0044"):
-        pages = load_pages(os.path.join(ROOT, f"Text data/SSDA_{tag}_Gemini_V2.json"))
+        pages = load_pages(os.path.join(ROOT, f"archivault_output/SSDA_{tag}_Gemini_V2.json"))
         res = segment_volume(pages)
         mc = margin_number_check(pages, res["per_image"])
         total += mc["pages"]; agree += mc["agree"]
